@@ -11,3 +11,4 @@ public class TestData {
 	private Integer median;
 	
 }
+ 

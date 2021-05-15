@@ -12,5 +12,5 @@ public class Student extends User{
 		this.tests = tests;
 	}
 	
-	
+	 
 }

@@ -5,7 +5,7 @@ import java.util.Hashtable;
 
 public class  Test {
 private int ID;
-	private String authorName;
+	private String authorName; 
 	private String testName;
 	private String course;
 	private Date testDuration;

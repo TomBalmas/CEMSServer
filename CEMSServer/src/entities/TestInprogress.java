@@ -11,3 +11,4 @@ public class TestInprogress {
 	private Integer examineesNum;
 	private boolean  isLocked ;
 }
+ 
