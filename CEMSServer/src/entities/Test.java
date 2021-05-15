@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Hashtable;
 
 public class  Test {
-private int ID;
+	private int ID;
 	private String authorName; 
 	private String testName;
 	private String course;
@@ -13,6 +13,7 @@ private int ID;
 	private String examineeInstructions;
 	private String teacherInstructions;
 	private String field;
+	private TestData testData;
 	public Test(int iD, String authorName, String testName, String course, Date testDuration,
 			Hashtable<Question, Integer> pointsPerQuestion, String examineeInstructions, String teacherInstructions,
 			String field) {
@@ -25,6 +26,14 @@ private int ID;
 		this.examineeInstructions = examineeInstructions;
 		this.teacherInstructions = teacherInstructions;
 		this.field = field;
+	}
+	
+	
+	public boolean finishTest() {
+		testData= new TestData();
+		return false;
+		
+		
 	}
 	
 }
