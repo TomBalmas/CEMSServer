@@ -1,23 +1,18 @@
 package gui;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import server.ServerController;
 
 public class ServerUI extends Application {
+	protected ServerController serverController;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("ServerUI.fxml"));
-		Parent root = loader.load();
-		Scene scene = new Scene(root);
-		primaryStage.setTitle("CEMS Server");
-		primaryStage.setResizable(false);
-		primaryStage.setScene(scene);
-		primaryStage.show();
+		serverController = new ServerController();
+		serverController.getUiController().start(primaryStage);
 	}
+
 	public static void main(String args[]) throws Exception {
 		launch(args);
 	}

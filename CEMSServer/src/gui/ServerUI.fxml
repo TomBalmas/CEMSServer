@@ -9,7 +9,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ServerUIController">
    <children>
       <Text layoutX="107.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CEMS " textAlignment="CENTER">
@@ -37,8 +36,12 @@
       <JFXTextField fx:id="schemaTxt" labelFloat="true" layoutX="132.0" layoutY="284.0" promptText="Schema" text="cems" />
       <JFXTextField fx:id="usernameTxt" labelFloat="true" layoutX="132.0" layoutY="332.0" promptText="Username" text="root" />
       <JFXPasswordField fx:id="passwordTxt" labelFloat="true" layoutX="132.0" layoutY="380.0" promptText="Password" />
-      <Label fx:id="connectedLbl" layoutX="224.0" layoutY="109.0" text="(Not Connected)" textFill="RED" />
-      <JFXButton fx:id="connectBtn" layoutX="173.0" layoutY="440.0" style="-fx-background-color: #1eae98;" text="Connect" />
-      <JFXTextArea fx:id="serverLog" layoutX="325.0" layoutY="12.0" prefHeight="543.0" prefWidth="661.0" />
+      <Label fx:id="connectedLbl" layoutX="224.0" layoutY="109.0" text="(Not Connected)" textFill="RED">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Label>
+      <JFXButton fx:id="connectBtn" layoutX="173.0" layoutY="440.0" onMouseClicked="#clickConnect" style="-fx-background-color: #1eae98;" text="Connect" />
+      <JFXTextArea fx:id="serverLog" editable="false" labelFloat="true" layoutX="332.0" layoutY="13.0" prefHeight="543.0" prefWidth="661.0" promptText="Server Log:" />
+      <JFXButton fx:id="disconnectBtn" layoutX="173.0" layoutY="440.0" onMouseClicked="#clickDisconnect" style="-fx-background-color: #1eae98;" text="Disconnect" visible="false" />
    </children>
 </AnchorPane>

@@ -5,44 +5,32 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * This class is a singleton design pattern,
- * it defines the jdbc driver and connect to specific schema of a database
+ * This class is a singleton design pattern, it defines the jdbc driver and
+ * connect to specific schema of a database
  */
 public class DBConnector {
 
-	private String dbIp, schema, userName, password;
-	private static DBConnector instance;
+	private static String dbIp, schema, userName, password;
+	private static volatile DBConnector instance;
 	private static Connection conn;
 
-	
-	private DBConnector(String dbIp, String schema, String userName, String password) {
-		this.dbIp = dbIp;
-		this.schema = schema.toLowerCase();
-		this.userName = userName;
-		this.password = password;
+	private DBConnector(String dbIp, String schema, String userName, String password) throws ClassNotFoundException, SQLException {
+		DBConnector.dbIp = dbIp;
+		DBConnector.schema = schema.toLowerCase();
+		DBConnector.userName = userName;
+		DBConnector.password = password;
 		connectToDB();
 	}
 
 	/**
 	 * This function makes the connection to the Database
+	 * @throws ClassNotFoundException 
+	 * @throws SQLException 
 	 */
-	private void connectToDB() {
-		try {
+	private static void connectToDB() throws ClassNotFoundException, SQLException {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			System.out.println("Driver definition succeed");
-
-		} catch (Exception e) {
-			System.out.println("Driver definition failed");
-		}
-		try {
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://" + dbIp + "/" + schema + "?useSSL=false&serverTimezone=IST", userName, password);
-			System.out.println("SQL connection succeed");
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-		}
 	}
 
 	public static Connection getConnection() {
@@ -53,47 +41,52 @@ public class DBConnector {
 		return dbIp;
 	}
 
-	public void setDbIp(String dbIp) {
-		this.dbIp = dbIp;
+	public static void setDbIp(String dbIp) {
+		DBConnector.dbIp = dbIp;
 	}
 
 	public String getUserName() {
 		return userName;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public static void setUserName(String userName) {
+		DBConnector.userName = userName;
 	}
 
 	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public static void setPassword(String password) {
+		DBConnector.password = password;
 	}
 
 	public String getSchema() {
 		return schema;
 	}
 
-	public void setSchema(String schema) {
-		this.schema = schema;
+	public static void setSchema(String schema) {
+		DBConnector.schema = schema;
 	}
 
 	/**
-	 * @param dbIp - the ip of mysql server
-	 * @param schema - schema name 
+	 * @param dbIp     - the ip of mysql server
+	 * @param schema   - schema name
 	 * @param userName - mysql username
 	 * @param password - mysql password
 	 * @return single instance for database connection
 	 * @throws SQLException
+	 * @throws ClassNotFoundException 
 	 */
-	public DBConnector getInstance(String dbIp, String schema, String userName, String password) throws SQLException {
-		if (instance == null)
-			instance = new DBConnector(dbIp, schema, userName, password);
-		else {
-			conn.close();
+	public static DBConnector getInstance(String dbIp, String schema, String userName, String password)
+			throws SQLException, ClassNotFoundException {
+		if (instance == null) {
+			synchronized (DBConnector.class) {
+				instance = new DBConnector(dbIp, schema, userName, password);
+			}
+		} else {
+			if (conn != null)
+				conn.close();
 			setDbIp(dbIp);
 			setSchema(schema);
 			setUserName(userName);
