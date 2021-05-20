@@ -24,8 +24,6 @@ public class ServerUIController implements Observer {
 
 	private int port;
 	private FXMLLoader loader;
-	private boolean dark = false;
-	private Scene scene;
 	@SuppressWarnings("unused")
 	private CEMSServer server;
 
@@ -54,7 +52,7 @@ public class ServerUIController implements Observer {
 
 	@FXML
 	private JFXButton connectBtn;
-	
+
 	@FXML
 	private JFXButton disconnectBtn;
 
@@ -77,6 +75,12 @@ public class ServerUIController implements Observer {
 		return passwordTxt;
 	}
 
+	/**
+	 * when clicking on connect the server will start and start listen to
+	 * connections
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void clickConnect(MouseEvent event) {
 		port = Integer.parseInt(portTxt.getText());
@@ -104,11 +108,19 @@ public class ServerUIController implements Observer {
 		}
 	}
 
+	/**
+	 * when clicking disconnect it will close the connection to the server
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void clickDisconnect(MouseEvent event) {
 		disconnectSet();
 	}
 
+	/**
+	 * this function contains the visual changes when clicking connect
+	 */
 	private void connectSet() {
 		connectBtn.setVisible(false);
 		disconnectBtn.setVisible(true);
@@ -116,6 +128,10 @@ public class ServerUIController implements Observer {
 		connectedLbl.setStyle("-fx-text-fill: green;");
 	}
 
+	/**
+	 * this function contains the visual and functional changes when clicking
+	 * disconnect
+	 */
 	private void disconnectSet() {
 		try {
 			ServerController.closeServer();
@@ -128,6 +144,9 @@ public class ServerUIController implements Observer {
 		connectedLbl.setStyle("-fx-text-fill: red;");
 	}
 
+	/**
+	 * @return instance of the fxml loader
+	 */
 	public FXMLLoader getLoader() {
 		return loader;
 	}
@@ -136,7 +155,7 @@ public class ServerUIController implements Observer {
 		try {
 			loader = new FXMLLoader(getClass().getResource("ServerUI.fxml"));
 			Parent root = loader.load();
-			scene = new Scene(root);
+			Scene scene = new Scene(root);
 			stage.setTitle("CEMS Server");
 			stage.setResizable(false);
 			stage.setScene(scene);
@@ -146,10 +165,16 @@ public class ServerUIController implements Observer {
 		}
 	}
 
+	/**
+	 * @param msg - this message will be written to the server log when called
+	 */
 	private void writeToLog(String msg) {
 		serverLog.appendText("> " + msg + "\n");
 	}
 
+	/**
+	 * this function will get the messages from the server to write them to the log
+	 */
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		writeToLog((String) arg1);

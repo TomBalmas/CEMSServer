@@ -4,6 +4,11 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import server.ServerController;
 
+/**
+ * this class starts the server UI
+ * @author ArtLo
+ *
+ */
 public class ServerUI extends Application {
 	protected ServerController serverController;
 

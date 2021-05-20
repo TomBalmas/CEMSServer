@@ -14,7 +14,8 @@ public class DBConnector {
 	private static volatile DBConnector instance;
 	private static Connection conn;
 
-	private DBConnector(String dbIp, String schema, String userName, String password) throws ClassNotFoundException, SQLException {
+	private DBConnector(String dbIp, String schema, String userName, String password)
+			throws ClassNotFoundException, SQLException {
 		DBConnector.dbIp = dbIp;
 		DBConnector.schema = schema.toLowerCase();
 		DBConnector.userName = userName;
@@ -24,15 +25,19 @@ public class DBConnector {
 
 	/**
 	 * This function makes the connection to the Database
-	 * @throws ClassNotFoundException 
-	 * @throws SQLException 
+	 * 
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
 	 */
 	private static void connectToDB() throws ClassNotFoundException, SQLException {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(
-					"jdbc:mysql://" + dbIp + "/" + schema + "?useSSL=false&serverTimezone=IST", userName, password);
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		conn = DriverManager.getConnection("jdbc:mysql://" + dbIp + "/" + schema + "?useSSL=false&serverTimezone=IST",
+				userName, password);
 	}
 
+	/**
+	 * @return the connection for using queries
+	 */
 	public static Connection getConnection() {
 		return conn;
 	}
@@ -70,13 +75,14 @@ public class DBConnector {
 	}
 
 	/**
+	 * 
 	 * @param dbIp     - the ip of mysql server
 	 * @param schema   - schema name
 	 * @param userName - mysql username
 	 * @param password - mysql password
 	 * @return single instance for database connection
 	 * @throws SQLException
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException
 	 */
 	public static DBConnector getInstance(String dbIp, String schema, String userName, String password)
 			throws SQLException, ClassNotFoundException {

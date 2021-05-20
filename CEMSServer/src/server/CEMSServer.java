@@ -15,9 +15,13 @@ public class CEMSServer extends ObservableServer{
 		sendToLog(serverStartedString + " on port: " + getPort());
 	}
 	
-	private void sendToLog(Object o) {
+	/**
+	 * this function 
+	 * @param msg - the string for sending to the server log
+	 */
+	private void sendToLog(String msg) {
 		setChanged();
-		notifyObservers(o);
+		notifyObservers(msg);
 	}
 	
 	@Override
