@@ -64,8 +64,8 @@ public class CEMSServer extends ObservableServer {
 	}
 
 	/**
-	 * receives message from client and translates it to switch case
-	 * to handle it with connection to the DB
+	 * receives message from client and translates it to switch case to handle it
+	 * with connection to the DB
 	 */
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -73,7 +73,7 @@ public class CEMSServer extends ObservableServer {
 			String[] str = ((String) msg).split("-");
 			switch (str[0]) {
 			case "LOGIN":
-				String[] details = str[1].split(",");	// details[0] = user name, details[1] = password
+				String[] details = str[1].split(","); // details[0] = user name, details[1] = password
 				User user = Queries.getUser(details[0], details[1]);
 				if (user == null)
 					client.sendToClient("LOGIN-null:");

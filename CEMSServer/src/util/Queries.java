@@ -24,19 +24,20 @@ public class Queries {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(
 					"SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'");
-			switch (rs.getString("Role")) {
-			case "Student":
-				return new Student(rs.getLong(0), rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-						rs.getString(5));
-			case "Teacher":
-				return new Teacher(rs.getLong(0), rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-						rs.getString(5));
-			case "Principle":
-				return new Principle(rs.getLong(0), rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-						rs.getString(5));
-			default:
-				return null;
-			}
+			if (rs.next())
+				switch (rs.getString("role")) {
+				case "Student":
+					return new Student(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
+							rs.getString("email"), rs.getString("username"), rs.getString("password"));
+				case "Teacher":
+					return new Teacher(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
+							rs.getString("email"), rs.getString("username"), rs.getString("password"));
+				case "Principle":
+					return new Principle(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
+							rs.getString("email"), rs.getString("username"), rs.getString("password"));
+				default:
+					return null;
+				}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
