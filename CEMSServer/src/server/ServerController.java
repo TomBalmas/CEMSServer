@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import gui.ServerUIController;
+import util.Queries;
 
 /**
  * this class implements the logic of what the server can do function wise.
@@ -14,6 +15,7 @@ public class ServerController {
 
 	public static CEMSServer server;
 	private static ServerUIController uiController;
+	private static Queries queries;
 
 	public ServerController() {
 		uiController = new ServerUIController();
@@ -51,6 +53,7 @@ public class ServerController {
 	public static void connectToDB(String ip, String schema, String user, String pass)
 			throws SQLException, ClassNotFoundException {
 		DBConnector.getInstance(ip, schema, user, pass);
+		queries = new Queries(DBConnector.getConnection());
 	}
 
 	/**

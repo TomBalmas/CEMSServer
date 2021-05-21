@@ -2,9 +2,13 @@ package entities;
 
 public class Teacher extends User {
 
-	public Teacher(long sSN, String name, String surName, String userName, String email, String password) {
+	public Teacher(long sSN, String name, String surName, String email, String userName, String password) {
 		super(sSN, name, surName, userName, email, password);
-		// TODO Auto-generated constructor stub
+	}
+	
+	public String toString() {
+		return String.format("Teacher: %ld, %s, %s, %s, %s, %s", getSSN(), getName(), getSurName(), getEmail(),
+				getUserName(), getPassword());
 	}
 
 }
