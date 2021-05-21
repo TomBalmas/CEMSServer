@@ -14,6 +14,6 @@ public class ActiveUser  {
 	public String getUserType() {
 		return userType;
 	}
-	
+	 
 
 }
