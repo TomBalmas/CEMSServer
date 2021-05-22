@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import entities.User;
+import common.User;
 import ocsf.server.ConnectionToClient;
 import ocsf.server.ObservableServer;
 import util.Queries;
@@ -77,7 +77,7 @@ public class CEMSServer extends ObservableServer {
 				User user = Queries.getUser(details[0], details[1]);
 				if (user == null)
 					client.sendToClient("LOGIN-null:");
-				client.sendToClient("LOGIN-" + user.toString());
+				client.sendToClient(user);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
