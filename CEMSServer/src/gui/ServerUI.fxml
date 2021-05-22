@@ -35,7 +35,7 @@
       <JFXTextField fx:id="ipTxt" labelFloat="true" layoutX="132.0" layoutY="236.0" promptText="IP" text="localhost" />
       <JFXTextField fx:id="schemaTxt" labelFloat="true" layoutX="132.0" layoutY="284.0" promptText="Schema" text="cems" />
       <JFXTextField fx:id="usernameTxt" labelFloat="true" layoutX="132.0" layoutY="332.0" promptText="Username" text="root" />
-      <JFXPasswordField fx:id="passwordTxt" labelFloat="true" layoutX="132.0" layoutY="380.0" promptText="Password" />
+      <JFXPasswordField fx:id="passwordTxt" labelFloat="true" layoutX="132.0" layoutY="380.0" onAction="#clickConnect" promptText="Password" />
       <Label fx:id="connectedLbl" layoutX="224.0" layoutY="109.0" text="(Not Connected)" textFill="RED">
          <font>
             <Font name="System Bold" size="12.0" />
