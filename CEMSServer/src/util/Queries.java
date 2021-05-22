@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import entities.Principle;
 import entities.Student;
@@ -30,8 +31,17 @@ public class Queries {
 					return new Student(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				case "Teacher":
+					//getting teachers fields from DB and inserting into teachers arrayList
+					 String[] arr = null; 
+					  arr = rs.getString("fields").split(" "); 
+					  ArrayList<String> fields = new ArrayList<>();
+					  for(int i=0;i<arr.length;i++){
+					  fields.add(arr[i]);
+					  }
+					  
 					return new Teacher(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
-							rs.getString("email"), rs.getString("username"), rs.getString("password"));
+							rs.getString("email"), rs.getString("username"), rs.getString("password"),fields);
+				
 				case "Principle":
 					return new Principle(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
