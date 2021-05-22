@@ -1,9 +1,12 @@
 package entities;
 
-public class Teacher extends User {
+import java.util.ArrayList;
 
-	public Teacher(int sSN, String name, String surName, String email, String userName, String password) {
+public class Teacher extends User {
+	private ArrayList<String> fields = new ArrayList<>();
+	public Teacher(int sSN, String name, String surName, String email, String userName, String password,ArrayList<String> fields) {
 		super(sSN, name, surName, userName, email, password);
+		this.fields=fields;
 	}
 	
 	public String toString() {
