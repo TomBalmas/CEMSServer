@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -82,7 +83,7 @@ public class ServerUIController implements Observer {
 	 * @param event
 	 */
 	@FXML
-	void clickConnect(MouseEvent event) {
+	void clickConnect(Event event) {
 		port = Integer.parseInt(portTxt.getText());
 		try {
 			ServerController.runServer(port);
@@ -99,6 +100,7 @@ public class ServerUIController implements Observer {
 				connectSet();
 			} catch (ClassNotFoundException e) {
 				writeToLog("Driver definition failed");
+				disconnectSet();
 			}
 		} catch (SQLException ex) {
 			writeToLog("SQLException: " + ex.getMessage());
@@ -124,6 +126,11 @@ public class ServerUIController implements Observer {
 	private void connectSet() {
 		connectBtn.setVisible(false);
 		disconnectBtn.setVisible(true);
+		passwordTxt.setDisable(true);
+		usernameTxt.setDisable(true);
+		ipTxt.setDisable(true);
+		schemaTxt.setDisable(true);
+		portTxt.setDisable(true);
 		connectedLbl.setText("(Connected)");
 		connectedLbl.setStyle("-fx-text-fill: green;");
 	}
@@ -140,6 +147,11 @@ public class ServerUIController implements Observer {
 		}
 		disconnectBtn.setVisible(false);
 		connectBtn.setVisible(true);
+		passwordTxt.setDisable(false);
+		usernameTxt.setDisable(false);
+		ipTxt.setDisable(false);
+		portTxt.setDisable(false);
+		schemaTxt.setDisable(false);
 		connectedLbl.setText("(Not Connected)");
 		connectedLbl.setStyle("-fx-text-fill: red;");
 	}
