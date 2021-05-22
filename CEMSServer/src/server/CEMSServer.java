@@ -74,10 +74,7 @@ public class CEMSServer extends ObservableServer {
 			switch (str[0]) {
 			case "LOGIN":
 				String[] details = str[1].split(","); // details[0] = user name, details[1] = password
-				User user = Queries.getUser(details[0], details[1]);
-				if (user == null)
-					client.sendToClient("LOGIN-null:");
-				client.sendToClient(user);
+				client.sendToClient(Queries.getUser(details[0], details[1]));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
