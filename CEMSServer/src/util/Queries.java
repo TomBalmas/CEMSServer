@@ -6,10 +6,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import entities.Principle;
-import entities.Student;
-import entities.Teacher;
-import entities.User;
+import common.Principle;
+import common.Student;
+import common.Teacher;
+import common.User;
 
 public class Queries {
 
