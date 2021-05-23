@@ -68,8 +68,6 @@ public class Queries {
 		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
 		for (int i = 0; i < arr.length; i++)
 			array.add(i, arr[i]);
-		;
-		System.out.println(array.get(0));
 		ArrayList<String> answers = new ArrayList<>();
 
 		try {
