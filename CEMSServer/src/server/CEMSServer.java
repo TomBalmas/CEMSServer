@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.Question;
 import common.User;
 import ocsf.server.ConnectionToClient;
 import ocsf.server.ObservableServer;
@@ -70,6 +71,7 @@ public class CEMSServer extends ObservableServer {
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		try {
+			
 			String[] str = ((String) msg).split("-");
 			switch (str[0]) {
 			case "LOGIN":
@@ -78,6 +80,16 @@ public class CEMSServer extends ObservableServer {
 				if (user == null)
 					client.sendToClient("LOGIN-null:");
 				client.sendToClient(user);
+				break;
+			case "QUESTION_BANK":
+				String fields =  str[1];//details[i]=field i<=6
+				ArrayList<Question> questions = new ArrayList<>();
+				questions=Queries.getQuestions(fields);
+				client.sendToClient(questions); 
+			default: 
+				break;
+				
+				
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
