@@ -62,7 +62,7 @@ public class Queries {
 	public static ArrayList<Question> getQuestions(String fields) {
 		Statement stmt;
 		ArrayList<Question> questions = new ArrayList<>();
-		String[] arr = new String[5];
+		String[] arr;
 		String temp = fields.substring(1, fields.length() - 1);
 		arr = temp.split(",");
 		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
