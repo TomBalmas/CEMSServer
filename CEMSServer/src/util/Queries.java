@@ -53,42 +53,45 @@ public class Queries {
 		}
 		return null;
 	}
+
 	/**
-	 *this method returns questions that are of the teachers fields
+	 * this method returns questions that are of the teachers fields
+	 * 
 	 * @return
 	 */
 	public static ArrayList<Question> getQuestions(String fields) {
 		Statement stmt;
 		ArrayList<Question> questions = new ArrayList<>();
 		String[] arr = new String[5];
-		String temp =fields.substring(1, fields.length() - 1);
+		String temp = fields.substring(1, fields.length() - 1);
 		arr = temp.split(",");
-		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x","x", "x", "x"));
-		for(int i=0; i<arr.length; i++)
-		array.add(i, arr[i]);;
+		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
+		for (int i = 0; i < arr.length; i++)
+			array.add(i, arr[i]);
+		;
 		System.out.println(array.get(0));
 		ArrayList<String> answers = new ArrayList<>();
-		
+
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM questions WHERE field = '" +array.get(0) + "' OR field = '"+array.get(1) + "' OR field = '"
-			+ array.get(2)+"' OR field = '" + array.get(3) +"' OR field = '" + array.get(4) + "' OR field = '" + array.get(4) + "'" );
-				while(rs.next()) {
-					answers.add(rs.getString("answer1"));
-					answers.add(rs.getString("answer2"));
-					answers.add(rs.getString("answer3"));
-					answers.add(rs.getString("answer4"));
-				questions.add(new Question(rs.getInt("ID"), rs.getString("author") , rs.getString("instructionsForTeacher") , rs.getString("instructionsForStudent" ), rs.getString( "questionContent"),
-						rs.getInt("correctAnswer"),rs.getString("field") , answers));
-				
+			ResultSet rs = stmt.executeQuery("SELECT * FROM questions WHERE field = '" + array.get(0) + "' OR field = '"
+					+ array.get(1) + "' OR field = '" + array.get(2) + "' OR field = '" + array.get(3)
+					+ "' OR field = '" + array.get(4) + "' OR field = '" + array.get(4) + "'");
+			while (rs.next()) {
+				answers.add(rs.getString("answer1"));
+				answers.add(rs.getString("answer2"));
+				answers.add(rs.getString("answer3"));
+				answers.add(rs.getString("answer4"));
+				questions.add(new Question(rs.getInt("ID"), rs.getString("author"),
+						rs.getString("instructionsForTeacher"), rs.getString("instructionsForStudent"),
+						rs.getString("questionContent"), rs.getInt("correctAnswer"), rs.getString("field"), answers));
+
 			}
-	
-		
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return questions;
 	}
-	}
-
+}
