@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import common.Question;
 import common.User;
 import ocsf.server.ConnectionToClient;
@@ -82,7 +83,7 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(user);
 				break;
 			case "QUESTION_BANK":
-				String fields =  str[1];//details[i]=field i<=6
+				String fields =  str[1];
 				ArrayList<Question> questions = new ArrayList<>();
 				questions=Queries.getQuestions(fields);
 				client.sendToClient(questions); 
