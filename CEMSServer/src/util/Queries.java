@@ -12,6 +12,7 @@ import common.Question;
 import common.Student;
 import common.Teacher;
 import common.Test;
+import common.TestForm;
 import common.User;
 
 public class Queries {
@@ -119,7 +120,7 @@ public class Queries {
 					+ "' OR field = '" + array.get(4) + "' OR field = '" + array.get(4) + "'");
 			while (rs.next()) {
 				System.out.println(rs.getString("autour"));
-				tests.add(new Test(rs.getInt("id"), rs.getString("autour"), rs.getString("testName"),
+				tests.add(new TestForm(rs.getInt("id"), rs.getString("autour"), rs.getString("testName"),
 						rs.getString("course"), rs.getString("testDuartion"), rs.getString("pointsPerQuestion"),
 						rs.getString("instructions"), rs.getString("teacherInstructions"),
 						rs.getString("questionsInTest"), rs.getString("field")));
@@ -161,6 +162,18 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return questions;
+	}
+
+	public static boolean deleteTest(Test test) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery("DELETE FROM `tests` WHERE id='" + test.getID() + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 
 	}
 
