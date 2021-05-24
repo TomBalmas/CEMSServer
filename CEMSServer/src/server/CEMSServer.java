@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.ActiveTest;
 import common.Question;
 import common.Test;
-import common.User;
 import ocsf.server.ConnectionToClient;
 import ocsf.server.ObservableServer;
 import util.Queries;
@@ -105,6 +105,12 @@ public class CEMSServer extends ObservableServer {
 				ArrayList<Test> tests = new ArrayList<>();
 				tests = Queries.getTests(fields);
 				client.sendToClient(tests);
+				break;
+			case "ACTIVE_TEST":
+				ArrayList<ActiveTest> activeTests = new ArrayList<>();
+				activeTests = Queries.getActiveTests();
+				client.sendToClient(activeTests);
+				break; 
 			default:
 				break;
 
