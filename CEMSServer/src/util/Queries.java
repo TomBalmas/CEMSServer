@@ -12,6 +12,7 @@ import common.Question;
 import common.Student;
 import common.Teacher;
 import common.Test;
+import common.TestForm;
 import common.User;
 
 public class Queries {
@@ -35,14 +36,10 @@ public class Queries {
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				case "Teacher":
 					// getting teachers fields from DB and inserting into teachers arrayList
-					String[] arr = null;
-					arr = rs.getString("fields").split(",");
-					ArrayList<String> fields = new ArrayList<>();
-					for (int i = 0; i < arr.length; i++) {
-						fields.add(arr[i]);
-					}
+
 					return new Teacher(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
-							rs.getString("email"), rs.getString("username"), rs.getString("password"), fields);
+							rs.getString("email"), rs.getString("username"), rs.getString("password"),
+							rs.getString("fields"));
 				case "Principle":
 					return new Principle(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
@@ -83,7 +80,6 @@ public class Queries {
 				questions.add(new Question(rs.getInt("ID"), rs.getString("author"),
 						rs.getString("instructionsForTeacher"), rs.getString("instructionsForStudent"),
 						rs.getString("questionContent"), rs.getInt("correctAnswer"), rs.getString("field"), answers));
-
 			}
 
 		} catch (SQLException e) {
@@ -93,6 +89,12 @@ public class Queries {
 		return questions;
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param fields - getting the fields of the teacher
+	 * @return arraylist of test that found in tests DB
+	 */
 	public static ArrayList<Test> getTests(String fields) {
 		Statement stmt;
 		ArrayList<Test> tests = new ArrayList<>();
@@ -110,15 +112,64 @@ public class Queries {
 					+ "' OR field = '" + array.get(4) + "' OR field = '" + array.get(4) + "'");
 			while (rs.next()) {
 				System.out.println(rs.getString("autour"));
-				tests.add(new Test(rs.getInt("id"), rs.getString("autour"), rs.getString("testName"),
+				tests.add(new TestForm(rs.getInt("id"), rs.getString("autour"), rs.getString("testName"),
 						rs.getString("course"), rs.getString("testDuartion"), rs.getString("pointsPerQuestion"),
-						rs.getString("instructions"), rs.getString("teacherInstructions"), rs.getString("field")));
-				System.out.println(tests.get(0));
+						rs.getString("instructions"), rs.getString("teacherInstructions"),
+						rs.getString("questionsInTest"), rs.getString("field")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return tests;
+	}
+
+	/**
+	 * 
+	 * 
+	 * while getting a test and call this function you will get an array list of its
+	 * question
+	 * 
+	 * @param test - a test
+	 * @return question array list of the test's questions
+	 */
+	public static ArrayList<Question> getQuestionFromTest(Test test) {
+		Statement stmt;
+		ArrayList<Question> questions = new ArrayList<>();
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT questionInTest FROM tests WHERE id='" + test.getID() + "'");
+			String questionString = rs.getString(0);
+			String[] arr = questionString.split(":");
+			for (String str : arr) {
+				ArrayList<String> answers = new ArrayList<>();
+				rs = stmt.executeQuery("SELECT * FROM questions WHERE id='" + str + "'");
+				rs.next();
+				answers.add(rs.getString("answer1"));
+				answers.add(rs.getString("answer2"));
+				answers.add(rs.getString("answer3"));
+				answers.add(rs.getString("answer4"));
+				questions.add(new Question(rs.getInt(0), rs.getString(1), rs.getString(2), rs.getString(3),
+						rs.getString(4), rs.getInt(5), rs.getString(6), answers));
+			}
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		return questions;
+	}
+
+	public static boolean deleteTest(Test test) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery("DELETE FROM `tests` WHERE id='" + test.getID() + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+
 	}
 
 }
