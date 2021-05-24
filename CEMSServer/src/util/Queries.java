@@ -33,15 +33,9 @@ public class Queries {
 					return new Student(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				case "Teacher":
-					// getting teachers fields from DB and inserting into teachers arrayList
-					String[] arr = null;
-					arr = rs.getString("fields").split(",");
-					ArrayList<String> fields = new ArrayList<>();
-					for (int i = 0; i < arr.length; i++) {
-						fields.add(arr[i]);
-					}
+				
 					return new Teacher(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
-							rs.getString("email"), rs.getString("username"), rs.getString("password"), fields);
+							rs.getString("email"), rs.getString("username"), rs.getString("password"), rs.getString("fields"));
 				case "Principle":
 					return new Principle(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
@@ -67,9 +61,9 @@ public class Queries {
 		arr = temp.split(",");
 		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
 		for (int i = 0; i < arr.length; i++)
-			array.add(i, arr[i]);
+			array.add(i, arr[i].trim());
 		ArrayList<String> answers = new ArrayList<>();
-
+		System.out.println(array.toString());
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM questions WHERE field = '" + array.get(0) + "' OR field = '"
