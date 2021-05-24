@@ -103,30 +103,25 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(questions);
 				break;
 			case "TEST_BANK":
-				ArrayList<Test> tests = new ArrayList<>();
-				tests = Queries.getTests(args);
+				ArrayList<Test> tests = Queries.getTestsByField(args);
 				client.sendToClient(tests);
 				break;
 			case "DELETE_TEST":
 				boolean deleted = Queries.deleteTestByID(args);
 				client.sendToClient(deleted ? "deleted" : "notDeleted");
-				ArrayList<Test> tests = new ArrayList<>();
-				tests = Queries.getTestsByField(args);
-				client.sendToClient(tests);
+				ArrayList<Test> testsAfterDelete = Queries.getTestsByField(args);
+				client.sendToClient(testsAfterDelete);
 				break;
 			case "ACTIVE_TEST":
-				ArrayList<ActiveTest> activeTests = new ArrayList<>();
-				activeTests = Queries.getActiveTests();
+				ArrayList<ActiveTest> activeTests = Queries.getActiveTests();
 				client.sendToClient(activeTests);
-				break; 
+				break;
 			case "SCHEDULED_TESTS":
-				ArrayList<ScheduledTest> scheduledTests = new ArrayList<>();
-				scheduledTests = Queries.getScheduledTestsByAuthorID(args);
+				ArrayList<ScheduledTest> scheduledTests = Queries.getScheduledTestsByAuthorID(args);
 				client.sendToClient(scheduledTests);
 				break;
 			default:
 				break;
-
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
