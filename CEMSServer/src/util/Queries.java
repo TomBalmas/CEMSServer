@@ -19,7 +19,7 @@ public class Queries {
 	private static Connection conn = null;
 
 	public Queries(Connection conn) {
-		this.conn = conn;
+		Queries.conn = conn;
 	}
 
 	public static User getUser(String username, String password) {
@@ -63,9 +63,8 @@ public class Queries {
 	public static ArrayList<Question> getQuestions(String fields) {
 		Statement stmt;
 		ArrayList<Question> questions = new ArrayList<>();
-		String[] arr;
 		String temp = fields.substring(1, fields.length() - 1);
-		arr = temp.split(",");
+		String[] arr = temp.split(",");
 		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
 		for (int i = 0; i < arr.length; i++)
 			array.add(i, arr[i].trim());
@@ -83,7 +82,6 @@ public class Queries {
 				questions.add(new Question(rs.getInt("ID"), rs.getString("author"),
 						rs.getString("instructionsForTeacher"), rs.getString("instructionsForStudent"),
 						rs.getString("questionContent"), rs.getInt("correctAnswer"), rs.getString("field"), answers));
-
 			}
 
 		} catch (SQLException e) {
