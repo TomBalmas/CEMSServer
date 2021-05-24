@@ -19,9 +19,16 @@ public class Queries {
 	private static Connection conn = null;
 
 	public Queries(Connection conn) {
-		Queries.conn = conn;
+		this.conn = conn;
 	}
 
+	/**
+	 * gets the user with the given user name and password
+	 * 
+	 * @param username
+	 * @param password
+	 * @return User
+	 */
 	public static User getUser(String username, String password) {
 		Statement stmt;
 		try {
@@ -34,9 +41,11 @@ public class Queries {
 					return new Student(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				case "Teacher":
-				
+					// getting teachers fields from DB and inserting into teachers arrayList
+
 					return new Teacher(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
-							rs.getString("email"), rs.getString("username"), rs.getString("password"), rs.getString("fields"));
+							rs.getString("email"), rs.getString("username"), rs.getString("password"),
+							rs.getString("fields"));
 				case "Principle":
 					return new Principle(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
@@ -50,15 +59,17 @@ public class Queries {
 	}
 
 	/**
-	 * this method returns questions that are of the teachers fields
+	 * gets all questions from the given fields
 	 * 
-	 * @return
+	 * @param fields
+	 * @return Question array list
 	 */
 	public static ArrayList<Question> getQuestions(String fields) {
 		Statement stmt;
 		ArrayList<Question> questions = new ArrayList<>();
+		String[] arr;
 		String temp = fields.substring(1, fields.length() - 1);
-		String[] arr = temp.split(",");
+		arr = temp.split(",");
 		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
 		for (int i = 0; i < arr.length; i++)
 			array.add(i, arr[i].trim());
@@ -85,6 +96,12 @@ public class Queries {
 		return questions;
 	}
 
+	/**
+	 * gets all the tests of the given fields
+	 * 
+	 * @param fields
+	 * @return Test array list
+	 */
 	public static ArrayList<Test> getTests(String fields) {
 		Statement stmt;
 		ArrayList<Test> tests = new ArrayList<>();
@@ -104,13 +121,47 @@ public class Queries {
 				System.out.println(rs.getString("autour"));
 				tests.add(new Test(rs.getInt("id"), rs.getString("autour"), rs.getString("testName"),
 						rs.getString("course"), rs.getString("testDuartion"), rs.getString("pointsPerQuestion"),
-						rs.getString("instructions"), rs.getString("teacherInstructions"), rs.getString("field")));
-				System.out.println(tests.get(0));
+						rs.getString("instructions"), rs.getString("teacherInstructions"),
+						rs.getString("questionsInTest"), rs.getString("field")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return tests;
+	}
+
+	/**
+	 * gets all the questions that belong to the given test
+	 * question
+	 * 
+	 * @param test
+	 * @return Question array list
+	 */
+	public static ArrayList<Question> getQuestionFromTest(Test test) {
+		Statement stmt;
+		ArrayList<Question> questions = new ArrayList<>();
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT questionInTest FROM tests WHERE id='" + test.getID() + "'");
+			String questionString = rs.getString(0);
+			String[] arr = questionString.split(":");
+			for (String str : arr) {
+				ArrayList<String> answers = new ArrayList<>();
+				rs = stmt.executeQuery("SELECT * FROM questions WHERE id='" + str + "'");
+				rs.next();
+				answers.add(rs.getString("answer1"));
+				answers.add(rs.getString("answer2"));
+				answers.add(rs.getString("answer3"));
+				answers.add(rs.getString("answer4"));
+				questions.add(new Question(rs.getInt(0), rs.getString(1), rs.getString(2), rs.getString(3),
+						rs.getString(4), rs.getInt(5), rs.getString(6), answers));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return questions;
+
 	}
 
 }
