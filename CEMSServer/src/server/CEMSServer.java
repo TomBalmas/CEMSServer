@@ -87,7 +87,7 @@ public class CEMSServer extends ObservableServer {
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		try {
-			String fields;
+			String args;
 			String[] str = ((String) msg).split("-");
 			switch (str[0]) {
 			case "LOGIN":
@@ -95,16 +95,22 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.getUser(details[0], details[1]));
 				break;
 			case "QUESTION_BANK":
-				fields = str[1];
+				args = str[1];
 				ArrayList<Question> questions = new ArrayList<>();
-				questions = Queries.getQuestions(fields);
+				questions = Queries.getQuestions(args);
 				client.sendToClient(questions);
 				break;
 			case "TEST_BANK":
-				fields = str[1];
+				args = str[1];
 				ArrayList<Test> tests = new ArrayList<>();
-				tests = Queries.getTests(fields);
+				tests = Queries.getTests(args);
 				client.sendToClient(tests);
+				break;
+			case "DELETE_TEST":
+				args = str[1];
+				boolean deleted = Queries.deleteTestByID(args);
+				client.sendToClient(deleted ? "deleted" : "notDeleted");
+				break;
 			default:
 				break;
 
