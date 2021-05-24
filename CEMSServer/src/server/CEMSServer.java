@@ -104,6 +104,13 @@ public class CEMSServer extends ObservableServer {
 				break;
 			case "TEST_BANK":
 				ArrayList<Test> tests = new ArrayList<>();
+				tests = Queries.getTests(args);
+				client.sendToClient(tests);
+				break;
+			case "DELETE_TEST":
+				boolean deleted = Queries.deleteTestByID(args);
+				client.sendToClient(deleted ? "deleted" : "notDeleted");
+				ArrayList<Test> tests = new ArrayList<>();
 				tests = Queries.getTestsByField(args);
 				client.sendToClient(tests);
 				break;

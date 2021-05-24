@@ -234,10 +234,11 @@ public class Queries {
 		return questions;
 	}
 
-	public static boolean deleteTest(Test test) {
+	public static boolean deleteTestByID(String id) {
+		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeQuery("DELETE FROM `tests` WHERE id='" + test.getID() + "'");
+			stmt.executeUpdate("DELETE FROM tests WHERE id='" + id + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
