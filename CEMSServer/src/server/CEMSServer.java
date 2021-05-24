@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.Question;
+import common.Test;
 import common.User;
 import ocsf.server.ConnectionToClient;
 import ocsf.server.ObservableServer;
@@ -50,6 +51,21 @@ public class CEMSServer extends ObservableServer {
 		sendToLog(clientConnectedString + " from ip: " + client.getInetAddress());
 	}
 
+	/**
+	 * catch exceptions and write them to the log
+	 *
+	 */
+	@Override
+	protected void clientException(ConnectionToClient client, Throwable exception) {
+
+		try {
+			sendToLog("Client Exception: " + exception.toString());
+			client.close();
+		} catch (Exception e) {
+
+		}
+	}
+
 	protected List<ConnectionToClient> getClients() {
 		return connectedClients;
 	}
@@ -71,7 +87,7 @@ public class CEMSServer extends ObservableServer {
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		try {
-
+			String fields;
 			String[] str = ((String) msg).split("-");
 			switch (str[0]) {
 			case "LOGIN":
@@ -79,11 +95,16 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.getUser(details[0], details[1]));
 				break;
 			case "QUESTION_BANK":
-				String fields = str[1];
+				fields = str[1];
 				ArrayList<Question> questions = new ArrayList<>();
 				questions = Queries.getQuestions(fields);
 				client.sendToClient(questions);
 				break;
+			case "TEST_BANK":
+				fields = str[1];
+				ArrayList<Test> tests = new ArrayList<>();
+				tests = Queries.getTests(fields);
+				client.sendToClient(tests);
 			default:
 				break;
 

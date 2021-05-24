@@ -11,6 +11,7 @@ import common.Principle;
 import common.Question;
 import common.Student;
 import common.Teacher;
+import common.Test;
 import common.User;
 
 public class Queries {
@@ -66,9 +67,8 @@ public class Queries {
 		String[] arr = temp.split(",");
 		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
 		for (int i = 0; i < arr.length; i++)
-			array.add(i, arr[i]);
+			array.add(i, arr[i].trim());
 		ArrayList<String> answers = new ArrayList<>();
-
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM questions WHERE field = '" + array.get(0) + "' OR field = '"
@@ -90,4 +90,33 @@ public class Queries {
 
 		return questions;
 	}
+
+	public static ArrayList<Test> getTests(String fields) {
+		Statement stmt;
+		ArrayList<Test> tests = new ArrayList<>();
+		String[] arr;
+		String temp = fields.substring(1, fields.length() - 1);
+		arr = temp.split(",");
+		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
+		for (int i = 0; i < arr.length; i++)
+			array.add(i, arr[i].trim());
+		try {
+			System.out.println("1");
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM tests WHERE field = '" + array.get(0) + "' OR field = '"
+					+ array.get(1) + "' OR field = '" + array.get(2) + "' OR field = '" + array.get(3)
+					+ "' OR field = '" + array.get(4) + "' OR field = '" + array.get(4) + "'");
+			while (rs.next()) {
+				System.out.println(rs.getString("autour"));
+				tests.add(new Test(rs.getInt("id"), rs.getString("autour"), rs.getString("testName"),
+						rs.getString("course"), rs.getString("testDuartion"), rs.getString("pointsPerQuestion"),
+						rs.getString("instructions"), rs.getString("teacherInstructions"), rs.getString("field")));
+				System.out.println(tests.get(0));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return tests;
+	}
+
 }
