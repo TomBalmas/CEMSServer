@@ -17,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import server.CEMSServer;
 import server.ServerController;
@@ -33,32 +34,44 @@ public class ServerUIController implements Observer {
 		server.addObserver(loader.getController());
 	}
 
-	@FXML
-	private JFXTextField portTxt;
+    @FXML
+    private JFXTextArea serverLog;
 
-	@FXML
-	private JFXTextField ipTxt;
+    @FXML
+    private AnchorPane questionAnchor;
 
-	@FXML
-	private JFXTextField schemaTxt;
+    @FXML
+    private AnchorPane insideQuestionAnchor;
 
-	@FXML
-	private JFXTextField usernameTxt;
+    @FXML
+    private JFXTextField portTxt;
 
-	@FXML
-	private JFXPasswordField passwordTxt;
+    @FXML
+    private Label connectedLbl;
 
-	@FXML
-	private Label connectedLbl;
+    @FXML
+    private AnchorPane questionAnchor1;
 
-	@FXML
-	private JFXButton connectBtn;
+    @FXML
+    private AnchorPane insideQuestionAnchor1;
 
-	@FXML
-	private JFXButton disconnectBtn;
+    @FXML
+    private JFXTextField ipTxt;
 
-	@FXML
-	private JFXTextArea serverLog;
+    @FXML
+    private JFXTextField schemaTxt;
+
+    @FXML
+    private JFXTextField usernameTxt;
+
+    @FXML
+    private JFXPasswordField passwordTxt;
+
+    @FXML
+    private JFXButton connectBtn;
+
+    @FXML
+    private JFXButton disconnectBtn;
 
 	public JFXTextField getIpTxt() {
 		return ipTxt;
@@ -168,6 +181,7 @@ public class ServerUIController implements Observer {
 			loader = new FXMLLoader(getClass().getResource("ServerUI.fxml"));
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add("util/style.css");
 			stage.setTitle("CEMS Server");
 			stage.setResizable(false);
 			stage.setScene(scene);
