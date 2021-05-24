@@ -1,0 +1,55 @@
+* {
+	-fx-base1: #469FBD;
+	-fx-base2: #f0f1f1;
+}
+
+.body {
+	-fx-background-color: -fx-base2;
+}
+
+.paneBorder {
+	-fx-background-color: white;
+	-fx-background-radius: 9.0px;
+	-fx-border-radius: 9.0px;
+}
+
+.grayPane{
+	-fx-background-color: -fx-base2;
+	-fx-background-radius: 9.0px 9.0px 0.0 0.0;
+	-fx-border-radius: 9.0px 9.0px 0.0 0.0;
+    -fx-background-insets: 10.0px;
+}
+
+.insideGrayPane {
+	-fx-background-color: white;
+}
+
+.connectButton {
+	-fx-background-color: #1eae98;
+}
+
+.disconnectButton {
+	-fx-background-color: #D47468;
+}
+
+.button {
+	-fx-width: 100.0%;
+	-fx-height: 35.0px;
+	-fx-color: white;
+}
+
+.consoleTxt {
+	-fx-background-color: white;
+	-fx-border-color: #dce0e0;
+	-fx-background-radius: 12.0px 12.0px 12.0px 12.0px;
+	-fx-border-radius: 12.0px 12.0px 12.0px 12.0px;
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
+}
+
+.consoleTxt .jfx-combo-box .input-line {
+	-fx-pref-height: 0.0px;
+}
+.consoleTxt .jfx-combo-box .input-focused-line {
+	-fx-pref-height: 0.0px;
+}
