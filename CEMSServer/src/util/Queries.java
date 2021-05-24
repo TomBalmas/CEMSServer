@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import common.ActiveTest;
 import common.AbstractTest;
 import common.Principle;
 import common.Question;
@@ -127,6 +128,7 @@ public class Queries {
 		}
 		return tests;
 	}
+	
 
 	/**
 	 * gets all the scheduled tests of a given author id
@@ -242,6 +244,25 @@ public class Queries {
 		}
 		return true;
 
+	}
+	
+	
+	
+	public static ArrayList<ActiveTest> getActiveTests() {
+		Statement stmt;
+		ArrayList<ActiveTest> activeTest = new ArrayList<>();
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM activetest");
+			while(rs.next()) {
+				activeTest.add(new ActiveTest( rs.getInt("ID"), rs.getString("name"), rs.getString("course"), 
+						rs.getString("author"),rs.getString("field"),rs.getString("starttime"), rs.getString("andtimetest")));
+
+			}
+			
+		} catch (SQLException e) {
+		}
+		return activeTest;
 	}
 
 }

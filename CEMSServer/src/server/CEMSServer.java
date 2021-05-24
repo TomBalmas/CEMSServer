@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.ActiveTest;
 import common.Question;
 import common.ScheduledTest;
 import common.Test;
@@ -106,6 +107,11 @@ public class CEMSServer extends ObservableServer {
 				tests = Queries.getTestsByField(args);
 				client.sendToClient(tests);
 				break;
+			case "ACTIVE_TEST":
+				ArrayList<ActiveTest> activeTests = new ArrayList<>();
+				activeTests = Queries.getActiveTests();
+				client.sendToClient(activeTests);
+				break; 
 			case "SCHEDULED_TESTS":
 				ArrayList<ScheduledTest> scheduledTests = new ArrayList<>();
 				scheduledTests = Queries.getScheduledTestsByAuthorID(args);
