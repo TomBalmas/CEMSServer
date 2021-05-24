@@ -12,7 +12,6 @@ import common.Question;
 import common.Student;
 import common.Teacher;
 import common.Test;
-import common.TestForm;
 import common.User;
 
 public class Queries {
@@ -120,7 +119,7 @@ public class Queries {
 					+ "' OR field = '" + array.get(4) + "' OR field = '" + array.get(4) + "'");
 			while (rs.next()) {
 				System.out.println(rs.getString("autour"));
-				tests.add(new TestForm(rs.getInt("id"), rs.getString("autour"), rs.getString("testName"),
+				tests.add(new Test(rs.getInt("id"), rs.getString("autour"), rs.getString("testName"),
 						rs.getString("course"), rs.getString("testDuartion"), rs.getString("pointsPerQuestion"),
 						rs.getString("instructions"), rs.getString("teacherInstructions"),
 						rs.getString("questionsInTest"), rs.getString("field")));
@@ -132,8 +131,7 @@ public class Queries {
 	}
 
 	/**
-	 * gets all the questions that belong to the given test
-	 * question
+	 * gets all the questions that belong to the given test question
 	 * 
 	 * @param test
 	 * @return Question array list
