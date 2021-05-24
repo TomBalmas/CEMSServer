@@ -6,6 +6,7 @@ import java.util.List;
 
 import common.ActiveTest;
 import common.Question;
+import common.ScheduledTest;
 import common.Test;
 import ocsf.server.ConnectionToClient;
 import ocsf.server.ObservableServer;
@@ -84,26 +85,26 @@ public class CEMSServer extends ObservableServer {
 	 * receives message from client and translates it to switch case to handle it
 	 * with connection to the DB
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		try {
-			String fields;
 			String[] str = ((String) msg).split("-");
-			switch (str[0]) {
+			String cases = str[0];
+			String args = str[1];
+			switch (cases) {
 			case "LOGIN":
-				String[] details = str[1].split(","); // details[0] = user name, details[1] = password
+				String[] details = args.split(","); // details[0] = user name, details[1] = password
 				client.sendToClient(Queries.getUser(details[0], details[1]));
 				break;
 			case "QUESTION_BANK":
-				fields = str[1];
 				ArrayList<Question> questions = new ArrayList<>();
-				questions = Queries.getQuestions(fields);
+				questions = Queries.getQuestions(args);
 				client.sendToClient(questions);
 				break;
 			case "TEST_BANK":
-				fields = str[1];
 				ArrayList<Test> tests = new ArrayList<>();
-				tests = Queries.getTests(fields);
+				tests = Queries.getTestsByField(args);
 				client.sendToClient(tests);
 				break;
 			case "ACTIVE_TEST":
@@ -111,6 +112,11 @@ public class CEMSServer extends ObservableServer {
 				activeTests = Queries.getActiveTests();
 				client.sendToClient(activeTests);
 				break; 
+			case "SCHEDULED_TESTS":
+				ArrayList<ScheduledTest> scheduledTests = new ArrayList<>();
+				scheduledTests = Queries.getScheduledTestsByAuthorID(args);
+				client.sendToClient(scheduledTests);
+				break;
 			default:
 				break;
 
