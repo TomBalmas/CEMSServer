@@ -23,6 +23,13 @@ public class Queries {
 		this.conn = conn;
 	}
 
+	/**
+	 * gets the user with the given user name and password
+	 * 
+	 * @param username
+	 * @param password
+	 * @return User
+	 */
 	public static User getUser(String username, String password) {
 		Statement stmt;
 		try {
@@ -53,9 +60,10 @@ public class Queries {
 	}
 
 	/**
-	 * this method returns questions that are of the teachers fields
+	 * gets all questions from the given fields
 	 * 
-	 * @return
+	 * @param fields
+	 * @return Question array list
 	 */
 	public static ArrayList<Question> getQuestions(String fields) {
 		Statement stmt;
@@ -90,10 +98,10 @@ public class Queries {
 	}
 
 	/**
+	 * gets all the tests of the given fields
 	 * 
-	 * 
-	 * @param fields - getting the fields of the teacher
-	 * @return arraylist of test that found in tests DB
+	 * @param fields
+	 * @return Test array list
 	 */
 	public static ArrayList<Test> getTests(String fields) {
 		Statement stmt;
@@ -124,13 +132,11 @@ public class Queries {
 	}
 
 	/**
-	 * 
-	 * 
-	 * while getting a test and call this function you will get an array list of its
+	 * gets all the questions that belong to the given test
 	 * question
 	 * 
-	 * @param test - a test
-	 * @return question array list of the test's questions
+	 * @param test
+	 * @return Question array list
 	 */
 	public static ArrayList<Question> getQuestionFromTest(Test test) {
 		Statement stmt;
@@ -153,7 +159,6 @@ public class Queries {
 			}
 
 		} catch (SQLException e) {
-
 			e.printStackTrace();
 		}
 		return questions;
