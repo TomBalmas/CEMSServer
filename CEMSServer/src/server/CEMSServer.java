@@ -116,7 +116,6 @@ public class CEMSServer extends ObservableServer {
 				break;
 			case "SCHEDULED_TESTS":
 				ArrayList<ScheduledTest> scheduledTests = Queries.getScheduledTestsByAuthorID(args);
-				System.out.println(scheduledTests.toString());
 				client.sendToClient(scheduledTests);
 				break;
 			default:
