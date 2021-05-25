@@ -175,9 +175,7 @@ public class Queries {
 			default:
 				break;
 			}
-		} catch (
-
-		SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
