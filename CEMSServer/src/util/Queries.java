@@ -43,8 +43,6 @@ public class Queries {
 					return new Student(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				case "Teacher":
-					// getting teachers fields from DB and inserting into teachers arrayList
-
 					return new Teacher(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"),
 							rs.getString("fields"));
@@ -100,7 +98,7 @@ public class Queries {
 				while (rs.next())
 					tests.add(new Test(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
 							rs.getString("course"), rs.getInt("testDuration"), rs.getInt("pointsPerQuestion"),
-							rs.getString("instructions"), rs.getString("teacherInstructions"),
+							rs.getString("studentInstructions"), rs.getString("teacherInstructions"),
 							rs.getString("questionsInTest"), rs.getString("field")));
 			}
 		} catch (SQLException e) {
@@ -150,23 +148,23 @@ public class Queries {
 		ScheduledTest scheduledTest;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM tests WHERE id = '" + Integer.parseInt(testID) + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM tests WHERE testId = '" + Integer.parseInt(testID) + "'");
 			switch (testType) {
 			case "Test":
 				rs.next();
-				test = new Test(rs.getString("id"), rs.getString("author"), rs.getString("title"),
+				test = new Test(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
 						rs.getString("course"), rs.getInt("testDuartion"), rs.getInt("pointsPerQuestion"),
-						rs.getString("instructions"), rs.getString("teacherInstructions"),
+						rs.getString("studentInstructions"), rs.getString("teacherInstructions"),
 						rs.getString("questionsInTest"), rs.getString("field"));
 				return test;
 			case "ScheduledTest":
 				rs.next();
 				scheduledTest = new ScheduledTest(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
 						rs.getString("course"), null, null, null, null);
-				rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE ID = '" + scheduledTest.getID() + "'");
+				rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE testId = '" + scheduledTest.getID() + "'");
 				rs.next();
 				scheduledTest.setDate(rs.getString("date"));
-				scheduledTest.setStartingTime(rs.getString("starting time"));
+				scheduledTest.setStartingTime(rs.getString("startingTime"));
 				scheduledTest.setDuration(rs.getInt("duration"));
 				scheduledTest.setBelongsToID(rs.getString("scheduledByTeacher"));
 				return scheduledTest;
@@ -226,22 +224,29 @@ public class Queries {
 
 	}
 
-	public static ArrayList<ActiveTest> getActiveTests() {
+	/**
+	 * gets all active tests of the given author id
+	 * 
+	 * @param authorId
+	 * @return array of active tests
+	 */
+	public static ArrayList<ActiveTest> getActiveTestsByAuthorId(String authorId) {
 		Statement stmt;
-		ArrayList<ActiveTest> activeTest = new ArrayList<>();
+		ArrayList<ActiveTest> activeTests = new ArrayList<>();
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM activetest");
+			ResultSet rs = stmt
+					.executeQuery("SELECT * FROM scheduled_tests s1, active_tests a1 WHERE s1.scheduledByTeacher = '"
+							+ authorId + "' AND a1.testId = s1.testId AND a1.startingTime = s1.startingTime");
 			while (rs.next()) {
-				activeTest.add(new ActiveTest(rs.getString("testId"), rs.getString("name"), rs.getString("course"),
-						rs.getString("author"), rs.getString("field"), rs.getString("starttime"),
-						rs.getString("andtimetest")));
-
+				activeTests.add(new ActiveTest(rs.getString("testId"), rs.getString("title"), rs.getString("course"),
+						rs.getString("author"), rs.getString("field"), rs.getString("startingTime"),
+						GeneralQueryMethods.calculateFinishTime(rs.getString("startingTime"), rs.getInt("duration"))));
 			}
-
 		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		return activeTest;
+		return activeTests;
 	}
 
 }
