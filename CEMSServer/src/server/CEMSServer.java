@@ -85,7 +85,6 @@ public class CEMSServer extends ObservableServer {
 	 * receives message from client and translates it to switch case to handle it
 	 * with connection to the DB
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		try {
@@ -98,8 +97,7 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.getUser(details[0], details[1]));
 				break;
 			case "QUESTION_BANK":
-				ArrayList<Question> questions = new ArrayList<>();
-				questions = Queries.getQuestions(args);
+				ArrayList<Question> questions = Queries.getQuestionsByFields(args);
 				client.sendToClient(questions);
 				break;
 			case "TEST_BANK":

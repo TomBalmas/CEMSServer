@@ -5,10 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import common.ActiveTest;
 import common.AbstractTest;
+import common.ActiveTest;
 import common.Principle;
 import common.Question;
 import common.ScheduledTest;
@@ -41,16 +40,16 @@ public class Queries {
 			if (rs.next())
 				switch (rs.getString("role")) {
 				case "Student":
-					return new Student(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
+					return new Student(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				case "Teacher":
 					// getting teachers fields from DB and inserting into teachers arrayList
 
-					return new Teacher(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
+					return new Teacher(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"),
 							rs.getString("fields"));
 				case "Principle":
-					return new Principle(rs.getInt("SSN"), rs.getString("name"), rs.getString("surname"),
+					return new Principle(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				default:
 					return null;
@@ -62,73 +61,55 @@ public class Queries {
 	}
 
 	/**
-	 * gets all questions from the given fields
+	 * query that returns all questions from the given fields
 	 * 
-	 * @param fields
+	 * @param fieldsString a string of fields split by ~
 	 * @return Question array list
 	 */
-	public static ArrayList<Question> getQuestions(String fields) {
+	public static ArrayList<Question> getQuestionsByFields(String fieldsString) {
 		ArrayList<Question> questions = new ArrayList<>();
-		String[] arr;
-		String temp = fields.substring(1, fields.length() - 1);
-		arr = temp.split(",");
-		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
-		for (int i = 0; i < arr.length; i++)
-			array.add(i, arr[i].trim());
-		ArrayList<String> answers = new ArrayList<>();
+		fieldsString = GeneralQueryMethods.trimEdges(fieldsString);
+		String[] fields = fieldsString.split("~");
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM questions WHERE field = '" + array.get(0) + "' OR field = '"
-					+ array.get(1) + "' OR field = '" + array.get(2) + "' OR field = '" + array.get(3)
-					+ "' OR field = '" + array.get(4) + "' OR field = '" + array.get(4) + "'");
-			while (rs.next()) {
-				answers.add(rs.getString("answer1"));
-				answers.add(rs.getString("answer2"));
-				answers.add(rs.getString("answer3"));
-				answers.add(rs.getString("answer4"));
-				questions.add(new Question(rs.getInt("ID"), rs.getString("author"),
-						rs.getString("instructionsForTeacher"), rs.getString("instructionsForStudent"),
-						rs.getString("questionContent"), rs.getInt("correctAnswer"), rs.getString("field"), answers));
+			ResultSet rs;
+			for (String field : fields) {
+				rs = stmt.executeQuery("SELECT * FROM questions WHERE field = '" + field + "'");
+				while (rs.next())
+					questions.add(GeneralQueryMethods.createQuestion(rs));
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 		return questions;
 	}
 
 	/**
-	 * gets all the tests of the given fields
+	 * query that returns all test from the given fields
 	 * 
-	 * @param fields
+	 * @param fieldsString a string of fields split by ~
 	 * @return Test array list
 	 */
-	public static ArrayList<Test> getTestsByField(String fields) {
+	public static ArrayList<Test> getTestsByField(String fieldsString) {
 		ArrayList<Test> tests = new ArrayList<>();
-		String[] arr;
-		String temp = fields.substring(1, fields.length() - 1);
-		arr = temp.split(",");
-		ArrayList<String> array = new ArrayList<>(Arrays.asList("x", "x", "x", "x", "x", "x"));
-		for (int i = 0; i < arr.length; i++)
-			array.add(i, arr[i].trim());
+		fieldsString = GeneralQueryMethods.trimEdges(fieldsString);
+		String[] fields = fieldsString.split("~");
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM tests WHERE field = '" + array.get(0) + "' OR field = '"
-					+ array.get(1) + "' OR field = '" + array.get(2) + "' OR field = '" + array.get(3)
-					+ "' OR field = '" + array.get(4) + "' OR field = '" + array.get(4) + "'");
-			while (rs.next()) {
-				tests.add(new Test(rs.getInt("id"), rs.getString("author"), rs.getString("title"),
-						rs.getString("course"), rs.getString("testDuartion"), rs.getString("pointsPerQuestion"),
-						rs.getString("instructions"), rs.getString("teacherInstructions"),
-						rs.getString("questionsInTest"), rs.getString("field")));
+			ResultSet rs;
+			for (String field : fields) {
+				rs = stmt.executeQuery("SELECT * FROM tests WHERE field = '" + field + "'");
+				while (rs.next())
+					tests.add(new Test(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
+							rs.getString("course"), rs.getInt("testDuration"), rs.getInt("pointsPerQuestion"),
+							rs.getString("instructions"), rs.getString("teacherInstructions"),
+							rs.getString("questionsInTest"), rs.getString("field")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return tests;
 	}
-	
 
 	/**
 	 * gets all the scheduled tests of a given author id
@@ -141,13 +122,13 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt
-					.executeQuery("SELECT * FROM scheduled_tests WHERE 'scheduled by (id)' = '" + authorId + "'");
+					.executeQuery("SELECT * FROM scheduled_tests WHERE scheduledByTeacher = '" + authorId + "'");
 			while (rs.next()) {
-				tests.add(new ScheduledTest(rs.getInt("ID"), null, null, null, rs.getDate("date"),
-						rs.getTime("starting time"), rs.getInt("duration"), rs.getInt("scheduled by (id)")));
+				tests.add(new ScheduledTest(rs.getString("testId"), null, null, null, rs.getDate("date"),
+						rs.getTime("startingTime"), rs.getInt("duration"), rs.getString("scheduledByTeacher")));
 			}
 			for (ScheduledTest test : tests) {
-				rs = stmt.executeQuery("SELECT * FROM tests WHERE ID = '" + test.getID() + "'");
+				rs = stmt.executeQuery("SELECT * FROM tests WHERE testId = '" + test.getID() + "'");
 				rs.next();
 				test.setAuthorName(rs.getString("author"));
 				test.setCourse(rs.getString("course"));
@@ -175,20 +156,21 @@ public class Queries {
 			switch (testType) {
 			case "Test":
 				rs.next();
-				test = new Test(rs.getInt("id"), rs.getString("author"), rs.getString("title"), rs.getString("course"),
-						rs.getString("testDuartion"), rs.getString("pointsPerQuestion"), rs.getString("instructions"),
-						rs.getString("teacherInstructions"), rs.getString("questionsInTest"), rs.getString("field"));
+				test = new Test(rs.getString("id"), rs.getString("author"), rs.getString("title"),
+						rs.getString("course"), rs.getInt("testDuartion"), rs.getInt("pointsPerQuestion"),
+						rs.getString("instructions"), rs.getString("teacherInstructions"),
+						rs.getString("questionsInTest"), rs.getString("field"));
 				return test;
 			case "ScheduledTest":
 				rs.next();
-				scheduledTest = new ScheduledTest(rs.getInt("id"), rs.getString("author"), rs.getString("title"),
+				scheduledTest = new ScheduledTest(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
 						rs.getString("course"), null, null, null, null);
 				rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE ID = '" + scheduledTest.getID() + "'");
 				rs.next();
 				scheduledTest.setDate(rs.getDate("date"));
 				scheduledTest.setStartingTime(rs.getTime("starting time"));
 				scheduledTest.setDuration(rs.getInt("duration"));
-				scheduledTest.setBelongsTo(rs.getInt("scheduled by (id)"));
+				scheduledTest.setBelongsToID(rs.getString("scheduledByTeacher"));
 				return scheduledTest;
 			case "ActiveTest":
 				break;
@@ -210,35 +192,36 @@ public class Queries {
 	 * @return Question array list
 	 */
 	public static ArrayList<Question> getQuestionFromTest(Test test) {
-		ArrayList<Question> questions = new ArrayList<>();
+		ArrayList<Question> questionsArray = new ArrayList<>();
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT questionInTest FROM tests WHERE id='" + test.getID() + "'");
-			String questionString = rs.getString(0);
-			String[] arr = questionString.split(":");
-			for (String str : arr) {
-				ArrayList<String> answers = new ArrayList<>();
-				rs = stmt.executeQuery("SELECT * FROM questions WHERE id='" + str + "'");
+			ResultSet rs = stmt.executeQuery("SELECT questionInTest FROM tests WHERE testId='" + test.getID() + "'");
+			rs.next();
+			String questionString = rs.getString("questionsInTest");
+			String[] questions = questionString.split("~");
+			for (String question : questions) {
+				rs = stmt.executeQuery("SELECT * FROM questions WHERE questionId='" + question + "'");
 				rs.next();
-				answers.add(rs.getString("answer1"));
-				answers.add(rs.getString("answer2"));
-				answers.add(rs.getString("answer3"));
-				answers.add(rs.getString("answer4"));
-				questions.add(new Question(rs.getInt(0), rs.getString(1), rs.getString(2), rs.getString(3),
-						rs.getString(4), rs.getInt(5), rs.getString(6), answers));
+				questionsArray.add(GeneralQueryMethods.createQuestion(rs));
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return questions;
+		return questionsArray;
 	}
 
+	/**
+	 * deletes a test from the DB given the test's id
+	 * 
+	 * @param id - test's id
+	 * @return true if the test was deleted,
+	 */
 	public static boolean deleteTestByID(String id) {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("DELETE FROM tests WHERE id='" + id + "'");
+			stmt.executeUpdate("DELETE FROM tests WHERE testId='" + id + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -246,21 +229,20 @@ public class Queries {
 		return true;
 
 	}
-	
-	
-	
+
 	public static ArrayList<ActiveTest> getActiveTests() {
 		Statement stmt;
 		ArrayList<ActiveTest> activeTest = new ArrayList<>();
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM activetest");
-			while(rs.next()) {
-				activeTest.add(new ActiveTest( rs.getInt("ID"), rs.getString("name"), rs.getString("course"), 
-						rs.getString("author"),rs.getString("field"),rs.getString("starttime"), rs.getString("andtimetest")));
+			while (rs.next()) {
+				activeTest.add(new ActiveTest(rs.getString("testId"), rs.getString("name"), rs.getString("course"),
+						rs.getString("author"), rs.getString("field"), rs.getString("starttime"),
+						rs.getString("andtimetest")));
 
 			}
-			
+
 		} catch (SQLException e) {
 		}
 		return activeTest;
