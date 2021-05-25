@@ -4,10 +4,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 
-import common.AbstractTest;
 import common.ActiveTest;
+import common.FinishedTest;
 import common.Principle;
 import common.Question;
 import common.ScheduledTest;
@@ -108,20 +112,21 @@ public class Queries {
 	}
 
 	/**
-	 * gets all the scheduled tests of a given author id
+	 * gets all the scheduled tests of a given scheduler id
 	 * 
 	 * @param authorId
 	 * @return scheduled tests array list
 	 */
-	public static ArrayList<ScheduledTest> getScheduledTestsByAuthorID(String authorId) {
+	public static ArrayList<ScheduledTest> getScheduledTestsByAuthorID(String schedulerId) {
 		ArrayList<ScheduledTest> tests = new ArrayList<>();
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt
-					.executeQuery("SELECT * FROM scheduled_tests WHERE scheduledByTeacher = '" + authorId + "'");
+					.executeQuery("SELECT * FROM scheduled_tests WHERE scheduledByTeacher = '" + schedulerId + "'");
 			while (rs.next()) {
 				tests.add(new ScheduledTest(rs.getString("testId"), null, null, null, rs.getString("date"),
-						rs.getString("startingTime"), rs.getInt("duration"), rs.getString("scheduledByTeacher")));
+						rs.getString("startingTime"), rs.getInt("duration"), rs.getString("scheduledByTeacher"),
+						rs.getString("beginTestCode")));
 			}
 			for (ScheduledTest test : tests) {
 				rs = stmt.executeQuery("SELECT * FROM tests WHERE testId = '" + test.getID() + "'");
@@ -134,49 +139,6 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return tests;
-	}
-
-	/**
-	 * gets a test given the test id
-	 * 
-	 * @param testType - which type of tests to return
-	 * @param testID
-	 * @return - returns the test with the given id
-	 */
-	public static AbstractTest getTestByID(String testType, String testID) {
-		Test test;
-		ScheduledTest scheduledTest;
-		try {
-			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM tests WHERE testId = '" + Integer.parseInt(testID) + "'");
-			switch (testType) {
-			case "Test":
-				rs.next();
-				test = new Test(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
-						rs.getString("course"), rs.getInt("testDuartion"), rs.getInt("pointsPerQuestion"),
-						rs.getString("studentInstructions"), rs.getString("teacherInstructions"),
-						rs.getString("questionsInTest"), rs.getString("field"));
-				return test;
-			case "ScheduledTest":
-				rs.next();
-				scheduledTest = new ScheduledTest(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
-						rs.getString("course"), null, null, null, null);
-				rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE testId = '" + scheduledTest.getID() + "'");
-				rs.next();
-				scheduledTest.setDate(rs.getString("date"));
-				scheduledTest.setStartingTime(rs.getString("startingTime"));
-				scheduledTest.setDuration(rs.getInt("duration"));
-				scheduledTest.setBelongsToID(rs.getString("scheduledByTeacher"));
-				return scheduledTest;
-			case "ActiveTest":
-				break;
-			default:
-				break;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/**
@@ -241,12 +203,163 @@ public class Queries {
 			while (rs.next()) {
 				activeTests.add(new ActiveTest(rs.getString("testId"), rs.getString("title"), rs.getString("course"),
 						rs.getString("author"), rs.getString("field"), rs.getString("startingTime"),
-						GeneralQueryMethods.calculateFinishTime(rs.getString("startingTime"), rs.getInt("duration"))));
+						GeneralQueryMethods.calculateFinishTime(rs.getString("startingTime"), rs.getInt("duration")),
+						rs.getString("beginTestCode")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return activeTests;
+	}
+
+	/**
+	 * sets date and time for a test (adds it to the scheduled_tests table)
+	 * 
+	 * @param args - testId,date,startingTime,scheduledBy,code
+	 * @return - true if the date was set
+	 */
+	public static boolean setTestDate(String args) {
+		String[] details = args.split(",");
+		String testId = details[0];
+		String date = details[1];
+		String startingTime = details[2];
+		String scheduledBy = details[3];
+		String code = details[4];
+		try {
+			LocalDate now = LocalDate.now();
+			Date today = new SimpleDateFormat("dd-mm-yyyy").parse(now.toString());
+			Date testDate = new SimpleDateFormat("dd-mm-yyyy").parse(date);
+			if (testDate.compareTo(today) >= 0)
+				return false;
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT duration FROM tests WHERE testId = '" + testId + "'");
+			rs.next();
+			stmt.executeUpdate("INSERT INTO scheduled_tests VALUES ('" + testId + "', '" + date + "', '" + startingTime
+					+ "', '" + rs.getInt("duration") + "', '" + scheduledBy + "', '" + code + "')");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * gets all the courses of the given field
+	 * 
+	 * @param field
+	 * @return courses that belong to the given field
+	 */
+	public static ArrayList<String> getCoursesByField(String field) {
+		ArrayList<String> courses = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT courseName FROM courses WHERE field = '" + field + "'");
+			while (rs.next())
+				courses.add(rs.getString("courseName"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return courses;
+	}
+
+	/**
+	 * gets all finished tests of the given scheduler id
+	 * 
+	 * @param args - id of the teacher who scheduled the tests
+	 * @return - array list of finished tests
+	 */
+	public static ArrayList<FinishedTest> getFinishedTestsBySchedulerSSN(String args) {
+		ArrayList<FinishedTest> finishedTests = new ArrayList<>();
+		String ssn = args;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM finished_tests ft, tests t WHERE scheduler = '" + ssn
+					+ "' AND t.testId = ft.testId");
+			while (rs.next())
+				finishedTests.add(new FinishedTest(rs.getString("testId"), rs.getString("author"),
+						rs.getString("Title"), rs.getString("Course"), rs.getString("scheduler"),
+						rs.getString("studentSSN"), rs.getString("date"), rs.getString("startingTime"),
+						rs.getInt("grade"), rs.getString("status")));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return finishedTests;
+	}
+
+	/**
+	 * adds a new test given the details in the right order, test id will be added automatically
+	 * 
+	 * @param args - author,title,course,duration,pointsPerQuestion,studentInstructions,TeacherInstructions,questions,field
+	 * @return test id
+	 */
+	public static String addNewTest(String args) {
+		String[] details = args.split(",");
+		String author = details[0];
+		String title = details[1];
+		String course = details[2];
+		Integer duration = Integer.parseInt(details[3]);
+		Integer pointsPerQuestion = Integer.parseInt(details[4]);
+		String studentInstructions = null;
+		String teacherInstructions = null;
+		if (!details[5].equals("null"))
+			studentInstructions = details[5];
+		if (!details[6].equals("null"))
+			teacherInstructions = details[6];
+		String questions = details[7];
+		String field = details[8];
+		String testId = Queries.getAvailableIdByCourse(course);
+		if (testId == null)
+			return null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("INSERT INTO tests VALUES ('" + testId + "', '" + author + "', '" + title + "', '"
+					+ course + "', " + duration + ", " + pointsPerQuestion + ", '" + studentInstructions + "', '"
+					+ teacherInstructions + "', '" + questions + "', '" + field + "');");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return testId;
+	}
+
+	/**
+	 * return an available id in a course
+	 * 
+	 * @param course
+	 * @return - the available id as a string
+	 */
+	private static String getAvailableIdByCourse(String course) {
+		Integer lastId = null;
+		Integer currentId = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT testId FROM tests WHERE course = '" + course + "' " + "ORDER BY testId");
+			rs.next();
+			currentId = rs.getInt("testId");
+			while (rs.next()) {
+				lastId = rs.getInt("testId");
+				if (lastId - currentId != 1) {
+					currentId += 1;
+					return currentId.toString();
+				}
+				currentId = lastId;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if (currentId.toString().endsWith("99"))
+			return null;
+		currentId += 1;
+		return currentId.toString();
 	}
 
 }

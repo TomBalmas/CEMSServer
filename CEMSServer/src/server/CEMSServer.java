@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.ActiveTest;
+import common.FinishedTest;
 import common.Question;
 import common.ScheduledTest;
 import common.Test;
@@ -118,6 +119,19 @@ public class CEMSServer extends ObservableServer {
 				ArrayList<ScheduledTest> scheduledTests = Queries.getScheduledTestsByAuthorID(args);
 				client.sendToClient(scheduledTests);
 				break;
+			case "SCHEDULE_TEST":
+				boolean scheduled = Queries.setTestDate(args);
+				client.sendToClient(scheduled ? "scheduled" : "notScheduled");
+				break;
+			case "GET_COURSES_BY_FIELD":
+				ArrayList<String> courses = Queries.getCoursesByField(args);
+				client.sendToClient(courses);
+			case "FINISHED_TESTS":
+				ArrayList<FinishedTest> finishedTests = Queries.getFinishedTestsBySchedulerSSN(args);
+				client.sendToClient(finishedTests);
+			case "ADD_TEST":
+				String testId = Queries.addNewTest(args);
+				client.sendToClient(testId);
 			default:
 				break;
 			}

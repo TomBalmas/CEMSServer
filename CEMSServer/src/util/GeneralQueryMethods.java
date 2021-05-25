@@ -54,4 +54,5 @@ public class GeneralQueryMethods {
 			minutes = "0" + minutes;
 		return hours + ":" + minutes;
 	}
+	
 }
