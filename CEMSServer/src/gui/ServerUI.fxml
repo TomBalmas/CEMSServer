@@ -15,38 +15,29 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="1000.0" styleClass="body" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ServerUIController">
    <children>
-      <JFXTextArea fx:id="serverLog" editable="false" focusColor="#405aa8" labelFloat="true" prefHeight="543.0" prefWidth="661.0" promptText="Server Log:" styleClass="consoleTxt" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
-      <AnchorPane prefHeight="577.0" prefWidth="300.0" styleClass="paneBorder" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
+     <AnchorPane prefHeight="577.0" prefWidth="230.0" styleClass="paneBorder" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
          <children>
-            <Text layoutX="102.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CEMS " textAlignment="CENTER">
+            <Text layoutX="55.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CEMS " textAlignment="CENTER">
                <font>
                   <Font name="System Bold" size="41.0" />
                </font>
             </Text>
-            <Text layoutX="107.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="S  E  R  V  E  R" textAlignment="CENTER">
+            <Text layoutX="60.0" layoutY="74.0" strokeType="OUTSIDE" strokeWidth="0.0" text="S  E  R  V  E  R" textAlignment="CENTER">
                <font>
                   <Font size="17.0" />
                </font>
             </Text>
-            <AnchorPane fx:id="questionAnchor" layoutX="15.0" layoutY="82.0" prefHeight="125.0" prefWidth="350.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
+            <AnchorPane fx:id="serverConnectionAnchor" layoutX="15.0" layoutY="82.0" prefHeight="125.0" prefWidth="210.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                <children>
-                  <AnchorPane fx:id="insideQuestionAnchor" layoutX="47.0" layoutY="40.0" prefHeight="73.0" styleClass="insideGrayPane" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
+                  <AnchorPane fx:id="insideserverConnectionAnchor" layoutX="47.0" layoutY="40.0" prefHeight="73.0" styleClass="insideGrayPane" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
                      <children>
-                        <JFXTextField fx:id="portTxt" labelFloat="true" promptText="Port" text="5555" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="25.0" />
+                        <JFXTextField fx:id="portTxt" labelFloat="true" promptText="Port" text="5555" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0" />
                      </children>
                   </AnchorPane>
-                  <Label text="Server Connection" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="13.0">
+                  <Label text="Server Connection" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="13.0">
                      <font>
                         <Font size="17.0" />
                      </font>
-                  </Label>
-                  <Label fx:id="connectedLbl" text="(Not Connected)" textFill="RED" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="13.0">
-                     <font>
-                        <Font name="System Bold" size="10.0" />
-                     </font>
-                     <padding>
-                        <Insets top="4.0" />
-                     </padding>
                   </Label>
                </children>
                <styleClass>
@@ -54,16 +45,16 @@
                   <String fx:value="grayPane" />
                </styleClass>
             </AnchorPane>
-            <AnchorPane fx:id="questionAnchor1" layoutX="15.0" layoutY="205.0" prefHeight="337.0" prefWidth="325.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
+            <AnchorPane fx:id="dataBaseConnectionAnchor" layoutX="15.0" layoutY="205.0" prefHeight="337.0" prefWidth="210.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                <children>
-                  <Label text="Database Connection" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="13.0">
+                  <Label text="Database Connection" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="13.0">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <AnchorPane fx:id="insideQuestionAnchor1" layoutY="46.0" prefHeight="337.0" prefWidth="301.0" styleClass="insideGrayPane" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
+                  <AnchorPane fx:id="insidedataBaseConnectionAnchor" layoutY="46.0" prefHeight="337.0" prefWidth="301.0" styleClass="insideGrayPane" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
                      <children>
-                        <VBox prefHeight="200.0" prefWidth="301.0" spacing="26.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="20.0">
+                        <VBox fx:id="databaseConVBox" prefHeight="200.0" prefWidth="301.0" spacing="26.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="20.0">
                            <children>
                               <JFXTextField fx:id="ipTxt" labelFloat="true" promptText="IP" text="localhost">
                                  <VBox.margin>
@@ -73,14 +64,14 @@
                               <JFXTextField fx:id="schemaTxt" labelFloat="true" promptText="Schema" text="cems" />
                               <JFXTextField fx:id="usernameTxt" labelFloat="true" promptText="Username" text="root" />
                               <JFXPasswordField fx:id="passwordTxt" labelFloat="true" onAction="#clickConnect" promptText="Password" />
-                              <Pane>
-                                 <children>
-                                    <JFXButton fx:id="connectBtn" onMouseClicked="#clickConnect" prefWidth="146.0" styleClass="connectButton" text="Connect" />
-                                    <JFXButton fx:id="disconnectBtn" onMouseClicked="#clickDisconnect" prefWidth="146.0" styleClass="disconnectButton" text="Disconnect" visible="false" />
-                                 </children>
-                              </Pane>
                            </children>
                         </VBox>
+                        <Pane AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0">
+                           <children>
+                              <JFXButton fx:id="connectBtn" onMouseClicked="#clickConnect" prefWidth="136.0" styleClass="connectButton" text="Connect" />
+                              <JFXButton fx:id="disconnectBtn" onMouseClicked="#clickDisconnect" prefWidth="136.0" styleClass="disconnectButton" text="Disconnect" visible="false" />
+                           </children>
+                        </Pane>
                      </children>
                   </AnchorPane>
                </children>
@@ -91,5 +82,6 @@
             </AnchorPane>
          </children>
       </AnchorPane>
+     <JFXTextArea fx:id="serverLog" editable="false" focusColor="#f0f1f1" labelFloat="true" prefHeight="543.0" prefWidth="720.0" promptText="Server Log:" styleClass="consoleTxt" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
    </children>
 </AnchorPane>

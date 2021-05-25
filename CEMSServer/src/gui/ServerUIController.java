@@ -15,9 +15,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import server.CEMSServer;
 import server.ServerController;
@@ -28,32 +28,29 @@ public class ServerUIController implements Observer {
 	private FXMLLoader loader;
 	@SuppressWarnings("unused")
 	private CEMSServer server;
+	private boolean connection = false;
 
 	public void setServer(CEMSServer server) {
 		this.server = server;
 		server.addObserver(loader.getController());
 	}
+    @FXML
+    private AnchorPane serverConnectionAnchor;
 
     @FXML
-    private JFXTextArea serverLog;
-
-    @FXML
-    private AnchorPane questionAnchor;
-
-    @FXML
-    private AnchorPane insideQuestionAnchor;
+    private AnchorPane insideserverConnectionAnchor;
 
     @FXML
     private JFXTextField portTxt;
 
     @FXML
-    private Label connectedLbl;
+    private AnchorPane dataBaseConnectionAnchor;
 
     @FXML
-    private AnchorPane questionAnchor1;
+    private AnchorPane insidedataBaseConnectionAnchor;
 
     @FXML
-    private AnchorPane insideQuestionAnchor1;
+    private VBox databaseConVBox;
 
     @FXML
     private JFXTextField ipTxt;
@@ -72,6 +69,9 @@ public class ServerUIController implements Observer {
 
     @FXML
     private JFXButton disconnectBtn;
+
+    @FXML
+    private JFXTextArea serverLog;
 
 	public JFXTextField getIpTxt() {
 		return ipTxt;
@@ -111,6 +111,7 @@ public class ServerUIController implements Observer {
 				writeToLog("Driver definition succeed");
 				writeToLog("SQL connection succeed");
 				connectSet();
+				connection = true;
 			} catch (ClassNotFoundException e) {
 				writeToLog("Driver definition failed");
 				disconnectSet();
@@ -137,15 +138,12 @@ public class ServerUIController implements Observer {
 	 * this function contains the visual changes when clicking connect
 	 */
 	private void connectSet() {
+		databaseConVBox.setDisable(true);
 		connectBtn.setVisible(false);
 		disconnectBtn.setVisible(true);
-		passwordTxt.setDisable(true);
-		usernameTxt.setDisable(true);
-		ipTxt.setDisable(true);
-		schemaTxt.setDisable(true);
+		disconnectBtn.setDisable(false);
 		portTxt.setDisable(true);
-		connectedLbl.setText("(Connected)");
-		connectedLbl.setStyle("-fx-text-fill: green;");
+		serverLog.requestFocus();
 	}
 
 	/**
@@ -158,15 +156,13 @@ public class ServerUIController implements Observer {
 		} catch (IOException e) {
 			writeToLog(e.getMessage());
 		}
+		if (connection) serverLog.clear();
+		connection = false;
+		databaseConVBox.setDisable(false);
+		passwordTxt.requestFocus();
 		disconnectBtn.setVisible(false);
 		connectBtn.setVisible(true);
-		passwordTxt.setDisable(false);
-		usernameTxt.setDisable(false);
-		ipTxt.setDisable(false);
 		portTxt.setDisable(false);
-		schemaTxt.setDisable(false);
-		connectedLbl.setText("(Not Connected)");
-		connectedLbl.setStyle("-fx-text-fill: red;");
 	}
 
 	/**
