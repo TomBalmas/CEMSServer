@@ -68,7 +68,6 @@ public class Queries {
 	 */
 	public static ArrayList<Question> getQuestionsByFields(String fieldsString) {
 		ArrayList<Question> questions = new ArrayList<>();
-		fieldsString = GeneralQueryMethods.trimEdges(fieldsString);
 		String[] fields = fieldsString.split("~");
 		try {
 			stmt = conn.createStatement();
@@ -92,7 +91,6 @@ public class Queries {
 	 */
 	public static ArrayList<Test> getTestsByField(String fieldsString) {
 		ArrayList<Test> tests = new ArrayList<>();
-		fieldsString = GeneralQueryMethods.trimEdges(fieldsString);
 		String[] fields = fieldsString.split("~");
 		try {
 			stmt = conn.createStatement();
@@ -124,8 +122,8 @@ public class Queries {
 			ResultSet rs = stmt
 					.executeQuery("SELECT * FROM scheduled_tests WHERE scheduledByTeacher = '" + authorId + "'");
 			while (rs.next()) {
-				tests.add(new ScheduledTest(rs.getString("testId"), null, null, null, rs.getDate("date"),
-						rs.getTime("startingTime"), rs.getInt("duration"), rs.getString("scheduledByTeacher")));
+				tests.add(new ScheduledTest(rs.getString("testId"), null, null, null, rs.getString("date"),
+						rs.getString("startingTime"), rs.getInt("duration"), rs.getString("scheduledByTeacher")));
 			}
 			for (ScheduledTest test : tests) {
 				rs = stmt.executeQuery("SELECT * FROM tests WHERE testId = '" + test.getID() + "'");
@@ -167,8 +165,8 @@ public class Queries {
 						rs.getString("course"), null, null, null, null);
 				rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE ID = '" + scheduledTest.getID() + "'");
 				rs.next();
-				scheduledTest.setDate(rs.getDate("date"));
-				scheduledTest.setStartingTime(rs.getTime("starting time"));
+				scheduledTest.setDate(rs.getString("date"));
+				scheduledTest.setStartingTime(rs.getString("starting time"));
 				scheduledTest.setDuration(rs.getInt("duration"));
 				scheduledTest.setBelongsToID(rs.getString("scheduledByTeacher"));
 				return scheduledTest;
