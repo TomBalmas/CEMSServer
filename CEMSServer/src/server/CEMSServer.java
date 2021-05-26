@@ -135,6 +135,9 @@ public class CEMSServer extends ObservableServer {
 			case "DELETE_QUESTION":
 				deleted = Queries.deleteQuestionById(args);
 				client.sendToClient(deleted ? "deleted" : "notDeleted");
+			case "ADD_QUESTION":
+				String questionId = Queries.addQuestion(args);
+				client.sendToClient(questionId);
 			default:
 				break;
 			}

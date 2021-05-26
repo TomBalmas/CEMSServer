@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.table.TableModel;
+
 import common.ActiveTest;
 import common.Course;
 import common.FinishedTest;
@@ -351,6 +353,7 @@ public class Queries {
 		String newId = null;
 		int lengthOfTestId = 6;
 		int lengthOfQuestionId = 5;
+		Integer tempId;
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
@@ -358,35 +361,67 @@ public class Queries {
 					+ " = '" + arg + "' " + "ORDER BY testId");
 			rs.next();
 			currentId = rs.getInt("testId");
+			tempId = currentId - 1;
+
+			// check if there is a lower id available
+			if (tableName.equals("tests")) {
+				if (!tempId.toString().endsWith("99")) {
+					newId = tempId.toString();
+					while (newId.length() < lengthOfTestId)
+						newId = "0" + newId;
+					return newId;
+				}
+			} else if (tableName.equals("questions")) {
+				if (!tempId.toString().endsWith("999")) {
+					newId = tempId.toString();
+					while (newId.length() < lengthOfQuestionId)
+						newId = "0" + newId;
+					return newId;
+				}
+			}
+
+			// check if there is a gap between id numbers
 			while (rs.next()) {
 				lastId = rs.getInt("testId");
 				if (lastId - currentId != 1) {
 					currentId += 1;
-					return currentId.toString();
+					if (tableName.equals("tests")) {
+						newId = currentId.toString();
+						while (newId.length() < lengthOfTestId)
+							newId = "0" + newId;
+						return newId;
+					} else if (tableName.equals("questions")) {
+						newId = currentId.toString();
+						while (newId.length() < lengthOfQuestionId)
+							newId = "0" + newId;
+					}
+
 				}
 				currentId = lastId;
 			}
+			
+			//check if there is room to add id as the highest number
+			if (tableName.equals("tests")) {
+				if (currentId.toString().endsWith("99"))
+					return null;
+				else {
+					currentId += 1;
+					newId = currentId.toString();
+					while (newId.length() < lengthOfTestId)
+						newId = "0" + newId;
+				}
+			} else if (tableName.equals("questions"))
+				if (currentId.toString().endsWith("999"))
+					return null;
+				else {
+					currentId += 1;
+					newId = currentId.toString();
+					while (newId.length() < lengthOfQuestionId)
+						newId = "0" + newId;
+				}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if (tableName.equals("tests")) {
-			if (currentId.toString().endsWith("99"))
-				return null;
-			else {
-				currentId += 1;
-				newId = currentId.toString();
-				while (newId.length() < lengthOfTestId)
-					newId = "0" + newId;
-			}
-		} else if (tableName.equals("questions"))
-			if (currentId.toString().endsWith("999"))
-				return null;
-			else {
-				currentId += 1;
-				newId = currentId.toString();
-				while (newId.length() < lengthOfQuestionId)
-					newId = "0" + newId;
-			}
 		return newId;
 	}
 
