@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import common.ActiveTest;
+import common.Course;
 import common.FinishedTest;
 import common.Principle;
 import common.Question;
@@ -256,14 +257,14 @@ public class Queries {
 	 * @param field
 	 * @return courses that belong to the given field
 	 */
-	public static ArrayList<String> getCoursesByField(String field) {
-		ArrayList<String> courses = new ArrayList<>();
+	public static ArrayList<Course> getCoursesByField(String field) {
+		ArrayList<Course> courses = new ArrayList<>();
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT courseName FROM courses WHERE field = '" + field + "'");
 			while (rs.next())
-				courses.add(rs.getString("courseName"));
+				courses.add(new Course(rs.getString("courseName")));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -384,5 +385,29 @@ public class Queries {
 		return true;
 	}
 
-
+	
+	/**
+	 * @param args
+	 * @return
+	 */
+	public static boolean addQuestion(String args) {		//not ready yet!
+		Statement stmt;
+		String[] details = args.split(",");
+		String author = details[0];
+		String questionContent = details[1];
+		Integer correctAnswer = Integer.valueOf(details[2]);
+		String field = details[3];
+		int firstAnswerIndex = 4;
+		int lastAnswerIndex = 7;
+		ArrayList<String> answers = new ArrayList<>();
+		for (int i = firstAnswerIndex; i <= lastAnswerIndex; i++)
+			answers.add(details[i]);
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("INSERT INTO questions VALUES ('" + author);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
 }
