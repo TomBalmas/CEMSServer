@@ -157,8 +157,8 @@ public class Queries {
 			String[] questions = questionString.split("~");
 			for (String question : questions) {
 				rs = stmt.executeQuery("SELECT * FROM questions WHERE questionId='" + question + "'");
-				rs.next();
-				questionsArray.add(GeneralQueryMethods.createQuestion(rs));
+				if (rs.next())
+					questionsArray.add(GeneralQueryMethods.createQuestion(rs));
 			}
 
 		} catch (SQLException e) {
@@ -173,11 +173,13 @@ public class Queries {
 	 * @param id - test's id
 	 * @return true if the test was deleted,
 	 */
-	public static boolean deleteTestByID(String id) {
+	public static boolean deleteTestByID(String testId) {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("DELETE FROM tests WHERE testId='" + id + "'");
+			stmt.executeUpdate("DELETE FROM tests WHERE testId='" + testId + "'");
+			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE testId = '" + testId + "'");
+			stmt.executeUpdate("DELETE FROM active_tests WHERE testId = '" + testId + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -294,9 +296,11 @@ public class Queries {
 	}
 
 	/**
-	 * adds a new test given the details in the right order, test id will be added automatically
+	 * adds a new test given the details in the right order, test id will be added
+	 * automatically
 	 * 
-	 * @param args - author,title,course,duration,pointsPerQuestion,studentInstructions,TeacherInstructions,questions,field
+	 * @param args -
+	 *             author,title,course,duration,pointsPerQuestion,studentInstructions,TeacherInstructions,questions,field
 	 * @return test id
 	 */
 	public static String addNewTest(String args) {
@@ -361,5 +365,24 @@ public class Queries {
 		currentId += 1;
 		return currentId.toString();
 	}
+
+	/**
+	 * deletes a question from the DB given its id
+	 * 
+	 * @param questionId
+	 * @return - true if the question was deleted
+	 */
+	public static boolean deleteQuestionById(String questionId) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("DELETE FROM questions WHERE questionId='" + questionId + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 
 }

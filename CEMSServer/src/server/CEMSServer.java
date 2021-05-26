@@ -92,6 +92,7 @@ public class CEMSServer extends ObservableServer {
 			String[] str = ((String) msg).split("-");
 			String cases = str[0];
 			String args = str[1];
+			boolean deleted;
 			switch (cases) {
 			case "LOGIN":
 				String[] details = args.split(","); // details[0] = user name, details[1] = password
@@ -106,10 +107,8 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(tests);
 				break;
 			case "DELETE_TEST":
-				boolean deleted = Queries.deleteTestByID(args);
+				deleted = Queries.deleteTestByID(args);
 				client.sendToClient(deleted ? "deleted" : "notDeleted");
-				ArrayList<Test> testsAfterDelete = Queries.getTestsByField(args);
-				client.sendToClient(testsAfterDelete);
 				break;
 			case "ACTIVE_TEST":
 				ArrayList<ActiveTest> activeTests = Queries.getActiveTestsByAuthorId(args);
@@ -132,6 +131,9 @@ public class CEMSServer extends ObservableServer {
 			case "ADD_TEST":
 				String testId = Queries.addNewTest(args);
 				client.sendToClient(testId);
+			case "DELETE_QUESTION":
+				deleted = Queries.deleteQuestionById(args);
+				client.sendToClient(deleted ? "deleted" : "notDeleted");
 			default:
 				break;
 			}
