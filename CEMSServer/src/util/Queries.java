@@ -375,7 +375,7 @@ public class Queries {
 			else {
 				currentId += 1;
 				newId = currentId.toString();
-				while (newId.length() <= lengthOfTestId)
+				while (newId.length() < lengthOfTestId)
 					newId = "0" + newId;
 			}
 		} else if (tableName.equals("questions"))
@@ -384,7 +384,7 @@ public class Queries {
 			else {
 				currentId += 1;
 				newId = currentId.toString();
-				while (newId.length() <= lengthOfQuestionId)
+				while (newId.length() < lengthOfQuestionId)
 					newId = "0" + newId;
 			}
 		return newId;
