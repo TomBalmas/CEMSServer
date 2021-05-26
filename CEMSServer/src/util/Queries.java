@@ -302,7 +302,7 @@ public class Queries {
 	 * 
 	 * @param args -
 	 *             author,title,course,duration,pointsPerQuestion,studentInstructions,TeacherInstructions,questions,field
-	 * @return test id
+	 * @return test id as string
 	 */
 	public static String addNewTest(String args) {
 		String[] details = args.split(",");
@@ -319,7 +319,7 @@ public class Queries {
 			teacherInstructions = details[6];
 		String questions = details[7];
 		String field = details[8];
-		String testId = Queries.getAvailableIdByCourse(course);
+		String testId = Queries.getAvailableId("tests,course,testId," + course);
 		if (testId == null)
 			return null;
 		Statement stmt;
@@ -331,23 +331,31 @@ public class Queries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return testId;
+		return "testAdded:" + testId;
 	}
 
 	/**
-	 * return an available id in a course
+	 * returns an available id
 	 * 
-	 * @param course
+	 * @param args - tableName,columnName,iDColumn,argument
 	 * @return - the available id as a string
 	 */
-	private static String getAvailableIdByCourse(String course) {
+	private static String getAvailableId(String args) {
 		Integer lastId = null;
 		Integer currentId = null;
+		String[] details = args.split(",");
+		String tableName = details[0];
+		String columnName = details[1];
+		String iDColumn = details[2];
+		String arg = details[3];
+		String newId = null;
+		int lengthOfTestId = 6;
+		int lengthOfQuestionId = 5;
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT testId FROM tests WHERE course = '" + course + "' " + "ORDER BY testId");
+			ResultSet rs = stmt.executeQuery("SELECT " + iDColumn + " FROM " + tableName + " WHERE " + columnName
+					+ " = '" + arg + "' " + "ORDER BY testId");
 			rs.next();
 			currentId = rs.getInt("testId");
 			while (rs.next()) {
@@ -361,10 +369,25 @@ public class Queries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if (currentId.toString().endsWith("99"))
-			return null;
-		currentId += 1;
-		return currentId.toString();
+		if (tableName.equals("tests")) {
+			if (currentId.toString().endsWith("99"))
+				return null;
+			else {
+				currentId += 1;
+				newId = currentId.toString();
+				while (newId.length() <= lengthOfTestId)
+					newId = "0" + newId;
+			}
+		} else if (tableName.equals("questions"))
+			if (currentId.toString().endsWith("999"))
+				return null;
+			else {
+				currentId += 1;
+				newId = currentId.toString();
+				while (newId.length() <= lengthOfQuestionId)
+					newId = "0" + newId;
+			}
+		return newId;
 	}
 
 	/**
@@ -385,29 +408,37 @@ public class Queries {
 		return true;
 	}
 
-	
 	/**
-	 * @param args
-	 * @return
+	 * adds a new question given the details in the right order, question id will be
+	 * added automatically
+	 * 
+	 * @param args -
+	 *             author,questionContent,correctAnswer,field,answer1,answer2,answer3,answer4
+	 * @return - question id as string
 	 */
-	public static boolean addQuestion(String args) {		//not ready yet!
+	public static String addQuestion(String args) {
 		Statement stmt;
 		String[] details = args.split(",");
 		String author = details[0];
 		String questionContent = details[1];
 		Integer correctAnswer = Integer.valueOf(details[2]);
 		String field = details[3];
-		int firstAnswerIndex = 4;
-		int lastAnswerIndex = 7;
-		ArrayList<String> answers = new ArrayList<>();
-		for (int i = firstAnswerIndex; i <= lastAnswerIndex; i++)
-			answers.add(details[i]);
+		String answer1 = details[4];
+		String answer2 = details[5];
+		String answer3 = details[6];
+		String answer4 = details[7];
+		String questionId = Queries.getAvailableId("questions,field,questionId," + field);
+		if (questionId == null)
+			return null;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO questions VALUES ('" + author);
+			stmt.executeUpdate("INSERT INTO questions VALUES ('" + questionId + "', '" + questionContent + "', '"
+					+ author + "', '" + field + "', '" + answer1 + "', '" + answer2 + "', '" + answer3 + "', '"
+					+ answer4 + "', " + correctAnswer + ");");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return true;
+		return "questionAdded:" + questionId;
 	}
 }
