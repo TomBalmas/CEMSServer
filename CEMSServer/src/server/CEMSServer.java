@@ -93,51 +93,45 @@ public class CEMSServer extends ObservableServer {
 			String[] str = ((String) msg).split("-");
 			String cases = str[0];
 			String args = str[1];
-			boolean deleted;
 			switch (cases) {
 			case "LOGIN":
 				String[] details = args.split(","); // details[0] = user name, details[1] = password
 				client.sendToClient(Queries.getUser(details[0], details[1]));
 				break;
 			case "QUESTION_BANK":
-				ArrayList<Question> questions = Queries.getQuestionsByFields(args);
-				client.sendToClient(questions);
+				client.sendToClient(Queries.getQuestionsByFields(args));
 				break;
 			case "TEST_BANK":
-				ArrayList<Test> tests = Queries.getTestsByField(args);
-				client.sendToClient(tests);
+				client.sendToClient(Queries.getTestsByField(args));
 				break;
 			case "DELETE_TEST":
-				deleted = Queries.deleteTestByID(args);
-				client.sendToClient(deleted ? "deleted" : "notDeleted");
+				client.sendToClient(Queries.deleteTestByID(args) ? "deleted" : "notDeleted");
 				break;
 			case "ACTIVE_TEST":
-				ArrayList<ActiveTest> activeTests = Queries.getActiveTestsByAuthorId(args);
-				client.sendToClient(activeTests);
+				client.sendToClient(Queries.getActiveTestsByAuthorId(args));
 				break;
 			case "SCHEDULED_TESTS":
-				ArrayList<ScheduledTest> scheduledTests = Queries.getScheduledTestsByAuthorID(args);
-				client.sendToClient(scheduledTests);
+				client.sendToClient(Queries.getScheduledTestsByAuthorID(args));
 				break;
 			case "SCHEDULE_TEST":
-				boolean scheduled = Queries.setTestDate(args);
-				client.sendToClient(scheduled ? "scheduled" : "notScheduled");
+				client.sendToClient(Queries.setTestDate(args) ? "scheduled" : "notScheduled");
 				break;
 			case "GET_COURSES_BY_FIELD":
-				ArrayList<Course> courses = Queries.getCoursesByField(args);
-				client.sendToClient(courses);
+				client.sendToClient(Queries.getCoursesByField(args));
 			case "FINISHED_TESTS":
-				ArrayList<FinishedTest> finishedTests = Queries.getFinishedTestsBySchedulerSSN(args);
-				client.sendToClient(finishedTests);
+				client.sendToClient(Queries.getFinishedTestsBySchedulerSSN(args));
 			case "ADD_TEST":
-				String testId = Queries.addNewTest(args);
-				client.sendToClient(testId);
+				client.sendToClient(Queries.addNewTest(args));
 			case "DELETE_QUESTION":
-				deleted = Queries.deleteQuestionById(args);
-				client.sendToClient(deleted ? "deleted" : "notDeleted");
+				client.sendToClient(Queries.deleteQuestionById(args) ? "deleted" : "notDeleted");
 			case "ADD_QUESTION":
-				String questionId = Queries.addQuestion(args);
-				client.sendToClient(questionId);
+				client.sendToClient(Queries.addQuestion(args));
+			case "GET_QUESTIONS_TABLE":
+				client.sendToClient(Queries.getQuestionsTable());
+			case "EDIT_QUESTION":
+				client.sendToClient(Queries.editQuestion(args) ? "editSuccess" : "editFailed");
+			case "EDIT_TEST":
+				client.sendToClient(Queries.editTest(args) ? "editSuccess" : "editFailed");
 			default:
 				break;
 			}

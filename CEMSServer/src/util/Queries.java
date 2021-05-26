@@ -103,10 +103,7 @@ public class Queries {
 			for (String field : fields) {
 				rs = stmt.executeQuery("SELECT * FROM tests WHERE field = '" + field + "'");
 				while (rs.next())
-					tests.add(new Test(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
-							rs.getString("course"), rs.getInt("testDuration"), rs.getInt("pointsPerQuestion"),
-							rs.getString("studentInstructions"), rs.getString("teacherInstructions"),
-							rs.getString("questionsInTest"), rs.getString("field")));
+					tests.add(GeneralQueryMethods.createTest(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -124,25 +121,19 @@ public class Queries {
 		ArrayList<ScheduledTest> tests = new ArrayList<>();
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT * FROM scheduled_tests WHERE scheduledByTeacher = '" + schedulerId + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests st, tests t WHERE st.scheduledByTeacher = '"
+					+ schedulerId + "' AND t.testId = st.testId");
 			while (rs.next()) {
-				tests.add(new ScheduledTest(rs.getString("testId"), null, null, null, rs.getString("date"),
-						rs.getString("startingTime"), rs.getInt("duration"), rs.getString("scheduledByTeacher"),
-						rs.getString("beginTestCode")));
-			}
-			for (ScheduledTest test : tests) {
-				rs = stmt.executeQuery("SELECT * FROM tests WHERE testId = '" + test.getID() + "'");
-				rs.next();
-				test.setAuthorName(rs.getString("author"));
-				test.setCourse(rs.getString("course"));
-				test.setTitle(rs.getString("title"));
+				tests.add(GeneralQueryMethods.createScheduledTest(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return tests;
 	}
+
+	// "SELECT * FROM scheduled_tests st, tests t WHERE st.scheduledByTeacher = '" +
+	// schedulerId + "' AND t.testId = st.testId"
 
 	/**
 	 * gets all the questions that belong to the given test question
@@ -206,10 +197,7 @@ public class Queries {
 					.executeQuery("SELECT * FROM scheduled_tests s1, active_tests a1 WHERE s1.scheduledByTeacher = '"
 							+ authorId + "' AND a1.testId = s1.testId AND a1.startingTime = s1.startingTime");
 			while (rs.next()) {
-				activeTests.add(new ActiveTest(rs.getString("testId"), rs.getString("title"), rs.getString("course"),
-						rs.getString("author"), rs.getString("field"), rs.getString("startingTime"),
-						GeneralQueryMethods.calculateFinishTime(rs.getString("startingTime"), rs.getInt("duration")),
-						rs.getString("beginTestCode")));
+				activeTests.add(GeneralQueryMethods.createActiveTest(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -288,10 +276,7 @@ public class Queries {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM finished_tests ft, tests t WHERE scheduler = '" + ssn
 					+ "' AND t.testId = ft.testId");
 			while (rs.next())
-				finishedTests.add(new FinishedTest(rs.getString("testId"), rs.getString("author"),
-						rs.getString("Title"), rs.getString("Course"), rs.getString("scheduler"),
-						rs.getString("studentSSN"), rs.getString("date"), rs.getString("startingTime"),
-						rs.getInt("grade"), rs.getString("status")));
+				finishedTests.add(GeneralQueryMethods.createFinishedTest(rs));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -399,8 +384,8 @@ public class Queries {
 				}
 				currentId = lastId;
 			}
-			
-			//check if there is room to add id as the highest number
+
+			// check if there is room to add id as the highest number
 			if (tableName.equals("tests")) {
 				if (currentId.toString().endsWith("99"))
 					return null;
@@ -475,5 +460,113 @@ public class Queries {
 			return null;
 		}
 		return "questionAdded:" + questionId;
+	}
+
+	/**
+	 * getter for questions table
+	 * 
+	 * @return the entire questions table as array list
+	 */
+	public static ArrayList<Question> getQuestionsTable() {
+		ArrayList<Question> questions = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM questions");
+			while (rs.next())
+				questions.add(GeneralQueryMethods.createQuestion(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return questions;
+	}
+
+	/**
+	 * getter for tests table
+	 * 
+	 * @return the entire tests table as array list
+	 */
+	public static ArrayList<Test> getTestsTable() {
+		ArrayList<Test> tests = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM questions");
+			while (rs.next())
+				tests.add(GeneralQueryMethods.createTest(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return tests;
+	}
+
+	/**
+	 * changes details of a question in the DB
+	 * 
+	 * @param args -
+	 *             questionId,author,questionContent,correctAnswer,field,answer1,answer2,answer3,answer4
+	 * @return true if the question was edited successfully
+	 */
+	public static boolean editQuestion(String args) {
+		String[] details = args.split(",");
+		String questionId = details[0];
+		String author = details[1];
+		String questionContent = details[2];
+		Integer correctAnswer = Integer.parseInt(details[3]);
+		String field = details[4];
+		String answer1 = details[5];
+		String answer2 = details[6];
+		String answer3 = details[7];
+		String answer4 = details[8];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("UPDATE questions SET author = '" + author + "', questionContent = '" + questionContent
+					+ "', correctAnswer = " + correctAnswer + ", field = '" + field + "', answer1 = '" + answer1
+					+ "', answer2 = '" + answer2 + "', answer3 = '" + answer3 + "', answer4 = '" + answer4
+					+ "' WHERE questionId = '" + questionId + "';");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * changes details of a test in the DB
+	 * 
+	 * @param args -
+	 *             testId,authorName,title,course,testDuration,pointsPerQuestion,studentInstructions,teacherInstructions,questionsString,field
+	 * @return true if the test was edited successfully
+	 */
+	public static boolean editTest(String args) {
+		String[] details = args.split(",");
+		String testId = details[0];
+		String author = details[1];
+		String title = details[2];
+		String course = details[3];
+		Integer duration = Integer.parseInt(details[4]);
+		Integer pointsPerQuestion = Integer.parseInt(details[5]);
+		String studentInstructions = null;
+		String teacherInstructions = null;
+		if (!details[5].equals("null"))
+			studentInstructions = details[5];
+		if (!details[6].equals("null"))
+			teacherInstructions = details[6];
+		String questions = details[8];
+		String field = details[9];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("UPDATE tests SET author = '" + author + "', title = '" + title + "', course = '"
+					+ course + "', testDuration = " + duration + ", pointsPerQuestion = " + pointsPerQuestion
+					+ ", studentInstructions = '" + studentInstructions + "', teacherInstructions = '"
+					+ teacherInstructions + "', questions = '" + questions + "', field = '" + field
+					+ "' WHERE testId = '" + testId + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }
