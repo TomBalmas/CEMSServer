@@ -347,8 +347,8 @@ public class Queries {
 
 			// case of empty bank
 			if (!rs.next()) {
-				rs = stmt.executeQuery("SELECT fieldId, courseId FROM fields f, courses c WHERE (f.fieldName = '"
-						+ arg + "') OR (c.courseName = '" + arg + "' AND f.fieldName = c.field);" );
+				rs = stmt.executeQuery("SELECT fieldId, courseId FROM fields f, courses c WHERE (f.fieldName = '" + arg
+						+ "') OR (c.courseName = '" + arg + "' AND f.fieldName = c.field);");
 				rs.next();
 				if (tableName.equals("questions"))
 					newId = rs.getString("fieldId") + "000";
@@ -362,6 +362,8 @@ public class Queries {
 				tempId = currentId - 1;
 				if (!tempId.toString().endsWith("99")) {
 					newId = tempId.toString();
+					newId = newId.substring(0, newId.length() - 2);
+					newId = newId + "00";
 					while (newId.length() < lengthOfTestId)
 						newId = "0" + newId;
 					return newId;
@@ -371,6 +373,8 @@ public class Queries {
 				tempId = currentId - 1;
 				if (!tempId.toString().endsWith("999")) {
 					newId = tempId.toString();
+					newId = newId.substring(0, newId.length() - 3);
+					newId = newId + "000";
 					while (newId.length() < lengthOfQuestionId)
 						newId = "0" + newId;
 					return newId;
