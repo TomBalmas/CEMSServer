@@ -128,6 +128,8 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.addQuestion(args));
 			case "GET_QUESTIONS_TABLE":
 				client.sendToClient(Queries.getQuestionsTable());
+			case "GET_TESTS_TABLE":
+				client.sendToClient(Queries.getTestsTable());
 			case "EDIT_QUESTION":
 				client.sendToClient(Queries.editQuestion(args) ? "editSuccess" : "editFailed");
 			case "EDIT_TEST":
