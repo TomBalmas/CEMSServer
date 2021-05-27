@@ -343,13 +343,12 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT " + iDColumn + " FROM " + tableName + " WHERE " + columnName
-					+ " = '" + arg + "' " + "ORDER BY testId");
+					+ " = '" + arg + "' " + "ORDER BY " + iDColumn);
 			rs.next();
-			currentId = rs.getInt("testId");
-			tempId = currentId - 1;
-
 			// check if there is a lower id available
 			if (tableName.equals("tests")) {
+				currentId = rs.getInt("testId");
+				tempId = currentId - 1;
 				if (!tempId.toString().endsWith("99")) {
 					newId = tempId.toString();
 					while (newId.length() < lengthOfTestId)
@@ -357,6 +356,8 @@ public class Queries {
 					return newId;
 				}
 			} else if (tableName.equals("questions")) {
+				currentId = rs.getInt("questionId");
+				tempId = currentId - 1;
 				if (!tempId.toString().endsWith("999")) {
 					newId = tempId.toString();
 					while (newId.length() < lengthOfQuestionId)
