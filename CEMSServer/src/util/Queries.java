@@ -324,7 +324,7 @@ public class Queries {
 	/**
 	 * returns an available id
 	 * 
-	 * @param args - tableName,columnName,iDColumn,argument
+	 * @param args - tableName,columnToCompare,iDColumn,argument
 	 * @return - the available id as a string
 	 */
 	private static String getAvailableId(String args) {
@@ -332,7 +332,7 @@ public class Queries {
 		Integer currentId = null;
 		String[] details = args.split(",");
 		String tableName = details[0];
-		String columnName = details[1];
+		String columnToCompare = details[1];
 		String iDColumn = details[2];
 		String arg = details[3];
 		String newId = null;
@@ -342,9 +342,20 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT " + iDColumn + " FROM " + tableName + " WHERE " + columnName
+			ResultSet rs = stmt.executeQuery("SELECT " + iDColumn + " FROM " + tableName + " WHERE " + columnToCompare
 					+ " = '" + arg + "' " + "ORDER BY " + iDColumn);
-			rs.next();
+
+			// case of empty bank
+			if (!rs.next()) {
+				rs = stmt.executeQuery("SELECT fieldId, courseId FROM fields f, courses c WHERE (f.fieldName = '"
+						+ arg + "') OR (c.courseName = '" + arg + "' AND f.fieldName = c.field);" );
+				rs.next();
+				if (tableName.equals("questions"))
+					newId = rs.getString("fieldId") + "000";
+				else if (tableName.equals("tests"))
+					newId = rs.getString("fieldId") + rs.getString("courseId") + "00";
+				return newId;
+			}
 			// check if there is a lower id available
 			if (tableName.equals("tests")) {
 				currentId = rs.getInt("testId");
@@ -375,6 +386,7 @@ public class Queries {
 						newId = currentId.toString();
 						while (newId.length() < lengthOfTestId)
 							newId = "0" + newId;
+						rs.close();
 						return newId;
 					} else if (tableName.equals("questions")) {
 						newId = currentId.toString();
