@@ -10,8 +10,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.swing.table.TableModel;
-
 import common.ActiveTest;
 import common.Course;
 import common.FinishedTest;
@@ -114,10 +112,10 @@ public class Queries {
 	/**
 	 * gets all the scheduled tests of a given scheduler id
 	 * 
-	 * @param authorId
+	 * @param schedulerId
 	 * @return scheduled tests array list
 	 */
-	public static ArrayList<ScheduledTest> getScheduledTestsByAuthorID(String schedulerId) {
+	public static ArrayList<ScheduledTest> getScheduledTestsBySchedulerID(String schedulerId) {
 		ArrayList<ScheduledTest> tests = new ArrayList<>();
 		try {
 			stmt = conn.createStatement();
@@ -183,19 +181,19 @@ public class Queries {
 	}
 
 	/**
-	 * gets all active tests of the given author id
+	 * gets all active tests of the given schedulerId id
 	 * 
-	 * @param authorId
+	 * @param schedulerId
 	 * @return array of active tests
 	 */
-	public static ArrayList<ActiveTest> getActiveTestsByAuthorId(String authorId) {
+	public static ArrayList<ActiveTest> getActiveTestsBySchedulerId(String schedulerId) {
 		Statement stmt;
 		ArrayList<ActiveTest> activeTests = new ArrayList<>();
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt
 					.executeQuery("SELECT * FROM scheduled_tests s1, active_tests a1 WHERE s1.scheduledByTeacher = '"
-							+ authorId + "' AND a1.testId = s1.testId AND a1.startingTime = s1.startingTime");
+							+ schedulerId + "' AND a1.testId = s1.testId AND a1.startingTime = s1.startingTime");
 			while (rs.next()) {
 				activeTests.add(GeneralQueryMethods.createActiveTest(rs));
 			}
@@ -288,12 +286,12 @@ public class Queries {
 	 * automatically
 	 * 
 	 * @param args -
-	 *             author,title,course,duration,pointsPerQuestion,studentInstructions,TeacherInstructions,questions,field
+	 *             authorId,title,course,duration,pointsPerQuestion,studentInstructions,TeacherInstructions,questions,field
 	 * @return test id as string
 	 */
 	public static String addNewTest(String args) {
 		String[] details = args.split(",");
-		String author = details[0];
+		String authorId = details[0];
 		String title = details[1];
 		String course = details[2];
 		Integer duration = Integer.parseInt(details[3]);
@@ -312,7 +310,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO tests VALUES ('" + testId + "', '" + author + "', '" + title + "', '"
+			stmt.executeUpdate("INSERT INTO tests VALUES ('" + testId + "', '" + authorId + "', '" + title + "', '"
 					+ course + "', " + duration + ", " + pointsPerQuestion + ", '" + studentInstructions + "', '"
 					+ teacherInstructions + "', '" + questions + "', '" + field + "');");
 		} catch (SQLException e) {
@@ -434,10 +432,20 @@ public class Queries {
 	 * @return - true if the question was deleted
 	 */
 	public static boolean deleteQuestionById(String questionId) {
-		Statement stmt;
+		Statement stmt1, stmt2;
+		String tempQuestions = null;
 		try {
-			stmt = conn.createStatement();
-			stmt.executeUpdate("DELETE FROM questions WHERE questionId='" + questionId + "'");
+			stmt1 = conn.createStatement();
+			stmt2 = conn.createStatement();
+			ResultSet rs = stmt1.executeQuery(
+					"SELECT testId, questionsInTest FROM tests WHERE questionsInTest LIKE '%" + questionId + "%'");
+			while (rs.next()) {
+				tempQuestions = rs.getString("questionsInTest");
+				tempQuestions = tempQuestions.replace("~" + questionId + "~", "~");
+				stmt2.executeUpdate("UPDATE tests SET questionsInTest = '" + tempQuestions + "' WHERE testId = '"
+						+ rs.getString("testId") + "'");
+			}
+			stmt1.executeUpdate("DELETE FROM questions WHERE questionId='" + questionId + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -450,13 +458,13 @@ public class Queries {
 	 * added automatically
 	 * 
 	 * @param args -
-	 *             author,questionContent,correctAnswer,field,answer1,answer2,answer3,answer4
+	 *             authorId,questionContent,correctAnswer,field,answer1,answer2,answer3,answer4
 	 * @return - question id as string
 	 */
 	public static String addQuestion(String args) {
 		Statement stmt;
 		String[] details = args.split(",");
-		String author = details[0];
+		String authorId = details[0];
 		String questionContent = details[1];
 		Integer correctAnswer = Integer.valueOf(details[2]);
 		String field = details[3];
@@ -470,7 +478,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("INSERT INTO questions VALUES ('" + questionId + "', '" + questionContent + "', '"
-					+ author + "', '" + field + "', '" + answer1 + "', '" + answer2 + "', '" + answer3 + "', '"
+					+ authorId + "', '" + field + "', '" + answer1 + "', '" + answer2 + "', '" + answer3 + "', '"
 					+ answer4 + "', " + correctAnswer + ");");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -521,13 +529,13 @@ public class Queries {
 	 * changes details of a question in the DB
 	 * 
 	 * @param args -
-	 *             questionId,author,questionContent,correctAnswer,field,answer1,answer2,answer3,answer4
+	 *             questionId,authorId,questionContent,correctAnswer,field,answer1,answer2,answer3,answer4
 	 * @return true if the question was edited successfully
 	 */
 	public static boolean editQuestion(String args) {
 		String[] details = args.split(",");
 		String questionId = details[0];
-		String author = details[1];
+		String authorId = details[1];
 		String questionContent = details[2];
 		Integer correctAnswer = Integer.parseInt(details[3]);
 		String field = details[4];
@@ -538,9 +546,9 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("UPDATE questions SET author = '" + author + "', questionContent = '" + questionContent
-					+ "', correctAnswer = " + correctAnswer + ", field = '" + field + "', answer1 = '" + answer1
-					+ "', answer2 = '" + answer2 + "', answer3 = '" + answer3 + "', answer4 = '" + answer4
+			stmt.executeUpdate("UPDATE questions SET authorId = '" + authorId + "', questionContent = '"
+					+ questionContent + "', correctAnswer = " + correctAnswer + ", field = '" + field + "', answer1 = '"
+					+ answer1 + "', answer2 = '" + answer2 + "', answer3 = '" + answer3 + "', answer4 = '" + answer4
 					+ "' WHERE questionId = '" + questionId + "';");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -553,13 +561,13 @@ public class Queries {
 	 * changes details of a test in the DB
 	 * 
 	 * @param args -
-	 *             testId,authorName,title,course,testDuration,pointsPerQuestion,studentInstructions,teacherInstructions,questionsString,field
+	 *             testId,authorId,title,course,testDuration,pointsPerQuestion,studentInstructions,teacherInstructions,questionsString,field
 	 * @return true if the test was edited successfully
 	 */
 	public static boolean editTest(String args) {
 		String[] details = args.split(",");
 		String testId = details[0];
-		String author = details[1];
+		String authorId = details[1];
 		String title = details[2];
 		String course = details[3];
 		Integer duration = Integer.parseInt(details[4]);
@@ -575,7 +583,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("UPDATE tests SET author = '" + author + "', title = '" + title + "', course = '"
+			stmt.executeUpdate("UPDATE tests SET authorId = '" + authorId + "', title = '" + title + "', course = '"
 					+ course + "', testDuration = " + duration + ", pointsPerQuestion = " + pointsPerQuestion
 					+ ", studentInstructions = '" + studentInstructions + "', teacherInstructions = '"
 					+ teacherInstructions + "', questions = '" + questions + "', field = '" + field
@@ -585,5 +593,45 @@ public class Queries {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * gets all the questions of the given authorId
+	 * 
+	 * @param authorId - ssn of the author
+	 * @return string array list of question IDs
+	 */
+	public static ArrayList<String> getQuestionsByAuthorId(String authorId) {
+		ArrayList<String> questions = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT questionId FROM questions WHERE authorId = '" + authorId + "'");
+			while (rs.next())
+				questions.add(rs.getString("questionId"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return questions;
+	}
+
+	/**
+	 * gets all the tests of the given authorId
+	 * 
+	 * @param authorId - ssn of the author
+	 * @return string array list of test IDs
+	 */
+	public static ArrayList<String> getTestsByAuthorId(String authorId) {
+		ArrayList<String> tests = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT testId FROM test WHERE authorId = '" + authorId + "'");
+			while (rs.next())
+				tests.add(rs.getString("testId"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return tests;
 	}
 }
