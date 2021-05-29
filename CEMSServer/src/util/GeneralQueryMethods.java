@@ -25,7 +25,7 @@ public class GeneralQueryMethods {
 		answers.add(rs.getString("answer2"));
 		answers.add(rs.getString("answer3"));
 		answers.add(rs.getString("answer4"));
-		return new Question(rs.getString("questionId"), rs.getString("author"), rs.getString("questionContent"),
+		return new Question(rs.getString("questionId"), rs.getString("authorId"), rs.getString("questionContent"),
 				rs.getInt("correctAnswer"), rs.getString("field"), answers);
 	}
 
@@ -37,7 +37,7 @@ public class GeneralQueryMethods {
 	 * @throws SQLException
 	 */
 	public static Test createTest(ResultSet rs) throws SQLException {
-		return new Test(rs.getString("testId"), rs.getString("author"), rs.getString("title"), rs.getString("course"),
+		return new Test(rs.getString("testId"), rs.getString("authorId"), rs.getString("title"), rs.getString("course"),
 				rs.getInt("testDuration"), rs.getInt("pointsPerQuestion"), rs.getString("studentInstructions"),
 				rs.getString("teacherInstructions"), rs.getString("questionsInTest"), rs.getString("field"));
 	}
