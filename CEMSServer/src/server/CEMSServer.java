@@ -138,6 +138,8 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.getQuestionsByAuthorId(args));
 			case "GET_TESTS_BY_AUTHOR_ID":
 				client.sendToClient(Queries.getTestsByAuthorId(args));
+			case "GET_NAME_BY_ID":
+				client.sendToClient(Queries.getNameById(args));
 			default:
 				break;
 			}
