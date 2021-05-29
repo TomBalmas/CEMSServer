@@ -108,10 +108,10 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.deleteTestByID(args) ? "deleted" : "notDeleted");
 				break;
 			case "ACTIVE_TEST":
-				client.sendToClient(Queries.getActiveTestsByAuthorId(args));
+				client.sendToClient(Queries.getActiveTestsBySchedulerId(args));
 				break;
 			case "SCHEDULED_TESTS":
-				client.sendToClient(Queries.getScheduledTestsByAuthorID(args));
+				client.sendToClient(Queries.getScheduledTestsBySchedulerID(args));
 				break;
 			case "SCHEDULE_TEST":
 				client.sendToClient(Queries.setTestDate(args) ? "scheduled" : "notScheduled");
@@ -134,6 +134,10 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.editQuestion(args) ? "editSuccess" : "editFailed");
 			case "EDIT_TEST":
 				client.sendToClient(Queries.editTest(args) ? "editSuccess" : "editFailed");
+			case "GET_QUESTIONS_BY_AUTHOR_ID":
+				client.sendToClient(Queries.getQuestionsByAuthorId(args));
+			case "GET_TESTS_BY_AUTHOR_ID":
+				client.sendToClient(Queries.getTestsByAuthorId(args));
 			default:
 				break;
 			}
