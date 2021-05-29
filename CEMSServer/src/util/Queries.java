@@ -634,4 +634,24 @@ public class Queries {
 		}
 		return tests;
 	}
+	
+	/**
+	 * gets the name of the given ssn
+	 * 
+	 * @param userId - ssn of the user
+	 * @return string with the name of the user
+	 */
+	public static String getNameById(String userId) {
+		String name = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT name FROM users WHERE ssn = '" + userId + "'");
+			rs.next();
+			name = rs.getString("name");
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return name;
+	}
 }
