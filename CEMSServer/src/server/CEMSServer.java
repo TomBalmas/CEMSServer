@@ -92,7 +92,9 @@ public class CEMSServer extends ObservableServer {
 		try {
 			String[] str = ((String) msg).split("-");
 			String cases = str[0];
-			String args = str[1];
+			String args = null;
+			if (str.length > 1)
+				args = str[1];
 			switch (cases) {
 			case "LOGIN":
 				String[] details = args.split(","); // details[0] = user name, details[1] = password
