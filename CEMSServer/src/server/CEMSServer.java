@@ -145,11 +145,12 @@ public class CEMSServer extends ObservableServer {
 			case "LOGIN":
 				String[] details = args.split(","); // details[0] = user name, details[1] = password
 				User user = Queries.getUser(details[0], details[1]);
-				for (ClientIdentifier c : connectedClients)
-					if (c.getClientID() == null && c.getClientType() == null) {
-						c.setClientID(user.getSSN());
-						c.setClientType(user.getClass().getSimpleName());
-					}
+				if (user != null)
+					for (ClientIdentifier c : connectedClients)
+						if (c.getClientID() == null && c.getClientType() == null) {
+							c.setClientID(user.getSSN());
+							c.setClientType(user.getClass().getSimpleName());
+						}
 				for (ClientIdentifier c : connectedClients) {
 					System.out.println(c);
 				}
