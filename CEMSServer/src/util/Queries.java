@@ -216,15 +216,6 @@ public class Queries {
 		String startingTime = details[2];
 		String scheduledBy = details[3];
 		String code = details[4];
-		try {
-			LocalDate now = LocalDate.now();
-			Date today = new SimpleDateFormat("dd-mm-yyyy").parse(now.toString());
-			Date testDate = new SimpleDateFormat("dd-mm-yyyy").parse(date);
-			if (testDate.compareTo(today) >= 0)
-				return false;
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
