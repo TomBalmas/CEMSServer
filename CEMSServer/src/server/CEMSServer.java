@@ -171,6 +171,9 @@ public class CEMSServer extends ObservableServer {
 			case "GET_QUESTIONS_FROM_TEST":
 				client.sendToClient(Queries.getQuestionsFromTest(args));	// sends ArrayList<Question>
 				break;
+			case "DELETE_REPORT":
+				client.sendToClient(Queries.deleteReport(args) ? "reportDeleted" : "reportNotDeleted");	// sends String
+				break;
 			default:
 				break;
 			}
