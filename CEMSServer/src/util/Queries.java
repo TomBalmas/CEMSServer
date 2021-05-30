@@ -721,12 +721,32 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM time_extension_requests");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM statistics_reports");
 			while(rs.next())
 				reports.add(GeneralQueryMethods.createReport(rs));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return reports;
+	}
+	
+	/**
+	 * deletes a report from the reports table
+	 * 
+	 * @param args - report id
+	 * @return true if the report was deleted
+	 */
+	public static boolean deleteReport(String reportId) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("DELETE FROM statistics_reports WHERE reportId = '" + reportId + "'");
+			stmt.executeUpdate("DELETE FROM course_statistics WHERE reportId = '" + reportId + "'");
+			stmt.executeUpdate("DELETE FROM student_statistics WHERE reportId = '" + reportId + "'");
+			stmt.executeUpdate("DELETE FROM teacher_statistics WHERE reportId = '" + reportId + "'");
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 }
