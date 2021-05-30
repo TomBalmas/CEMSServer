@@ -128,7 +128,6 @@ public class Queries {
 		return tests;
 	}
 
-
 	/**
 	 * deletes a test from the DB given the test's id
 	 * 
@@ -191,7 +190,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE beginTestCode = '" + code + "'");
-			if(rs.next())
+			if (rs.next())
 				return false;
 			rs = stmt.executeQuery("SELECT duration FROM tests WHERE testId = '" + testId + "'");
 			rs.next();
@@ -698,14 +697,14 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM statistic_reports");
-			while(rs.next())
+			while (rs.next())
 				reports.add(GeneralQueryMethods.createReport(rs));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return reports;
 	}
-	
+
 	/**
 	 * deletes a report from the reports table
 	 * 
@@ -720,12 +719,12 @@ public class Queries {
 			stmt.executeUpdate("DELETE FROM course_statistics WHERE reportId = '" + reportId + "'");
 			stmt.executeUpdate("DELETE FROM student_statistics WHERE reportId = '" + reportId + "'");
 			stmt.executeUpdate("DELETE FROM teacher_statistics WHERE reportId = '" + reportId + "'");
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return true;
 	}
-	
+
 	/**
 	 * gets author name given a test's id
 	 * 
@@ -745,14 +744,14 @@ public class Queries {
 		}
 		return name;
 	}
-	
+
 	/**
 	 * gets all the questions belong to the test id
 	 * 
 	 * @param testId
 	 * @return array list of questions
 	 */
-	public static ArrayList<Question> getQuestionsFromTest(String testId){
+	public static ArrayList<Question> getQuestionsFromTest(String testId) {
 		String questionsString;
 		String[] questionsArray;
 		ArrayList<Question> questions = new ArrayList<>();
@@ -763,13 +762,14 @@ public class Queries {
 			rs.next();
 			questionsString = rs.getString("questionsInTest");
 			questionsArray = questionsString.split("~");
-			for(String question : questionsArray) {
+			for (String question : questionsArray) {
 				rs = stmt.executeQuery("SELECT * FROM questions WHERE questionId = '" + question + "'");
 				questions.add(GeneralQueryMethods.createQuestion(rs));
 			}
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return questions;
 	}
+
 }
