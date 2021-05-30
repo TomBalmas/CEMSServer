@@ -166,7 +166,7 @@ public class CEMSServer extends ObservableServer {
 																														// String
 				break;
 			case "GET_REPORTS":
-				client.sendToClient(Queries.getReportsTable()); // sends ArrayList<Repor>
+				client.sendToClient(Queries.getReportsTable()); // sends ArrayList<Report>
 				break;
 			default:
 				break;
