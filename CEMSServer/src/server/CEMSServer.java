@@ -120,28 +120,40 @@ public class CEMSServer extends ObservableServer {
 				break;
 			case "GET_COURSES_BY_FIELD":
 				client.sendToClient(Queries.getCoursesByField(args)); // sends ArrayList<Course>
+				break;
 			case "FINISHED_TESTS":
 				client.sendToClient(Queries.getFinishedTestsBySchedulerSSN(args)); // sends ArrayList<FinishedTest>
+				break;
 			case "ADD_TEST":
 				client.sendToClient(Queries.addNewTest(args)); // sends String
+				break;
 			case "DELETE_QUESTION":
 				client.sendToClient(Queries.deleteQuestionById(args) ? "deleted" : "notDeleted"); // sends String
+				break;
 			case "ADD_QUESTION":
 				client.sendToClient(Queries.addQuestion(args)); // sends String
+				break;
 			case "GET_QUESTIONS_TABLE":
 				client.sendToClient(Queries.getQuestionsTable()); // sends ArrayList<Question>
+				break;
 			case "GET_TESTS_TABLE":
 				client.sendToClient(Queries.getTestsTable()); // sends ArrayList<Test>
+				break;
 			case "EDIT_QUESTION":
 				client.sendToClient(Queries.editQuestion(args) ? "editSuccess" : "editFailed"); // sends String
+				break;
 			case "EDIT_TEST":
 				client.sendToClient(Queries.editTest(args) ? "editSuccess" : "editFailed"); // sends String
+				break;
 			case "GET_QUESTIONS_BY_AUTHOR_ID":
 				client.sendToClient(Queries.getQuestionsByAuthorId(args)); // sends ArrayList<String>
+				break;
 			case "GET_TESTS_BY_AUTHOR_ID":
 				client.sendToClient(Queries.getTestsByAuthorId(args)); // sends ArrayList<String>
+				break;
 			case "GET_NAME_BY_ID":
 				client.sendToClient("name:" + Queries.getNameById(args)); // sends String
+				break;
 			default:
 				break;
 			}
