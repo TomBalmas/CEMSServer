@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import common.ActiveTest;
 import common.FinishedTest;
 import common.Question;
+import common.Report;
 import common.ScheduledTest;
 import common.Test;
+import common.TimeExtensionRequest;
 
 public class GeneralQueryMethods {
 
@@ -82,6 +84,10 @@ public class GeneralQueryMethods {
 				rs.getString("scheduledByTeacher"), rs.getString("beginTestCode"));
 	}
 
+	public static TimeExtensionRequest createTimeExtensionRequest(ResultSet rs) throws SQLException {
+		return new TimeExtensionRequest(rs.getString("teacherId"), rs.getString("content"), rs.getString("testCode"));
+	}
+
 	/**
 	 * calculates starting time + duration
 	 * 
@@ -110,6 +116,20 @@ public class GeneralQueryMethods {
 		if (m < 10)
 			minutes = "0" + minutes;
 		return hours + ":" + minutes;
+	}
+
+	/**
+	 * creates a report
+	 * 
+	 * @param rs - result set that has all the arguments for report constructor
+	 * @return new report
+	 * @throws SQLException
+	 */
+	public static Report createReport(ResultSet rs) throws SQLException {
+		return new Report(rs.getString("reportId"), rs.getString("testId"), rs.getInt("numOfStudents"),
+				rs.getDouble("average"), rs.getDouble("median"), rs.getInt("0-54.9"), rs.getInt("55-64"),
+				rs.getInt("65-69"), rs.getInt("70-74"), rs.getInt("75-79"), rs.getInt("80-84"), rs.getInt("85-89"),
+				rs.getInt("90-94"), rs.getInt("95-100"));
 	}
 
 }

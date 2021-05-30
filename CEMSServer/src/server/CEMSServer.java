@@ -154,6 +154,20 @@ public class CEMSServer extends ObservableServer {
 			case "GET_NAME_BY_ID":
 				client.sendToClient("name:" + Queries.getNameById(args)); // sends String
 				break;
+			case "GET_TIME_EXTENSION_REQUESTS":
+				client.sendToClient(Queries.getTimeExtensionRequests()); // sends ArrayList<TimeExtensionRequest>
+				break;
+			case "ADD_TIME_EXTENSION_REQUEST":
+				client.sendToClient(Queries.addTimeExtensionRequest(args) ? "requestAdded" : "requestNotAdded"); // sends
+																													// String
+				break;
+			case "DELETE_TIME_EXTENSION_REQUEST":
+				client.sendToClient(Queries.deleteTimeExtensionRequest(args) ? "requestDeleted" : "requestNotDeleted"); // sends
+																														// String
+				break;
+			case "GET_REPORTS":
+				client.sendToClient(Queries.getReportsTable()); // sends ArrayList<Repor>
+				break;
 			default:
 				break;
 			}

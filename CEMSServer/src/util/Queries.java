@@ -4,21 +4,19 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 import common.ActiveTest;
 import common.Course;
 import common.FinishedTest;
 import common.Principle;
 import common.Question;
+import common.Report;
 import common.ScheduledTest;
 import common.Student;
 import common.Teacher;
 import common.Test;
+import common.TimeExtensionRequest;
 import common.User;
 
 public class Queries {
@@ -625,7 +623,7 @@ public class Queries {
 		}
 		return tests;
 	}
-	
+
 	/**
 	 * gets the name of the given ssn
 	 * 
@@ -640,9 +638,95 @@ public class Queries {
 			ResultSet rs = stmt.executeQuery("SELECT name FROM users WHERE ssn = '" + userId + "'");
 			rs.next();
 			name = rs.getString("name");
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return name;
+	}
+
+	/**
+	 * gets all the time extension requests
+	 * 
+	 * @return array list of time extension requests
+	 */
+	public static ArrayList<TimeExtensionRequest> getTimeExtensionRequests() {
+		ArrayList<TimeExtensionRequest> requests = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM time_extension_requests");
+			while (rs.next())
+				requests.add(GeneralQueryMethods.createTimeExtensionRequest(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return requests;
+	}
+
+	/**
+	 * adds a time request to the time_extension_requests table if the test is
+	 * already in the table, it updates its content
+	 * 
+	 * @param args - teacherSSN,content,testCode
+	 * @return true if request was successfully added
+	 */
+	public static boolean addTimeExtensionRequest(String args) {
+		String[] details = args.split(",");
+		String teacherSSN = details[0];
+		String content = details[1];
+		String code = details[2];
+		Statement stmt1;
+		Statement stmt2;
+		ResultSet rs;
+		try {
+			stmt1 = conn.createStatement();
+			stmt2 = conn.createStatement();
+			rs = stmt1.executeQuery("SELECT * FROM time_extension_requests WHERE testCode = '" + code + "'");
+			if (rs.next())
+				stmt2.executeUpdate("UPDATE time_extension_requests SET content = '" + content + "' WHERE testCode = '"
+						+ code + "'");
+			else
+				stmt1.executeUpdate("INSERT INTO time_extension_requests VALUES ('" + teacherSSN + "', '" + content
+						+ "', '" + code + "');");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	/**
+	 * deletes a request from the time_extension_requests table
+	 * 
+	 * @param code - the test's code
+	 * @return true if the request was deleted
+	 */
+	public static boolean deleteTimeExtensionRequest(String code) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("DELETE FROM time_extension_requests WHERE testCode = '" + code + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	/**
+	 * gets the reports table
+	 * 
+	 * @return report array list
+	 */
+	public static ArrayList<Report> getReportsTable() {
+		ArrayList<Report> reports = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM time_extension_requests");
+			while(rs.next())
+				reports.add(GeneralQueryMethods.createReport(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return reports;
 	}
 }
