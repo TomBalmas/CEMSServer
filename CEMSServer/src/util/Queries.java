@@ -765,7 +765,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT authorId FROM tests WHERE ssn = '" + testId + "'");
+			ResultSet rs = stmt.executeQuery("SELECT authorId FROM tests WHERE testId = '" + testId + "'");
 			rs.next();
 			name = getNameById(rs.getString("authorId"));
 		} catch (SQLException e) {
