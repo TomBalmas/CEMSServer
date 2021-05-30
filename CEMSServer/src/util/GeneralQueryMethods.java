@@ -80,7 +80,7 @@ public class GeneralQueryMethods {
 	 * @throws SQLException
 	 */
 	public static ScheduledTest createScheduledTest(ResultSet rs) throws SQLException {
-		return new ScheduledTest(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
+		return new ScheduledTest(rs.getString("testId"), Queries.getAuthorNameByTestId(rs.getString("testId")), rs.getString("title"),
 				rs.getString("course"), rs.getString("date"), rs.getString("startingTime"), rs.getInt("duration"),
 				rs.getString("scheduledByTeacher"), rs.getString("beginTestCode"));
 	}

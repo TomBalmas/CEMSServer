@@ -754,4 +754,23 @@ public class Queries {
 		return true;
 	}
 	
+	/**
+	 * gets author name given a test's id
+	 * 
+	 * @param testId
+	 * @return the name of the author
+	 */
+	public static String getAuthorNameByTestId(String testId) {
+		String name = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT authorId FROM tests WHERE ssn = '" + testId + "'");
+			rs.next();
+			name = getNameById(rs.getString("authorId"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return name;
+	}
 }
