@@ -721,7 +721,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM statistics_reports");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM statistic_reports");
 			while(rs.next())
 				reports.add(GeneralQueryMethods.createReport(rs));
 		} catch (SQLException e) {
@@ -740,7 +740,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("DELETE FROM statistics_reports WHERE reportId = '" + reportId + "'");
+			stmt.executeUpdate("DELETE FROM statistic_reports WHERE reportId = '" + reportId + "'");
 			stmt.executeUpdate("DELETE FROM course_statistics WHERE reportId = '" + reportId + "'");
 			stmt.executeUpdate("DELETE FROM student_statistics WHERE reportId = '" + reportId + "'");
 			stmt.executeUpdate("DELETE FROM teacher_statistics WHERE reportId = '" + reportId + "'");
