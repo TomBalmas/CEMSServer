@@ -128,34 +128,6 @@ public class Queries {
 		return tests;
 	}
 
-	// "SELECT * FROM scheduled_tests st, tests t WHERE st.scheduledByTeacher = '" +
-	// schedulerId + "' AND t.testId = st.testId"
-
-	/**
-	 * gets all the questions that belong to the given test question
-	 * 
-	 * @param test
-	 * @return Question array list
-	 */
-	public static ArrayList<Question> getQuestionFromTest(Test test) {
-		ArrayList<Question> questionsArray = new ArrayList<>();
-		try {
-			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT questionInTest FROM tests WHERE testId='" + test.getID() + "'");
-			rs.next();
-			String questionString = rs.getString("questionsInTest");
-			String[] questions = questionString.split("~");
-			for (String question : questions) {
-				rs = stmt.executeQuery("SELECT * FROM questions WHERE questionId='" + question + "'");
-				if (rs.next())
-					questionsArray.add(GeneralQueryMethods.createQuestion(rs));
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return questionsArray;
-	}
 
 	/**
 	 * deletes a test from the DB given the test's id
@@ -772,5 +744,32 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return name;
+	}
+	
+	/**
+	 * gets all the questions belong to the test id
+	 * 
+	 * @param testId
+	 * @return array list of questions
+	 */
+	public static ArrayList<Question> getQuestionsFromTest(String testId){
+		String questionsString;
+		String[] questionsArray;
+		ArrayList<Question> questions = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT questionsInTest FROM tests WHERE testId = '" + testId + "'");
+			rs.next();
+			questionsString = rs.getString("questionsInTest");
+			questionsArray = questionsString.split("~");
+			for(String question : questionsArray) {
+				rs = stmt.executeQuery("SELECT * FROM questions WHERE questionId = '" + question + "'");
+				questions.add(GeneralQueryMethods.createQuestion(rs));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return questions;
 	}
 }
