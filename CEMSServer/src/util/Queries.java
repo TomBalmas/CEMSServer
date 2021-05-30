@@ -215,9 +215,13 @@ public class Queries {
 		String scheduledBy = details[3];
 		String code = details[4];
 		Statement stmt;
+		ResultSet rs;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT duration FROM tests WHERE testId = '" + testId + "'");
+			rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE beginTestCode = '" + code + "'");
+			if(rs.next())
+				return false;
+			rs = stmt.executeQuery("SELECT duration FROM tests WHERE testId = '" + testId + "'");
 			rs.next();
 			stmt.executeUpdate("INSERT INTO scheduled_tests VALUES ('" + testId + "', '" + date + "', '" + startingTime
 					+ "', '" + rs.getInt("duration") + "', '" + scheduledBy + "', '" + code + "')");
@@ -550,7 +554,7 @@ public class Queries {
 	 * changes details of a test in the DB
 	 * 
 	 * @param args -
-	 *             testId,authorId,title,course,testDuration,pointsPerQuestion,studentInstructions,teacherInstructions,questionsString,field
+	 *             testId,authorId,title,course,duration,pointsPerQuestion,studentInstructions,teacherInstructions,questionsString,field
 	 * @return true if the test was edited successfully
 	 */
 	public static boolean editTest(String args) {
@@ -573,7 +577,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("UPDATE tests SET authorId = '" + authorId + "', title = '" + title + "', course = '"
-					+ course + "', testDuration = " + duration + ", pointsPerQuestion = " + pointsPerQuestion
+					+ course + "', duration = " + duration + ", pointsPerQuestion = " + pointsPerQuestion
 					+ ", studentInstructions = '" + studentInstructions + "', teacherInstructions = '"
 					+ teacherInstructions + "', questions = '" + questions + "', field = '" + field
 					+ "' WHERE testId = '" + testId + "'");
@@ -749,4 +753,5 @@ public class Queries {
 		}
 		return true;
 	}
+	
 }

@@ -39,9 +39,10 @@ public class GeneralQueryMethods {
 	 * @throws SQLException
 	 */
 	public static Test createTest(ResultSet rs) throws SQLException {
-		return new Test(rs.getString("testId"), rs.getString("authorId"), rs.getString("title"), rs.getString("course"),
-				rs.getInt("testDuration"), rs.getInt("pointsPerQuestion"), rs.getString("studentInstructions"),
-				rs.getString("teacherInstructions"), rs.getString("questionsInTest"), rs.getString("field"));
+		return new Test(rs.getString("testId"), Queries.getNameById(rs.getString("authorId")), rs.getString("title"),
+				rs.getString("course"), rs.getInt("duration"), rs.getInt("pointsPerQuestion"),
+				rs.getString("studentInstructions"), rs.getString("teacherInstructions"),
+				rs.getString("questionsInTest"), rs.getString("field"));
 	}
 
 	/**
