@@ -53,9 +53,9 @@ public class GeneralQueryMethods {
 	 * @throws SQLException
 	 */
 	public static FinishedTest createFinishedTest(ResultSet rs) throws SQLException {
-		return new FinishedTest(rs.getString("testId"), rs.getString("author"), rs.getString("Title"),
-				rs.getString("Course"), rs.getString("scheduler"), rs.getString("studentSSN"), rs.getString("date"),
-				rs.getString("startingTime"), rs.getInt("grade"), rs.getString("status"));
+		return new FinishedTest(rs.getString("testId"), Queries.getNameById(rs.getString("authorId")),
+				rs.getString("Title"), rs.getString("Course"), rs.getString("scheduler"), rs.getString("studentSSN"),
+				rs.getString("date"), rs.getString("startingTime"), rs.getInt("grade"), rs.getString("status"));
 	}
 
 	/**
@@ -80,9 +80,9 @@ public class GeneralQueryMethods {
 	 * @throws SQLException
 	 */
 	public static ScheduledTest createScheduledTest(ResultSet rs) throws SQLException {
-		return new ScheduledTest(rs.getString("testId"), Queries.getAuthorNameByTestId(rs.getString("testId")), rs.getString("title"),
-				rs.getString("course"), rs.getString("date"), rs.getString("startingTime"), rs.getInt("duration"),
-				rs.getString("scheduledByTeacher"), rs.getString("beginTestCode"));
+		return new ScheduledTest(rs.getString("testId"), Queries.getAuthorNameByTestId(rs.getString("testId")),
+				rs.getString("title"), rs.getString("course"), rs.getString("date"), rs.getString("startingTime"),
+				rs.getInt("duration"), rs.getString("scheduledByTeacher"), rs.getString("beginTestCode"));
 	}
 
 	public static TimeExtensionRequest createTimeExtensionRequest(ResultSet rs) throws SQLException {
