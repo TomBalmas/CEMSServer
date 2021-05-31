@@ -778,4 +778,24 @@ public class Queries {
 		return questions;
 	}
 
+	/**
+	 * removes a scheduled test from the DB
+	 * 
+	 * @param args - testCode
+	 * @return true if the test was removed from the scheduled_tests
+	 */
+	public static boolean removeScheduledTest(String testCode) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+			if(!rs.next())
+				return false;
+			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 }
