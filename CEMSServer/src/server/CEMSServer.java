@@ -231,6 +231,28 @@ public class CEMSServer extends ObservableServer {
 			case "DELETE_REPORT":
 				client.sendToClient(Queries.deleteReport(args) ? "reportDeleted" : "reportNotDeleted"); // sends String
 				break;
+			// notifies the principle
+			case "NOTIFY_PRINCIPLE":
+				for (ClientIdentifier c : connectedClients)
+					if (c.getClientType().equals("Principle")) {
+						c.getClientConnection().sendToClient("notify"); // sends String
+						break;
+					}
+				break;
+			/*
+			 * notifies students given their id
+			 * 
+			 * @param - studentSSN,studentSSN,studentSSN...
+			 */
+			case "NOTIFY_STUDENTS_IN_TEST":
+				String[] studentsSSN = args.split(",");
+				for (ClientIdentifier c : connectedClients)
+					for (String ssn : studentsSSN)
+						if (c.getClientID().equals(ssn)) {
+							c.getClientConnection().sendToClient("notify"); // sends string
+							break;
+						}
+				break;
 			default:
 				break;
 			}
