@@ -67,8 +67,8 @@ public class GeneralQueryMethods {
 	 * @throws SQLException
 	 */
 	public static ActiveTest createActiveTest(ResultSet rs) throws SQLException {
-		return new ActiveTest(rs.getString("testId"), rs.getString("title"), rs.getString("course"),
-				rs.getString("author"), rs.getString("field"), rs.getString("startingTime"),
+		return new ActiveTest(rs.getString("testId"), rs.getString("author"), rs.getString("title"),
+				rs.getString("course"), rs.getString("field"), rs.getString("startingTime"),
 				GeneralQueryMethods.calculateFinishTime(rs.getString("startingTime"), rs.getInt("duration")),
 				rs.getString("beginTestCode"));
 	}
