@@ -151,9 +151,6 @@ public class CEMSServer extends ObservableServer {
 							c.setClientID(user.getSSN());
 							c.setClientType(user.getClass().getSimpleName());
 						}
-				for (ClientIdentifier c : connectedClients) {
-					System.out.println(c);
-				}
 				client.sendToClient(user); // sends User
 
 				break;
@@ -252,6 +249,9 @@ public class CEMSServer extends ObservableServer {
 							c.getClientConnection().sendToClient("notify"); // sends string
 							break;
 						}
+				break;
+			case "REMOVE_SCHEDULED_TEST":
+				client.sendToClient(Queries.removeScheduledTest(args) ? "testRemoved" : "testNotRemoved");
 				break;
 			default:
 				break;
