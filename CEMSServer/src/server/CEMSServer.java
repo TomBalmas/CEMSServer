@@ -4,19 +4,60 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import common.ActiveTest;
-import common.Course;
-import common.FinishedTest;
-import common.Question;
-import common.ScheduledTest;
-import common.Test;
+import common.User;
 import ocsf.server.ConnectionToClient;
 import ocsf.server.ObservableServer;
 import util.Queries;
 
 public class CEMSServer extends ObservableServer {
 
-	private List<ConnectionToClient> connectedClients;
+	private List<ClientIdentifier> connectedClients;
+
+	private static class ClientIdentifier {
+		private static int counter = 0;
+
+		private ConnectionToClient clientConnection;
+		private String clientType = null;
+		private String clientID = null;
+		private int identifier;
+
+		public ClientIdentifier(ConnectionToClient clientConnection) {
+			this.clientConnection = clientConnection;
+			identifier = counter;
+			counter++;
+		}
+
+		public int getIdentifier() {
+			return identifier;
+		}
+
+		public ConnectionToClient getClientConnection() {
+			return clientConnection;
+		}
+
+		public String getClientType() {
+			return clientType;
+		}
+
+		public String getClientID() {
+			return clientID;
+		}
+
+		public void setClientType(String clientType) {
+			this.clientType = clientType;
+		}
+
+		public void setClientID(String clientID) {
+			this.clientID = clientID;
+		}
+
+		@Override
+		public String toString() {
+			return "ClientIdentifier [clientType=" + clientType + ", clientID=" + clientID + ", identifier="
+					+ identifier + "]";
+		}
+
+	}
 
 	public CEMSServer(int port) {
 		super(port);
@@ -50,7 +91,7 @@ public class CEMSServer extends ObservableServer {
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
 		String clientConnectedString = CLIENT_CONNECTED.substring(0, CLIENT_CONNECTED.length() - 1);
-		connectedClients.add(client);
+		connectedClients.add(new ClientIdentifier(client));
 		sendToLog(clientConnectedString + " from ip: " + client.getInetAddress());
 	}
 
@@ -62,6 +103,9 @@ public class CEMSServer extends ObservableServer {
 	protected void clientException(ConnectionToClient client, Throwable exception) {
 
 		try {
+			for (ClientIdentifier c : connectedClients)
+				if (c.getClientConnection().equals(client))
+					connectedClients.remove(c);
 			sendToLog("Client Exception: " + exception.toString());
 			client.close();
 		} catch (Exception e) {
@@ -69,7 +113,7 @@ public class CEMSServer extends ObservableServer {
 		}
 	}
 
-	protected List<ConnectionToClient> getClients() {
+	protected List<ClientIdentifier> getClients() {
 		return connectedClients;
 	}
 
@@ -79,7 +123,9 @@ public class CEMSServer extends ObservableServer {
 	@Override
 	protected void clientDisconnected(ConnectionToClient client) {
 		String clientDisconnectedString = CLIENT_DISCONNECTED.substring(0, CLIENT_DISCONNECTED.length() - 1);
-		connectedClients.remove(client);
+		for (ClientIdentifier c : connectedClients)
+			if (c.getClientConnection().equals(client))
+				connectedClients.remove(c);
 		sendToLog(clientDisconnectedString + " ip: " + client.getInetAddress());
 	}
 
@@ -98,7 +144,18 @@ public class CEMSServer extends ObservableServer {
 			switch (cases) {
 			case "LOGIN":
 				String[] details = args.split(","); // details[0] = user name, details[1] = password
-				client.sendToClient(Queries.getUser(details[0], details[1])); // sends User
+				User user = Queries.getUser(details[0], details[1]);
+				if (user != null)
+					for (ClientIdentifier c : connectedClients)
+						if (c.getClientID() == null && c.getClientType() == null) {
+							c.setClientID(user.getSSN());
+							c.setClientType(user.getClass().getSimpleName());
+						}
+				for (ClientIdentifier c : connectedClients) {
+					System.out.println(c);
+				}
+				client.sendToClient(user); // sends User
+
 				break;
 			case "QUESTION_BANK":
 				client.sendToClient(Queries.getQuestionsByFields(args)); // sends ArrayList<Question>
@@ -169,10 +226,10 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.getReportsTable()); // sends ArrayList<Report>
 				break;
 			case "GET_QUESTIONS_FROM_TEST":
-				client.sendToClient(Queries.getQuestionsFromTest(args));	// sends ArrayList<Question>
+				client.sendToClient(Queries.getQuestionsFromTest(args)); // sends ArrayList<Question>
 				break;
 			case "DELETE_REPORT":
-				client.sendToClient(Queries.deleteReport(args) ? "reportDeleted" : "reportNotDeleted");	// sends String
+				client.sendToClient(Queries.deleteReport(args) ? "reportDeleted" : "reportNotDeleted"); // sends String
 				break;
 			default:
 				break;
