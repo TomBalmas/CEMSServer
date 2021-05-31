@@ -888,9 +888,9 @@ public class Queries {
 			rs.next();
 			test = GeneralQueryMethods.createTest(rs);
 			answers = rs.getString("studentAnswers").split("~");
-			for(String answer : answers)
+			for (String answer : answers)
 				studentAnswers.add(answer);
-			studentTest = new Pair<>(test,studentAnswers);
+			studentTest = new Pair<>(test, studentAnswers);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -913,6 +913,78 @@ public class Queries {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("UPDATE scheduled_tests SET date = '" + date + "', startingTime = '" + startingTime
 					+ "' WHERE beginTestCode = '" + testCode + "';");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * calculates the grade of a student's test
+	 * 
+	 * @param testId
+	 * @param studentId
+	 * @return grade as integer
+	 */
+	private static int calculateStudentGrade(String testId, String studentId) {
+		int grade = 0;
+		String questionsInTest;
+		String studentAnswers;
+		String[] questions;
+		String[] answers;
+		int pointsPerQuestion;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT pointsPerQuestion, questionsInTest, studentAnswers FROM tests t, students_answers sa WHERE t.testId = '"
+							+ testId + "' AND sa.testId = '" + testId + "'");
+			rs.next();
+			questionsInTest = rs.getString("questionsInTest");
+			pointsPerQuestion = rs.getInt("pointsPerQuestion");
+			studentAnswers = rs.getString("studentAnswers");
+			questions = questionsInTest.split("~");
+			answers = studentAnswers.split("~");
+			if (questions.length != answers.length)
+				return -1;
+			for (int i = 0; i < questions.length; i++) {
+				rs = stmt.executeQuery("SELECT correctAnswer FROM questions WHERE questionId = '" + questions[i] + "'");
+				if (rs.getInt("correctAnswer") == Integer.parseInt(answers[i]))
+					grade += pointsPerQuestion;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return grade;
+	}
+
+	/**
+	 * adds a finished test to the finished_tests table
+	 * 
+	 * @param args -
+	 *             scheduler,studentSSN,testId,date,startingTime,timeTaken,presentationMethod,title,course,status
+	 * @return true if the finished test was added to the finished_tests table
+	 */
+	public static boolean addFinishedTest(String args) {
+		String[] details = args.split(",");
+		String scheduler = details[0];
+		String studentSSN = details[1];
+		String testId = details[2];
+		String date = details[3];
+		String startingTime = details[4];
+		int timeTaken = Integer.parseInt(details[5]);
+		String presentationMethod = details[6];
+		String title = details[7];
+		String course = details[8];
+		int grade = Queries.calculateStudentGrade(testId, studentSSN);
+		String status = details[9];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("INSERT INTO finished_tests VALUES ('" + scheduler + "', '" + studentSSN + "', '"
+					+ testId + "', '" + date + "', '" + startingTime + "', '" + timeTaken + "', '" + presentationMethod
+					+ "', '" + title + "', '" + course + "', '" + grade + "', '" + status + "');");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
