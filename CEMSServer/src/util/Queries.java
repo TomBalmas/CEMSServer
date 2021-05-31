@@ -18,6 +18,7 @@ import common.Teacher;
 import common.Test;
 import common.TimeExtensionRequest;
 import common.User;
+import javafx.util.Pair;
 
 public class Queries {
 
@@ -229,9 +230,9 @@ public class Queries {
 	 * @param args - id of the teacher who scheduled the tests
 	 * @return - array list of finished tests
 	 */
-	public static ArrayList<FinishedTest> getFinishedTestsBySchedulerSSN(String args) {
+	public static ArrayList<FinishedTest> getFinishedTestsBySchedulerSSN(String schedulerSSN) {
 		ArrayList<FinishedTest> finishedTests = new ArrayList<>();
-		String ssn = args;
+		String ssn = schedulerSSN;
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
@@ -863,6 +864,37 @@ public class Queries {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * gets test with student's answers
+	 * 
+	 * @param args - testId,studentSSN
+	 * @return pair of test and array list of the student's answers
+	 */
+	public static Pair<Test, ArrayList<String>> getStudentTest(String args) {
+		String[] details = args.split(",");
+		String testId = details[0];
+		String studentSSN = details[1];
+		Test test = null;
+		String[] answers;
+		ArrayList<String> studentAnswers = new ArrayList<>();
+		Pair<Test, ArrayList<String>> studentTest = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM tests t, students_answers sa WHERE sa.studentSSN = '"
+					+ studentSSN + "', AND sa.testId = '" + testId + "', AND t.testId = '" + testId + "'");
+			rs.next();
+			test = GeneralQueryMethods.createTest(rs);
+			answers = rs.getString("studentAnswers").split("~");
+			for(String answer : answers)
+				studentAnswers.add(answer);
+			studentTest = new Pair<>(test,studentAnswers);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return studentTest;
 	}
 
 	/**

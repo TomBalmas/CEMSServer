@@ -265,6 +265,9 @@ public class CEMSServer extends ObservableServer {
 			case "RESCHEDULE_TEST":
 				client.sendToClient(Queries.rescheduleTest(args)? "testRescheduled" : "testNotRescheduled");	//sends String
 				break;
+			case "GET_STUDENT_TEST":
+				client.sendToClient(Queries.getStudentTest(args));	//sends Pair<Test,ArrayList<String>>
+				break;
 			default:
 				break;
 			}
