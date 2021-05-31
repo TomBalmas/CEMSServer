@@ -770,6 +770,7 @@ public class Queries {
 			questionsArray = questionsString.split("~");
 			for (String question : questionsArray) {
 				rs = stmt.executeQuery("SELECT * FROM questions WHERE questionId = '" + question + "'");
+				rs.next();
 				questions.add(GeneralQueryMethods.createQuestion(rs));
 			}
 		} catch (SQLException e) {
@@ -789,13 +790,102 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
-			if(!rs.next())
+			if (!rs.next())
 				return false;
 			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
+
+	/**
+	 * returns the test belongs to the given code
+	 * 
+	 * @param testCode
+	 * @return test entity
+	 */
+	public static Test getTestByCode(String testCode) {
+		Test test = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM tests t, scheduled_tests st WHERE st.beginTestCode = '"
+					+ testCode + "' AND t.testId = st.testId");
+			rs.next();
+			test = GeneralQueryMethods.createTest(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return test;
+	}
+
+	/**
+	 * gets the grades that belong to the given SSN
+	 * 
+	 * @param studentSSN
+	 * @return integer array list of grades
+	 */
+	public static ArrayList<Integer> getGradesBySSN(String studentSSN) {
+		ArrayList<Integer> grades = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT grade FROM grades WHERE ssn = '" + studentSSN + "'");
+			while (rs.next())
+				grades.add(rs.getInt("grade"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return grades;
+	}
+
+	/**
+	 * saves answers of a student in the DB answers is a string, example: answers =
+	 * 1~2~1~0~3~3~4~3
+	 * 
+	 * @param args - studentSSN,testId,answers
+	 * @return
+	 */
+	public static boolean saveStudentAnswers(String args) {
+		String[] details = args.split(",");
+		String studentSSN = details[0];
+		String testId = details[1];
+		String answers = details[3];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate(
+					"INSERT INTO students_answers VALUES ('" + studentSSN + "', '" + testId + "', '" + answers + "');");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * reschedule date and time for a test
+	 * 
+	 * @param args - testCode,date,startingTime
+	 * @return - true if the date was rescheduled
+	 */
+	public static boolean rescheduleTest(String args) {
+		String[] details = args.split(",");
+		String testCode = details[0];
+		String date = details[1];
+		String startingTime = details[2];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("UPDATE scheduled_tests SET date = '" + date + "', startingTime = '" + startingTime
+					+ "' WHERE beginTestCode = '" + testCode + "';");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 }

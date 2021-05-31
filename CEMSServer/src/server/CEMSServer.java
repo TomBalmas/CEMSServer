@@ -251,7 +251,19 @@ public class CEMSServer extends ObservableServer {
 						}
 				break;
 			case "REMOVE_SCHEDULED_TEST":
-				client.sendToClient(Queries.removeScheduledTest(args) ? "testRemoved" : "testNotRemoved");
+				client.sendToClient(Queries.removeScheduledTest(args) ? "testRemoved" : "testNotRemoved");	// sends String
+				break;
+			case "GET_TEST_BY_CODE":
+				client.sendToClient(Queries.getTestByCode(args));	//sends Test
+				break;
+			case "GET_GRADES_BY_SSN":
+				client.sendToClient(Queries.getGradesBySSN(args));	//sends ArrayList<Integer>
+				break;
+			case "SAVE_STUDENT_ANSWERS":
+				client.sendToClient(Queries.saveStudentAnswers(args) ? "answersSaved" : "answersNotSaved");	//sends String
+				break;
+			case "RESCHEDULE_TEST":
+				client.sendToClient(Queries.rescheduleTest(args)? "testRescheduled" : "testNotRescheduled");	//sends String
 				break;
 			default:
 				break;
