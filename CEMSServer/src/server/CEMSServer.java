@@ -172,7 +172,7 @@ public class CEMSServer extends ObservableServer {
 			case "SCHEDULED_TESTS":
 				client.sendToClient(Queries.getScheduledTestsBySchedulerID(args)); // sends ArrayList<ScheduledTest>
 				break;
-			case "SCHEDULE_TEST":
+			case "SET_TEST_DATE":
 				client.sendToClient(Queries.setTestDate(args) ? "scheduled" : "notScheduled"); // sends String
 				break;
 			case "GET_COURSES_BY_FIELD":

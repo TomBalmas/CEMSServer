@@ -319,7 +319,7 @@ public class Queries {
 				return newId;
 			}
 			// check if there is a lower id available
-			if (tableName.equals("tests")) {
+			if (tableName.equals("tests")) { // tests
 				currentId = rs.getInt("testId");
 				tempId = currentId - 1;
 				if (!tempId.toString().endsWith("99")) {
@@ -330,7 +330,7 @@ public class Queries {
 						newId = "0" + newId;
 					return newId;
 				}
-			} else if (tableName.equals("questions")) {
+			} else if (tableName.equals("questions")) { // questions
 				currentId = rs.getInt("questionId");
 				tempId = currentId - 1;
 				if (!tempId.toString().endsWith("999")) {
@@ -345,21 +345,27 @@ public class Queries {
 
 			// check if there is a gap between id numbers
 			while (rs.next()) {
-				lastId = rs.getInt("testId");
-				if (lastId - currentId != 1) {
-					currentId += 1;
-					if (tableName.equals("tests")) {
+				if (tableName.equals("tests")) { // tests
+					lastId = rs.getInt("testId");
+					if (lastId - currentId != 1) {
+						currentId += 1;
 						newId = currentId.toString();
 						while (newId.length() < lengthOfTestId)
 							newId = "0" + newId;
 						rs.close();
 						return newId;
-					} else if (tableName.equals("questions")) {
+					}
+
+				} else if (tableName.equals("questions")) {// questions
+					lastId = rs.getInt("questionId");
+					if (lastId - currentId != 1) {
+						currentId += 1;
 						newId = currentId.toString();
 						while (newId.length() < lengthOfQuestionId)
 							newId = "0" + newId;
+						rs.close();
+						return newId;
 					}
-
 				}
 				currentId = lastId;
 			}
