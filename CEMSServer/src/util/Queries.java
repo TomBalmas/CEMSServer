@@ -487,7 +487,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM test");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM tests");
 			while (rs.next())
 				tests.add(GeneralQueryMethods.createTest(rs));
 		} catch (SQLException e) {
