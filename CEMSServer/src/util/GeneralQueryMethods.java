@@ -90,7 +90,7 @@ public class GeneralQueryMethods {
 	}
 
 	public static TimeExtensionRequest createTimeExtensionRequest(ResultSet rs) throws SQLException {
-		return new TimeExtensionRequest(rs.getString("teacherId"), rs.getString("content"), rs.getString("testCode"));
+		return new TimeExtensionRequest(rs.getString("teacherSSN"), rs.getString("content"), rs.getString("testCode"));
 	}
 
 	/**
