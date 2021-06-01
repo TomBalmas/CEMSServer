@@ -170,8 +170,8 @@ public class Queries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		for(ActiveTest activeTest : activeTests) {
-			if(!temp.contains(activeTest))
+		for (ActiveTest activeTest : activeTests) {
+			if (!temp.contains(activeTest))
 				temp.add(activeTest);
 		}
 		return temp;
@@ -622,8 +622,8 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT name FROM users WHERE ssn = '" + userId + "'");
-			rs.next();
-			name = rs.getString("name");
+			if (rs.next())
+				name = rs.getString("name");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -807,24 +807,30 @@ public class Queries {
 	}
 
 	/**
-	 * returns the test belongs to the given code
+	 * gets the test and the scheduler ID of the given code
 	 * 
 	 * @param testCode
-	 * @return test entity
+	 * @return pair of test and string that contains the test and scheduler ID
 	 */
-	public static Test getTestByCode(String testCode) {
+	public static Pair<Test, String> getTestByCode(String testCode) {
 		Test test = null;
+		String schedulerId = null;
+		Pair<Test, String> toBeSent = null;
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM tests t, scheduled_tests st WHERE st.beginTestCode = '"
 					+ testCode + "' AND t.testId = st.testId");
-			if (rs.next())
+			if (rs.next()) {
 				test = GeneralQueryMethods.createTest(rs);
+				schedulerId = rs.getString("scheduledByTeacher");
+				toBeSent = new Pair<Test, String>(test, schedulerId);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return test;
+		return toBeSent;
 	}
 
 	/**
