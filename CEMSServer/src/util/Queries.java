@@ -157,20 +157,24 @@ public class Queries {
 	 * @return array of active tests
 	 */
 	public static ArrayList<ActiveTest> getActiveTestsBySchedulerId(String schedulerId) {
-		Statement stmt;
+		Statement stmt1;
 		ArrayList<ActiveTest> activeTests = new ArrayList<>();
+		ArrayList<ActiveTest> temp = new ArrayList<>();
 		try {
-			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT DISTINCT * FROM scheduled_tests s1, active_tests a1 WHERE s1.scheduledByTeacher = '"
+			stmt1 = conn.createStatement();
+			ResultSet rs = stmt1
+					.executeQuery("SELECT * FROM scheduled_tests s1, active_tests a1 WHERE s1.scheduledByTeacher = '"
 							+ schedulerId + "' AND a1.testId = s1.testId AND a1.startingTime = s1.startingTime");
-			while (rs.next()) {
+			while (rs.next())
 				activeTests.add(GeneralQueryMethods.createActiveTest(rs));
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return activeTests;
+		for(ActiveTest activeTest : activeTests) {
+			if(!temp.contains(activeTest))
+				temp.add(activeTest);
+		}
+		return temp;
 	}
 
 	/**
@@ -1003,7 +1007,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE role = Student");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE role = 'Student'");
 			while (rs.next())
 				students.add(GeneralQueryMethods.createStudent(rs));
 		} catch (SQLException e) {

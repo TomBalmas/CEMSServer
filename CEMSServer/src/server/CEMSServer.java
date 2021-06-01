@@ -150,7 +150,6 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.deleteTestByID(args) ? "deleted" : "notDeleted"); // send String
 				break;
 			case "ACTIVE_TEST":
-				System.out.println(Queries.getActiveTestsBySchedulerId(args).toString());
 				client.sendToClient(Queries.getActiveTestsBySchedulerId(args)); // sends ArrayList<ActiveTest>
 				break;
 			case "SCHEDULED_TESTS":
