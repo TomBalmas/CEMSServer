@@ -253,7 +253,7 @@ public class CEMSServer extends ObservableServer {
 																											// String
 				break;
 			case "GET_TEST_BY_CODE":
-				client.sendToClient(Queries.getTestByCode(args)); // sends Test
+				client.sendToClient(Queries.getTestByCode(args)); // sends Pair<Test,String>
 				break;
 			case "GET_GRADES_BY_SSN":
 				client.sendToClient(Queries.getGradesBySSN(args)); // sends ArrayList<Integer>
