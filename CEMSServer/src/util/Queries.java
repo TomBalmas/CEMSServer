@@ -162,7 +162,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt
-					.executeQuery("SELECT * FROM scheduled_tests s1, active_tests a1 WHERE s1.scheduledByTeacher = '"
+					.executeQuery("SELECT DISTINCT * FROM scheduled_tests s1, active_tests a1 WHERE s1.scheduledByTeacher = '"
 							+ schedulerId + "' AND a1.testId = s1.testId AND a1.startingTime = s1.startingTime");
 			while (rs.next()) {
 				activeTests.add(GeneralQueryMethods.createActiveTest(rs));
