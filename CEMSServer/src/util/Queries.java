@@ -215,9 +215,9 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT courseName FROM courses WHERE field = '" + field + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM courses WHERE field = '" + field + "'");
 			while (rs.next())
-				courses.add(new Course(rs.getString("courseName")));
+				courses.add(GeneralQueryMethods.createCourse(rs));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -992,4 +992,103 @@ public class Queries {
 		return true;
 	}
 
+	/**
+	 * gets all students in the system
+	 * 
+	 * @return array list of students
+	 */
+	public static ArrayList<Student> getStudents() {
+		ArrayList<Student> students = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE role = Student");
+			while (rs.next())
+				students.add(GeneralQueryMethods.createStudent(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return students;
+	}
+
+	/**
+	 * gets all the courses of a given student
+	 * 
+	 * @param studentSSN
+	 * @return array list of courses
+	 */
+	public static ArrayList<Course> getCoursesByStudentSSN(String studentSSN) {
+		ArrayList<Course> courses = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM finished_tests ft, courses c  WHERE ft.studentSSN = '"
+					+ studentSSN + "', AND c.courseName = ft.course");
+			while (rs.next())
+				courses.add(GeneralQueryMethods.createCourse(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return courses;
+	}
+
+	/**
+	 * gets all the teachers
+	 * 
+	 * @return array list of teachers
+	 */
+	public static ArrayList<Teacher> getTeachers() {
+		ArrayList<Teacher> teachers = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE role = Teacher");
+			while (rs.next())
+				teachers.add(GeneralQueryMethods.createTeacher(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return teachers;
+	}
+
+	/**
+	 * gets all the courses
+	 * 
+	 * @return array list of courses
+	 */
+	public static ArrayList<Course> getCourses() {
+		ArrayList<Course> courses = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM courses");
+			while (rs.next())
+				courses.add(GeneralQueryMethods.createCourse(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return courses;
+	}
+
+	/**
+	 * gets all tests that were already taken by students
+	 * that belong to a single teacher
+	 * 
+	 * @param teacherSSN
+	 * @return array list of tests
+	 */
+	public static ArrayList<Test> getTestsByTeacherSSN(String teacherSSN) {
+		ArrayList<Test> tests = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM tests t, finished_tests ft WHERE ft.scheduler = '"
+					+ teacherSSN + "', AND ft.testId = t.testId");
+			while(rs.next())
+				tests.add(GeneralQueryMethods.createTest(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return tests;
+	}
 }
