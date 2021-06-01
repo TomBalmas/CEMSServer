@@ -18,7 +18,6 @@ public class CEMSServer extends ObservableServer {
 		private ConnectionToClient clientConnection;
 		private String clientType = null;
 		private String clientID = null;
-		private int identifier;
 
 		public ClientIdentifier(ConnectionToClient clientConnection) {
 			this.clientConnection = clientConnection;
@@ -42,12 +41,6 @@ public class CEMSServer extends ObservableServer {
 
 		public void setClientID(String clientID) {
 			this.clientID = clientID;
-		}
-
-		@Override
-		public String toString() {
-			return "ClientIdentifier [clientType=" + clientType + ", clientID=" + clientID + ", identifier="
-					+ identifier + "]";
 		}
 
 	}
