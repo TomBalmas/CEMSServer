@@ -229,6 +229,16 @@ public class CEMSServer extends ObservableServer {
 			case "DELETE_REPORT":
 				client.sendToClient(Queries.deleteReport(args) ? "reportDeleted" : "reportNotDeleted"); // sends String
 				break;
+			// notifies a teacher
+			case "NOTIFY_TEACHER_BY_SSN":
+				for (ClientIdentifier c : connectedClients) {
+					if (c.getClientType().equals("Teacher"))
+						if (c.getClientID().equals(args))
+							c.getClientConnection().sendToClient("notify"); // sends String
+					break;
+				}
+				client.sendToClient("teacherNotified"); // sends String
+				break;
 			// notifies the principle
 			case "NOTIFY_PRINCIPLE":
 				for (ClientIdentifier c : connectedClients)
@@ -236,13 +246,14 @@ public class CEMSServer extends ObservableServer {
 						c.getClientConnection().sendToClient("notify"); // sends String
 						break;
 					}
+				client.sendToClient("principleNotified"); // sends String
 				break;
 			/*
 			 * notifies students given their id
 			 * 
 			 * @param - studentSSN,studentSSN,studentSSN...
 			 */
-			case "NOTIFY_STUDENTS_IN_TEST":
+			case "NOTIFY_STUDENTS_BY_SSN":
 				String[] studentsSSN = args.split(",");
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
@@ -250,6 +261,7 @@ public class CEMSServer extends ObservableServer {
 							c.getClientConnection().sendToClient("notify"); // sends string
 							break;
 						}
+				client.sendToClient("studentsNotifies"); // sends String
 				break;
 			case "REMOVE_SCHEDULED_TEST":
 				client.sendToClient(Queries.removeScheduledTest(args) ? "testRemoved" : "testNotRemoved"); // sends
