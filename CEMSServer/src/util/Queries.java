@@ -807,30 +807,25 @@ public class Queries {
 	}
 
 	/**
-	 * gets the test and the scheduler ID of the given code
+	 * gets the test given its code
 	 * 
 	 * @param testCode
-	 * @return pair of test and string that contains the test and scheduler ID
+	 * @return test
 	 */
-	public static Pair<Test, String> getTestByCode(String testCode) {
+	public static Test getTestByCode(String testCode) {
 		Test test = null;
-		String schedulerId = null;
-		Pair<Test, String> toBeSent = null;
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM tests t, scheduled_tests st WHERE st.beginTestCode = '"
 					+ testCode + "' AND t.testId = st.testId");
-			if (rs.next()) {
+			if (rs.next())
 				test = GeneralQueryMethods.createTest(rs);
-				schedulerId = rs.getString("scheduledByTeacher");
-				toBeSent = new Pair<Test, String>(test, schedulerId);
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return toBeSent;
+		return test;
 	}
 
 	/**
@@ -974,22 +969,23 @@ public class Queries {
 	 * adds a finished test to the finished_tests table
 	 * 
 	 * @param args -
-	 *             scheduler,studentSSN,testId,date,startingTime,timeTaken,presentationMethod,title,course,status
+	 *             studentSSN,testId,code,startingTime,timeTaken,presentationMethod,title,course,status
 	 * @return true if the finished test was added to the finished_tests table
 	 */
 	public static boolean addFinishedTest(String args) {
 		String[] details = args.split(",");
-		String scheduler = details[0];
-		String studentSSN = details[1];
-		String testId = details[2];
-		String date = details[3];
-		String startingTime = details[4];
-		int timeTaken = Integer.parseInt(details[5]);
-		String presentationMethod = details[6];
-		String title = details[7];
-		String course = details[8];
+		String studentSSN = details[0];
+		String testId = details[1];
+		String code = details[2];
+		String startingTime = details[3];
+		int timeTaken = Integer.parseInt(details[4]);
+		String presentationMethod = details[5];
+		String title = details[6];
+		String course = details[7];
 		int grade = Queries.calculateStudentGrade(testId, studentSSN);
-		String status = details[9];
+		String status = details[8];
+		String date = Queries.getDateByCode(code);
+		String scheduler = Queries.getSchedulerIdByCode(code);
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
@@ -1101,5 +1097,45 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return tests;
+	}
+	
+	/**
+	 * gets date of a test
+	 * 
+	 * @param testCode
+	 * @return date string
+	 */
+	private static String getDateByCode(String testCode) {
+		String date = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT date FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+			rs.next();
+			date = rs.getString("date");
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return date;
+	}
+	
+	/**
+	 * get schedulerId of a test
+	 * 
+	 * @param testCode
+	 * @return ID string
+	 */
+	private static String getSchedulerIdByCode(String testCode) {
+		String schedulerId = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT scheduledByTeacher FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+			rs.next();
+			schedulerId = rs.getString("scheduledByTeacher");
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return schedulerId;
 	}
 }

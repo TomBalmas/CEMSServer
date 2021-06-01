@@ -131,14 +131,19 @@ public class CEMSServer extends ObservableServer {
 			case "LOGIN":
 				String[] details = args.split(","); // details[0] = user name, details[1] = password
 				User user = Queries.getUser(details[0], details[1]);
-				if (user != null)
+				if (user != null) {
+					for (ClientIdentifier c : connectedClients)
+						if (user.getSSN().equals(c.getClientID())) {
+							client.sendToClient("userAlreadyConnected"); // sends String
+							return;
+						}
 					for (ClientIdentifier c : connectedClients)
 						if (c.getClientID() == null && c.getClientType() == null) {
 							c.setClientID(user.getSSN());
 							c.setClientType(user.getClass().getSimpleName());
 						}
+				}
 				client.sendToClient(user); // sends User
-
 				break;
 			case "QUESTION_BANK":
 				client.sendToClient(Queries.getQuestionsByFields(args)); // sends ArrayList<Question>
@@ -253,7 +258,7 @@ public class CEMSServer extends ObservableServer {
 																											// String
 				break;
 			case "GET_TEST_BY_CODE":
-				client.sendToClient(Queries.getTestByCode(args)); // sends Pair<Test,String>
+				client.sendToClient(Queries.getTestByCode(args)); // sends Test
 				break;
 			case "GET_GRADES_BY_SSN":
 				client.sendToClient(Queries.getGradesBySSN(args)); // sends ArrayList<Integer>
