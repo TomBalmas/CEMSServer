@@ -666,8 +666,8 @@ public class Queries {
 			stmt2 = conn.createStatement();
 			rs = stmt1.executeQuery("SELECT * FROM time_extension_requests WHERE testCode = '" + code + "'");
 			if (rs.next())
-				stmt2.executeUpdate("UPDATE time_extension_requests SET content = '" + content + "', minutes = " + minutes + " WHERE testCode = '"
-						+ code + "'");
+				stmt2.executeUpdate("UPDATE time_extension_requests SET content = '" + content + "', minutes = "
+						+ minutes + " WHERE testCode = '" + code + "'");
 			else
 				stmt1.executeUpdate("INSERT INTO time_extension_requests VALUES ('" + teacherSSN + "', '" + content
 						+ "', '" + code + "', " + minutes + ");");
@@ -815,8 +815,8 @@ public class Queries {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM tests t, scheduled_tests st WHERE st.beginTestCode = '"
 					+ testCode + "' AND t.testId = st.testId");
-			rs.next();
-			test = GeneralQueryMethods.createTest(rs);
+			if (rs.next())
+				test = GeneralQueryMethods.createTest(rs);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1072,8 +1072,8 @@ public class Queries {
 	}
 
 	/**
-	 * gets all tests that were already taken by students
-	 * that belong to a single teacher
+	 * gets all tests that were already taken by students that belong to a single
+	 * teacher
 	 * 
 	 * @param teacherSSN
 	 * @return array list of tests
@@ -1085,7 +1085,7 @@ public class Queries {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM tests t, finished_tests ft WHERE ft.scheduler = '"
 					+ teacherSSN + "', AND ft.testId = t.testId");
-			while(rs.next())
+			while (rs.next())
 				tests.add(GeneralQueryMethods.createTest(rs));
 		} catch (SQLException e) {
 			e.printStackTrace();
