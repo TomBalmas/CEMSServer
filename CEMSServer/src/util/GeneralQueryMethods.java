@@ -5,10 +5,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import common.ActiveTest;
+import common.Course;
 import common.FinishedTest;
 import common.Question;
 import common.Report;
 import common.ScheduledTest;
+import common.Student;
+import common.Teacher;
 import common.Test;
 import common.TimeExtensionRequest;
 
@@ -134,4 +137,38 @@ public class GeneralQueryMethods {
 				rs.getInt("90-94"), rs.getInt("95-100"));
 	}
 
+	/**
+	 * creates a student
+	 * 
+	 * @param rs - result set that has all the arguments for student constructor
+	 * @return new student
+	 * @throws SQLException
+	 */
+	public static Student createStudent(ResultSet rs) throws SQLException {
+		return new Student(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"), rs.getString("email"),
+				rs.getString("username"), rs.getString("password"));
+	}
+
+	/**
+	 * creates a course
+	 * 
+	 * @param rs - result set that has all the arguments for course constructor
+	 * @return new course
+	 * @throws SQLException
+	 */
+	public static Course createCourse(ResultSet rs) throws SQLException {
+		return new Course(rs.getString("courseId"), rs.getString("courseName"), rs.getString("field"));
+	}
+
+	/**
+	 * creates a teacher
+	 * 
+	 * @param rs - result set that has all the arguments for teacher constructor
+	 * @return new teacher
+	 * @throws SQLException
+	 */
+	public static Teacher createTeacher(ResultSet rs) throws SQLException {
+		return new Teacher(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"), rs.getString("email"),
+				rs.getString("username"), rs.getString("password"), rs.getString("fields"));
+	}
 }

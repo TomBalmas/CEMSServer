@@ -252,25 +252,44 @@ public class CEMSServer extends ObservableServer {
 						}
 				break;
 			case "REMOVE_SCHEDULED_TEST":
-				client.sendToClient(Queries.removeScheduledTest(args) ? "testRemoved" : "testNotRemoved");	// sends String
+				client.sendToClient(Queries.removeScheduledTest(args) ? "testRemoved" : "testNotRemoved"); // sends
+																											// String
 				break;
 			case "GET_TEST_BY_CODE":
-				client.sendToClient(Queries.getTestByCode(args));	//sends Test
+				client.sendToClient(Queries.getTestByCode(args)); // sends Test
 				break;
 			case "GET_GRADES_BY_SSN":
-				client.sendToClient(Queries.getGradesBySSN(args));	//sends ArrayList<Integer>
+				client.sendToClient(Queries.getGradesBySSN(args)); // sends ArrayList<Integer>
 				break;
 			case "SAVE_STUDENT_ANSWERS":
-				client.sendToClient(Queries.saveStudentAnswers(args) ? "answersSaved" : "answersNotSaved");	//sends String
+				client.sendToClient(Queries.saveStudentAnswers(args) ? "answersSaved" : "answersNotSaved"); // sends
+																											// String
 				break;
 			case "RESCHEDULE_TEST":
-				client.sendToClient(Queries.rescheduleTest(args)? "testRescheduled" : "testNotRescheduled");	//sends String
+				client.sendToClient(Queries.rescheduleTest(args) ? "testRescheduled" : "testNotRescheduled"); // sends
+																												// String
 				break;
 			case "GET_STUDENT_TEST":
-				client.sendToClient(Queries.getStudentTest(args));	//sends Pair<Test,ArrayList<String>>
+				client.sendToClient(Queries.getStudentTest(args)); // sends Pair<Test,ArrayList<String>>
 				break;
 			case "ADD_FINISHED_TEST":
-				client.sendToClient(Queries.addFinishedTest(args) ? "finishedTestAdded" : "finishedTestNotAdded");	//sends String
+				client.sendToClient(Queries.addFinishedTest(args) ? "finishedTestAdded" : "finishedTestNotAdded"); // sends
+																													// String
+				break;
+			case "GET_STUDENTS":
+				client.sendToClient(Queries.getStudents()); // sends ArrayList<Student>
+				break;
+			case "GET_COURSES_BY_STUDENT":
+				client.sendToClient(Queries.getCoursesByStudentSSN(args)); // sends ArrayList<Course>
+				break;
+			case "GET_TEACHERS":
+				client.sendToClient(Queries.getTeachers()); // sends ArrayList<Teacher>
+				break;
+			case "GET_COURSES":
+				client.sendToClient(Queries.getCourses()); // sends ArrayList<Course>
+				break;
+			case "GET_TESTS_BY_TEACHER_SSN":
+				client.sendToClient(Queries.getTestsByTeacherSSN(args)); // sends ArrayList<Test>
 				break;
 			default:
 				break;
