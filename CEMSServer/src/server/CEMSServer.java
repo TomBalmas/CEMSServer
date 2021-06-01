@@ -13,22 +13,14 @@ public class CEMSServer extends ObservableServer {
 
 	private List<ClientIdentifier> connectedClients;
 
-	private static class ClientIdentifier {
-		private static int counter = 0;
+	private class ClientIdentifier {
 
 		private ConnectionToClient clientConnection;
 		private String clientType = null;
 		private String clientID = null;
-		private int identifier;
 
 		public ClientIdentifier(ConnectionToClient clientConnection) {
 			this.clientConnection = clientConnection;
-			identifier = counter;
-			counter++;
-		}
-
-		public int getIdentifier() {
-			return identifier;
 		}
 
 		public ConnectionToClient getClientConnection() {
@@ -49,12 +41,6 @@ public class CEMSServer extends ObservableServer {
 
 		public void setClientID(String clientID) {
 			this.clientID = clientID;
-		}
-
-		@Override
-		public String toString() {
-			return "ClientIdentifier [clientType=" + clientType + ", clientID=" + clientID + ", identifier="
-					+ identifier + "]";
 		}
 
 	}
