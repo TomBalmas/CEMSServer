@@ -649,7 +649,7 @@ public class Queries {
 	 * adds a time request to the time_extension_requests table if the test is
 	 * already in the table, it updates its content
 	 * 
-	 * @param args - teacherSSN,content,testCode
+	 * @param args - teacherSSN,content,testCode,minutes
 	 * @return true if request was successfully added
 	 */
 	public static boolean addTimeExtensionRequest(String args) {
@@ -657,6 +657,7 @@ public class Queries {
 		String teacherSSN = details[0];
 		String content = details[1];
 		String code = details[2];
+		int minutes = Integer.parseInt(details[3]);
 		Statement stmt1;
 		Statement stmt2;
 		ResultSet rs;
@@ -665,11 +666,11 @@ public class Queries {
 			stmt2 = conn.createStatement();
 			rs = stmt1.executeQuery("SELECT * FROM time_extension_requests WHERE testCode = '" + code + "'");
 			if (rs.next())
-				stmt2.executeUpdate("UPDATE time_extension_requests SET content = '" + content + "' WHERE testCode = '"
+				stmt2.executeUpdate("UPDATE time_extension_requests SET content = '" + content + "', minutes = " + minutes + " WHERE testCode = '"
 						+ code + "'");
 			else
 				stmt1.executeUpdate("INSERT INTO time_extension_requests VALUES ('" + teacherSSN + "', '" + content
-						+ "', '" + code + "');");
+						+ "', '" + code + "', " + minutes + ");");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
