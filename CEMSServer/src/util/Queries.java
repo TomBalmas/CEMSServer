@@ -1161,7 +1161,6 @@ public class Queries {
 		}
 		return true;
 	}
-	
 
 	/**
 	 * sets MYSQL to be able to use local files
@@ -1173,10 +1172,61 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			stmt.execute("SET GLOBAL local_infile = 1");
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * creates a student report
+	 * 
+	 * @param args - studentSSN,courses
+	 * @return report with student constructor
+	 */
+	public static Report createStudentReportBySSNAndCourses(String args) {
+		Pair<String, Integer> testAndGrade;
+		ArrayList<Pair<String, Integer>> testsAndGrades = new ArrayList<>();
+		Report report = null;
+		String[] details = args.split(",");
+		String studentSSN = details[0];
+		String[] courses = details[1].split("~");
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs;
+			for (String course : courses) {
+				rs = stmt.executeQuery("SELECT testId, grade FROM finished_tests WHERE studentSSN = '" + studentSSN
+						+ "' AND course = '" + course + "'");
+				while (rs.next()) {
+					testAndGrade = new Pair<String, Integer>(rs.getString("testId"), rs.getInt("grade"));
+					testsAndGrades.add(testAndGrade);
+				}
+			}
+			report = GeneralQueryMethods.createStudentReport(testsAndGrades);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return report;
+	}
+
+	/**
+	 * gets a test given its ID
+	 * 
+	 * @param testId
+	 * @return test
+	 */
+	public static Test getTestByTestId(String testId) {
+		Test test = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM tests WHERE testId = '" + testId + "'");
+			test = GeneralQueryMethods.createTest(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return test;
 	}
 }
