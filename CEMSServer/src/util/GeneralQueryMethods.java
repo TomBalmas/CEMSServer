@@ -3,6 +3,7 @@ package util;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import common.ActiveTest;
 import common.Course;
@@ -14,6 +15,7 @@ import common.Student;
 import common.Teacher;
 import common.Test;
 import common.TimeExtensionRequest;
+import javafx.util.Pair;
 
 public class GeneralQueryMethods {
 
@@ -171,5 +173,46 @@ public class GeneralQueryMethods {
 	public static Teacher createTeacher(ResultSet rs) throws SQLException {
 		return new Teacher(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"), rs.getString("email"),
 				rs.getString("username"), rs.getString("password"), rs.getString("fields"));
+	}
+
+	/**
+	 * creates a student report
+	 * 
+	 * @param testsAndGrades - array list of pairs of tests and grades
+	 * @return report with student constructor
+	 */
+	public static Report createStudentReport(ArrayList<Pair<String, Integer>> testsAndGrades) {
+		ArrayList<Integer> grades = new ArrayList<>();
+		Double median;
+		Double average;
+		for (Pair<String, Integer> testAndGrade : testsAndGrades)
+			grades.add(testAndGrade.getValue());
+		average = getAverage(grades);
+		median = getMedian(grades);
+		return new Report(testsAndGrades, average, median);
+	}
+
+	/**
+	 * gets the median of grades array list
+	 * 
+	 * @param grades - integer array list
+	 * @return median of the grades
+	 */
+	public static double getMedian(ArrayList<Integer> grades) {
+		Collections.sort(grades);
+		return grades.get(grades.size() / 2);
+	}
+
+	/**
+	 * gets the average of grades array list
+	 * 
+	 * @param grades - integer array list
+	 * @return average of the grades
+	 */
+	public static Double getAverage(ArrayList<Integer> grades) {
+		Double average = 0.0;
+		for (Integer grade : grades)
+			average += grade;
+		return average / grades.size();
 	}
 }
