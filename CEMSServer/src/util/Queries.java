@@ -1161,4 +1161,22 @@ public class Queries {
 		}
 		return true;
 	}
+	
+
+	/**
+	 * sets MYSQL to be able to use local files
+	 * 
+	 * @return true if the local files permission was set
+	 */
+	public static boolean setGlobalLocalInfile() {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.execute("SET GLOBAL local_infile = 1");
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 }
