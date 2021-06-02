@@ -1030,7 +1030,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM finished_tests ft, courses c  WHERE ft.studentSSN = '"
-					+ studentSSN + "', AND c.courseName = ft.course");
+					+ studentSSN + "' AND c.courseName = ft.course");
 			while (rs.next())
 				courses.add(GeneralQueryMethods.createCourse(rs));
 		} catch (SQLException e) {
@@ -1049,7 +1049,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE role = Teacher");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE role = 'Teacher'");
 			while (rs.next())
 				teachers.add(GeneralQueryMethods.createTeacher(rs));
 		} catch (SQLException e) {
