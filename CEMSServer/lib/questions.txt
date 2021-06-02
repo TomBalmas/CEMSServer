@@ -1,0 +1,13 @@
+01100	1+1=	205754773	Math	11	2	0	8	2
+01101	2*2=	205754773	Math	4	5	6	7	1
+01102	6/2=	205754773	Math	5	1	2	3	4
+01103	3^2=	205754773	Math	1	8	9	6	3
+01104	8*(2*2)=	205754773	Math	There is no correct answer	31	38	16	1
+01105	Complete the sentence: For every epsilon greater than 0...	205754773	Math	there exists a delta greater than 0	there exists a delta greater than 1	there isn't exist a delta greater than 0	there isn't exist a delta greater than 1	1
+01106	lim(x->0): sin(x)/x=	205754773	Math	-1	0	1	2	3
+02100	How can you print messege to screen?	205793524	OOP	printf	system out print	print	fprintf	2
+02101	What is the right way to define new private varible of type int?	205793524	OOP	new int var;	public int var;	protected int var;	private int var;	4
+02102	What is the right way to define new public class named myClass?	205793524	OOP	private class Myclass	protected class Myclass	public class Myclass	new class Myclass	3
+02103	Bonus:what group did the most beautiful project in java?	205793524	OOP	All answers correct	Group 1	Group 1	Group 1	1
+03100	Where is Israel located?	123456789	Science	Asia	Middle east	Europe	America	2
+04100	In the beginning God created the...	123456789	History	the sea	the animals	heavens and the earth	the light	3

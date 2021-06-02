@@ -54,6 +54,7 @@ public class ServerController {
 			throws SQLException, ClassNotFoundException {
 		DBConnector.getInstance(ip, schema, user, pass);
 		queries = new Queries(DBConnector.getConnection());
+		Queries.loadTxtFileIntoTable("questions,/lib/questions.txt");	//TODO path to library
 	}
 
 	/**

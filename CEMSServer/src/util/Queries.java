@@ -1098,7 +1098,7 @@ public class Queries {
 		}
 		return tests;
 	}
-	
+
 	/**
 	 * gets date of a test
 	 * 
@@ -1110,15 +1110,16 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT date FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+			ResultSet rs = stmt
+					.executeQuery("SELECT date FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
 			rs.next();
 			date = rs.getString("date");
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return date;
 	}
-	
+
 	/**
 	 * get schedulerId of a test
 	 * 
@@ -1130,12 +1131,34 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT scheduledByTeacher FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+			ResultSet rs = stmt.executeQuery(
+					"SELECT scheduledByTeacher FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
 			rs.next();
 			schedulerId = rs.getString("scheduledByTeacher");
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return schedulerId;
+	}
+
+	/**
+	 * loads text file into table
+	 * 
+	 * @param args - tableName,path example: questions,c:/folder/MYSQL/text_file.txt
+	 * @return true if the file was loaded
+	 */
+	public static boolean loadTxtFileIntoTable(String args) {
+		String[] details = args.split(",");
+		String tableName = details[0];
+		String path = details[1];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("LOAD DATA LOCAL INFILE '" + path + "' INTO TABLE " + tableName);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }
