@@ -843,7 +843,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt
-					.executeQuery("SELECT testId, course, title, grade FROM grades g, tests t WHERE g.ssn = '"
+					.executeQuery("SELECT g.testId, course, title, grade FROM grades g, tests t WHERE g.ssn = '"
 							+ studentSSN + "' AND g.testId = t.testId");
 			while (rs.next())
 				grades.add(GeneralQueryMethods.createStudentGrade(rs));
