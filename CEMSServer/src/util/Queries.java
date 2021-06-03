@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import common.ActiveTest;
 import common.Course;
@@ -273,7 +274,7 @@ public class Queries {
 			teacherInstructions = details[6];
 		String questions = details[7];
 		String field = details[8];
-		String testId = Queries.getAvailableId("tests,course,testId," + course);
+		String testId = Queries.getAvailableIdForTestOrQuestion("tests,course,testId," + course);
 		if (testId == null)
 			return null;
 		Statement stmt;
@@ -291,10 +292,11 @@ public class Queries {
 	/**
 	 * returns an available id
 	 * 
-	 * @param args - tableName,columnToCompare,iDColumn,argument
+	 * @param args - tableName,columnToCompare,iDColumn,argument argument is
+	 *             courseName or fieldName
 	 * @return - the available id as a string
 	 */
-	private static String getAvailableId(String args) {
+	private static String getAvailableIdForTestOrQuestion(String args) {
 		Integer lastId = null;
 		Integer currentId = null;
 		String[] details = args.split(",");
@@ -447,7 +449,7 @@ public class Queries {
 		String answer2 = details[5];
 		String answer3 = details[6];
 		String answer4 = details[7];
-		String questionId = Queries.getAvailableId("questions,field,questionId," + field);
+		String questionId = Queries.getAvailableIdForTestOrQuestion("questions,field,questionId," + field);
 		if (questionId == null)
 			return null;
 		try {
@@ -710,7 +712,7 @@ public class Queries {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM statistic_reports");
 			while (rs.next())
-				reports.add(GeneralQueryMethods.createReport(rs));
+				reports.add(GeneralQueryMethods.createTestReport(rs));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1090,7 +1092,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM tests t, finished_tests ft WHERE ft.scheduler = '"
-					+ teacherSSN + "', AND ft.testId = t.testId");
+					+ teacherSSN + "' AND ft.testId = t.testId");
 			while (rs.next())
 				tests.add(GeneralQueryMethods.createTest(rs));
 		} catch (SQLException e) {
@@ -1223,11 +1225,206 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM tests WHERE testId = '" + testId + "'");
-			test = GeneralQueryMethods.createTest(rs);
+			if (rs.next())
+				test = GeneralQueryMethods.createTest(rs);
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return null;
 		}
 		return test;
 	}
-	
+
+	/**
+	 * creates report of a teacher, includes all their scheduled tests
+	 * 
+	 * @param teacherSSN
+	 * @return report of all the teacher's tests
+	 */
+	public static Report createTeacherReportBySSN(String teacherSSN) {
+		ArrayList<Pair<String, Pair<Double, Double>>> testsAveragesMedians = new ArrayList<>();
+		Pair<Double, Double> averageMedian;
+		Pair<String, Pair<Double, Double>> testAverageMedian;
+		Report teacherReport = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT testId, average, median FROM teacher_statistics ts, statistic_reports sr WHERE teacherSSN = '"
+							+ teacherSSN + "' AND ts.reportId = sr.reportId");
+			while (rs.next()) {
+				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("meidan"));
+				testAverageMedian = new Pair<String, Pair<Double, Double>>(rs.getString("testId"), averageMedian);
+				testsAveragesMedians.add(testAverageMedian);
+			}
+			teacherReport = GeneralQueryMethods.createTeacherOrCourseReport(testsAveragesMedians);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return teacherReport;
+	}
+
+	/**
+	 * adds a test report to the all the report tables
+	 * 
+	 * @param testCode
+	 * @return reportId as string
+	 */
+	public static String addTestReport(String testCode) {
+		ArrayList<Integer> grades = new ArrayList<>();
+		Integer numberOfStudents = 0;
+		Double median;
+		Double average;
+		String reportId = null;
+		String testId = null;
+		String teacherSSN = null;
+		String courseName = null;
+		String courseId = null;
+		boolean initializeOnceFlag = true;
+		int F = 0; // 0-54.9
+		int DMinus = 0; // 55-64
+		int DPlus = 0; // 65 - 69
+		int CMinus = 0; // 70-74
+		int CPlus = 0; // 75-79
+		int BMinus = 0; // 80-84
+		int BPlus = 0; // 85-89
+		int AMinus = 0; // 90-94
+		int APlus = 0; // 95-100
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT testId, scheduledByTeacher, grades, course FROM scheduled_tests st, finished_tests ft WHERE st.date = ft.date AND st.beginTestCode = '"
+							+ testCode + "' AND st.starting_time = ft.starting_time AND st.testId = ft.testId");
+			while (rs.next()) {
+				grades.add(rs.getInt("grade"));
+				numberOfStudents += 1;
+				if (initializeOnceFlag) {
+					testId = rs.getString("testId");
+					teacherSSN = rs.getString("scheduledByTeacher");
+					courseName = rs.getString("course");
+					initializeOnceFlag = false;
+				}
+			}
+			average = GeneralQueryMethods.getAverage(grades);
+			median = GeneralQueryMethods.getMedian(grades);
+			reportId = Queries.getAvailableIdForReport();
+			Collections.sort(grades);
+			for (Integer grade : grades)
+				if (grade < 55)
+					F += 1;
+				else if (grade < 65)
+					DMinus += 1;
+				else if (grade < 70)
+					DPlus += 1;
+				else if (grade < 75)
+					CMinus += 1;
+				else if (grade < 80)
+					CPlus += 1;
+				else if (grade < 85)
+					BMinus += 1;
+				else if (grade < 90)
+					BPlus += 1;
+				else if (grade < 95)
+					AMinus += 1;
+				else
+					APlus += 1;
+			stmt.executeUpdate("INSERT INTO reports VALUES ('" + reportId + "', '" + testId + "', " + numberOfStudents
+					+ ", " + average + ", " + median + ", " + F + ", " + DMinus + ", " + DPlus + ", " + CMinus + ", "
+					+ CPlus + ", " + BMinus + ", " + BPlus + ", " + AMinus + ", " + APlus + ");");
+			stmt.executeUpdate("INSERT INTO teacher_statistics VALUES ('" + reportId + "', '" + teacherSSN + "'");
+			rs = stmt.executeQuery("SELECT courseId FROM courses WHERE courseName = '" + courseName + "'");
+			rs.next();
+			courseId = rs.getString("courseId");
+			stmt.executeUpdate("INSERT INTO course_statistics VALUES ('" + reportId + "', '" + courseId + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return reportId;
+	}
+
+	/**
+	 * gets the next available ID for a report in an ascending order
+	 * 
+	 * @return report ID as string
+	 * @throws SQLException
+	 */
+	private static String getAvailableIdForReport() throws SQLException {
+		Integer currentId;
+		Integer lastId;
+		Integer tempId;
+		stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT reportId FROM reports ORDER BY reportId");
+
+		// case of empty bank
+		if (!rs.next())
+			return "1";
+		// check if there is a lower id available
+		currentId = rs.getInt("reportId");
+		tempId = currentId - 1;
+		if (!tempId.equals(0))
+			return "1";
+		// check if there is a gap between id numbers
+		while (rs.next()) {
+			lastId = rs.getInt("reportId");
+			if (lastId - currentId != 1) {
+				currentId += 1;
+				rs.close();
+				return currentId.toString();
+			}
+			currentId = lastId;
+		}
+		// return highest id + 1;
+		currentId += 1;
+		return currentId.toString();
+	}
+
+	/**
+	 * gets all the reports of tests that their author is the teacher with the given
+	 * SSN
+	 * 
+	 * @param teacherSSN
+	 * @return report array list
+	 */
+	public static ArrayList<Report> getReportsByTeacherSSN(String teacherSSN) {
+		ArrayList<Report> reports = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM statistic_reports sr, tests t WHERE t.authorId = '"
+					+ teacherSSN + "' AND t.testId = sr.testId");
+			while (rs.next())
+				reports.add(GeneralQueryMethods.createTestReport(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return reports;
+	}
+
+	/**
+	 * creates report of a course
+	 * 
+	 * @param courseId
+	 * @return report of all the courses' tests
+	 */
+	public static Report createCourseReportById(String courseId) {
+		ArrayList<Pair<String, Pair<Double, Double>>> testsAveragesMedians = new ArrayList<>();
+		Pair<Double, Double> averageMedian;
+		Pair<String, Pair<Double, Double>> testAverageMedian;
+		Report courseReport = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM statistic_reports sr, course_statistics cs WHERE sr.reportId = cs.reportId");
+			while (rs.next()) {
+				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("meidan"));
+				testAverageMedian = new Pair<String, Pair<Double, Double>>(rs.getString("testId"), averageMedian);
+				testsAveragesMedians.add(testAverageMedian);
+			}
+			courseReport = GeneralQueryMethods.createTeacherOrCourseReport(testsAveragesMedians);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return courseReport;
+	}
 }
