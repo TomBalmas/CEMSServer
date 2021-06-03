@@ -15,6 +15,7 @@ import common.Question;
 import common.Report;
 import common.ScheduledTest;
 import common.Student;
+import common.StudentGrade;
 import common.Teacher;
 import common.Test;
 import common.TimeExtensionRequest;
@@ -836,14 +837,16 @@ public class Queries {
 	 * @param studentSSN
 	 * @return integer array list of grades
 	 */
-	public static ArrayList<Integer> getGradesBySSN(String studentSSN) {
-		ArrayList<Integer> grades = new ArrayList<>();
+	public static ArrayList<StudentGrade> getGradesBySSN(String studentSSN) {
+		ArrayList<StudentGrade> grades = new ArrayList<>();
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT grade FROM grades WHERE ssn = '" + studentSSN + "'");
+			ResultSet rs = stmt
+					.executeQuery("SELECT testId, course, title, grade FROM grades g, tests t WHERE g.ssn = '"
+							+ studentSSN + "' AND g.testId = t.testId");
 			while (rs.next())
-				grades.add(rs.getInt("grade"));
+				grades.add(GeneralQueryMethods.createStudentGrade(rs));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

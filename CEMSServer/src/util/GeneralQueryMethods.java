@@ -12,6 +12,7 @@ import common.Question;
 import common.Report;
 import common.ScheduledTest;
 import common.Student;
+import common.StudentGrade;
 import common.Teacher;
 import common.Test;
 import common.TimeExtensionRequest;
@@ -215,28 +216,30 @@ public class GeneralQueryMethods {
 			average += grade;
 		return average / grades.size();
 	}
-	
+
 	/**
 	 * creates a teacher report
 	 * 
-	 * @param testsAveragesMedians - array list of pairs of tests and pairs of averages and medians
+	 * @param testsAveragesMedians - array list of pairs of tests and pairs of
+	 *                             averages and medians
 	 * @return report with teacher constructor
 	 */
-	public static Report createTeacherOrCourseReport(ArrayList<Pair<String, Pair<Double, Double>>> testsAveragesMedians) {
-		ArrayList<Pair<Double,Double>> averagesMedians = new ArrayList<>();
+	public static Report createTeacherOrCourseReport(
+			ArrayList<Pair<String, Pair<Double, Double>>> testsAveragesMedians) {
+		ArrayList<Pair<Double, Double>> averagesMedians = new ArrayList<>();
 		ArrayList<Double> averages = new ArrayList<>();
 		ArrayList<Double> medians = new ArrayList<>();
 		Double average = null;
 		Double median = null;
-		for(Pair<String, Pair<Double, Double>> testAverageMedian : testsAveragesMedians)
+		for (Pair<String, Pair<Double, Double>> testAverageMedian : testsAveragesMedians)
 			averagesMedians.add(testAverageMedian.getValue());
-		for(Pair<Double,Double> averageMedian : averagesMedians) {
+		for (Pair<Double, Double> averageMedian : averagesMedians) {
 			averages.add(averageMedian.getKey());
 			medians.add(averageMedian.getValue());
 		}
 		return new Report(average, median, testsAveragesMedians);
 	}
-	
+
 	/**
 	 * gets the median of medians array list
 	 * 
@@ -245,9 +248,9 @@ public class GeneralQueryMethods {
 	 */
 	public static double getMedianOfMedians(ArrayList<Double> medians) {
 		Collections.sort(medians);
-		return medians.get(medians.size()/2);
+		return medians.get(medians.size() / 2);
 	}
-	
+
 	/**
 	 * gets the average of averages array list
 	 * 
@@ -256,8 +259,20 @@ public class GeneralQueryMethods {
 	 */
 	public static Double getAverageOfAverages(ArrayList<Double> averages) {
 		Double averageOfAverages = 0.0;
-		for(Double average : averages)
+		for (Double average : averages)
 			averageOfAverages += average;
-		return averageOfAverages/averages.size();
+		return averageOfAverages / averages.size();
+	}
+
+	/**
+	 * creates student's grade information
+	 * 
+	 * @param rs - result set that has all the arguments for student grade constructor
+	 * @return student grade
+	 * @throws SQLException
+	 */
+	public static StudentGrade createStudentGrade(ResultSet rs) throws SQLException {
+		return new StudentGrade(rs.getString("testId"), rs.getString("course"), rs.getString("title"),
+				rs.getInt("grade"));
 	}
 }
