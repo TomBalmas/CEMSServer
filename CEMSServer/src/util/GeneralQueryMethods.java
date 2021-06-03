@@ -133,7 +133,7 @@ public class GeneralQueryMethods {
 	 * @return new report
 	 * @throws SQLException
 	 */
-	public static Report createReport(ResultSet rs) throws SQLException {
+	public static Report createTestReport(ResultSet rs) throws SQLException {
 		return new Report(rs.getString("reportId"), rs.getString("testId"), rs.getInt("numOfStudents"),
 				rs.getDouble("average"), rs.getDouble("median"), rs.getInt("0-54.9"), rs.getInt("55-64"),
 				rs.getInt("65-69"), rs.getInt("70-74"), rs.getInt("75-79"), rs.getInt("80-84"), rs.getInt("85-89"),
@@ -183,8 +183,8 @@ public class GeneralQueryMethods {
 	 */
 	public static Report createStudentReport(ArrayList<Pair<String, Integer>> testsAndGrades) {
 		ArrayList<Integer> grades = new ArrayList<>();
-		Double median;
 		Double average;
+		Double median;
 		for (Pair<String, Integer> testAndGrade : testsAndGrades)
 			grades.add(testAndGrade.getValue());
 		average = getAverage(grades);
@@ -196,7 +196,7 @@ public class GeneralQueryMethods {
 	 * gets the median of grades array list
 	 * 
 	 * @param grades - integer array list
-	 * @return median of the grades
+	 * @return median of the grades as double
 	 */
 	public static double getMedian(ArrayList<Integer> grades) {
 		Collections.sort(grades);
@@ -207,12 +207,57 @@ public class GeneralQueryMethods {
 	 * gets the average of grades array list
 	 * 
 	 * @param grades - integer array list
-	 * @return average of the grades
+	 * @return average of the grades as double
 	 */
 	public static Double getAverage(ArrayList<Integer> grades) {
 		Double average = 0.0;
 		for (Integer grade : grades)
 			average += grade;
 		return average / grades.size();
+	}
+	
+	/**
+	 * creates a teacher report
+	 * 
+	 * @param testsAveragesMedians - array list of pairs of tests and pairs of averages and medians
+	 * @return report with teacher constructor
+	 */
+	public static Report createTeacherOrCourseReport(ArrayList<Pair<String, Pair<Double, Double>>> testsAveragesMedians) {
+		ArrayList<Pair<Double,Double>> averagesMedians = new ArrayList<>();
+		ArrayList<Double> averages = new ArrayList<>();
+		ArrayList<Double> medians = new ArrayList<>();
+		Double average = null;
+		Double median = null;
+		for(Pair<String, Pair<Double, Double>> testAverageMedian : testsAveragesMedians)
+			averagesMedians.add(testAverageMedian.getValue());
+		for(Pair<Double,Double> averageMedian : averagesMedians) {
+			averages.add(averageMedian.getKey());
+			medians.add(averageMedian.getValue());
+		}
+		return new Report(average, median, testsAveragesMedians);
+	}
+	
+	/**
+	 * gets the median of medians array list
+	 * 
+	 * @param medians - double array list
+	 * @return median of the medians as double
+	 */
+	public static double getMedianOfMedians(ArrayList<Double> medians) {
+		Collections.sort(medians);
+		return medians.get(medians.size()/2);
+	}
+	
+	/**
+	 * gets the average of averages array list
+	 * 
+	 * @param averages - double array list
+	 * @return average of the averages as double
+	 */
+	public static Double getAverageOfAverages(ArrayList<Double> averages) {
+		Double averageOfAverages = 0.0;
+		for(Double average : averages)
+			averageOfAverages += average;
+		return averageOfAverages/averages.size();
 	}
 }
