@@ -835,7 +835,7 @@ public class Queries {
 	 * gets the grades that belong to the given SSN
 	 * 
 	 * @param studentSSN
-	 * @return integer array list of grades
+	 * @return student grade array list
 	 */
 	public static ArrayList<StudentGrade> getGradesBySSN(String studentSSN) {
 		ArrayList<StudentGrade> grades = new ArrayList<>();
