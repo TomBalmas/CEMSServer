@@ -1187,7 +1187,7 @@ public class Queries {
 	/**
 	 * creates a student report
 	 * 
-	 * @param args - studentSSN,courses
+	 * @param args - studentSSN,courses example: 483285796,Java~Hedva
 	 * @return report with student constructor
 	 */
 	public static Report createStudentReportBySSNAndCourses(String args) {
