@@ -311,6 +311,9 @@ public class CEMSServer extends ObservableServer {
 			case "CREATE_COURSE_REPORT":
 				client.sendToClient(Queries.createCourseReportById(args)); // sends Report
 				break;
+			case "GET_SCHEDULED_TEST_BY_CODE":
+				client.sendToClient(Queries.getScheduledTestByCode(args));	//sends ScheduledTest
+				break;
 			default:
 				break;
 			}

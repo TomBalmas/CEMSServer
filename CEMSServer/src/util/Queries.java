@@ -1438,6 +1438,12 @@ public class Queries {
 		return courseReport;
 	}
 
+	/**
+	 * gets a scheduled test by its code
+	 * 
+	 * @param testCode
+	 * @return scheduled test
+	 */
 	public static ScheduledTest getScheduledTestByCode(String testCode) {
 		ScheduledTest scheduledTest = null;
 		Statement stmt;
