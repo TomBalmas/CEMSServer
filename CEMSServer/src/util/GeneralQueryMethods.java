@@ -263,6 +263,8 @@ public class GeneralQueryMethods {
 		Double averageOfAverages = 0.0;
 		for (Double average : averages)
 			averageOfAverages += average;
+		if (averages.size() == 0)
+			return 0.0;
 		return averageOfAverages / averages.size();
 	}
 
