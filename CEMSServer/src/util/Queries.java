@@ -1452,7 +1452,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests st, tests t WHERE beginTestCode = '" + testCode + "' AND t.testId = st.testId");
 			rs.next();
 			scheduledTest = GeneralQueryMethods.createScheduledTest(rs);
 		} catch (SQLException e) {
