@@ -1257,8 +1257,8 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM teacher_statistics ts, statistic_reports sr WHERE teacherSSN = '"
+			ResultSet rs = stmt
+					.executeQuery("SELECT * FROM teacher_statistics ts, statistic_reports sr WHERE teacherSSN = '"
 							+ teacherSSN + "' AND ts.reportId = sr.reportId");
 			while (rs.next()) {
 				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("median"));
@@ -1424,7 +1424,8 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM statistic_reports sr, course_statistics cs WHERE sr.reportId = cs.reportId");
+					"SELECT * FROM statistic_reports sr, course_statistics cs WHERE sr.reportId = cs.reportId AND cs.courseId = '"
+							+ courseId + "'");
 			while (rs.next()) {
 				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("median"));
 				testAverageMedian = new Pair<String, Pair<Double, Double>>(rs.getString("testId"), averageMedian);
