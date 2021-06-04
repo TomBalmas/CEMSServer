@@ -1437,4 +1437,17 @@ public class Queries {
 		}
 		return courseReport;
 	}
+
+	public static ScheduledTest getScheduledTestByCode(String testCode) {
+		ScheduledTest scheduledTest = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+			scheduledTest = GeneralQueryMethods.createScheduledTest(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return scheduledTest;
+	}
 }
