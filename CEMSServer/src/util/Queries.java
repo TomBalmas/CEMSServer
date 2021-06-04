@@ -1426,12 +1426,14 @@ public class Queries {
 			ResultSet rs = stmt.executeQuery(
 					"SELECT * FROM statistic_reports sr, course_statistics cs WHERE sr.reportId = cs.reportId AND cs.courseId = '"
 							+ courseId + "'");
-			while (rs.next()) {
-				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("median"));
-				testAverageMedian = new Pair<String, Pair<Double, Double>>(rs.getString("testId"), averageMedian);
-				testsAveragesMedians.add(testAverageMedian);
+			if (rs.next()) {
+				do {
+					averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("median"));
+					testAverageMedian = new Pair<String, Pair<Double, Double>>(rs.getString("testId"), averageMedian);
+					testsAveragesMedians.add(testAverageMedian);
+				} while (rs.next());
+				courseReport = GeneralQueryMethods.createTeacherOrCourseReport(testsAveragesMedians);
 			}
-			courseReport = GeneralQueryMethods.createTeacherOrCourseReport(testsAveragesMedians);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
