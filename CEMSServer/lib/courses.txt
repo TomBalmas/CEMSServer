@@ -1,0 +1,5 @@
+01	Algebra	Math
+02	Java	OOP
+03	Hedva	Math
+04	Geography	Science
+05	Bible	History
