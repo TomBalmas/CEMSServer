@@ -1046,7 +1046,6 @@ public class Queries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println(courses.toString());
 		return courses;
 	}
 
@@ -1259,10 +1258,10 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT testId, average, median FROM teacher_statistics ts, statistic_reports sr WHERE teacherSSN = '"
+					"SELECT * FROM teacher_statistics ts, statistic_reports sr WHERE teacherSSN = '"
 							+ teacherSSN + "' AND ts.reportId = sr.reportId");
 			while (rs.next()) {
-				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("meidan"));
+				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("median"));
 				testAverageMedian = new Pair<String, Pair<Double, Double>>(rs.getString("testId"), averageMedian);
 				testsAveragesMedians.add(testAverageMedian);
 			}
