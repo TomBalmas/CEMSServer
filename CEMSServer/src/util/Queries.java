@@ -1204,10 +1204,11 @@ public class Queries {
 			for (String course : courses) {
 				rs = stmt.executeQuery("SELECT testId, grade FROM finished_tests WHERE studentSSN = '" + studentSSN
 						+ "' AND course = '" + course + "'");
-				while (rs.next()) {
-					testAndGrade = new Pair<String, Integer>(rs.getString("testId"), rs.getInt("grade"));
-					testsAndGrades.add(testAndGrade);
-				}
+				if (rs.next())
+					do {
+						testAndGrade = new Pair<String, Integer>(rs.getString("testId"), rs.getInt("grade"));
+						testsAndGrades.add(testAndGrade);
+					} while (rs.next());
 			}
 			report = GeneralQueryMethods.createStudentReport(testsAndGrades);
 		} catch (SQLException e) {
@@ -1215,7 +1216,6 @@ public class Queries {
 		}
 		return report;
 	}
-
 	/**
 	 * gets a test given its ID
 	 * 
