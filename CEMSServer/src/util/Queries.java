@@ -845,8 +845,10 @@ public class Queries {
 			ResultSet rs = stmt
 					.executeQuery("SELECT g.testId, course, title, grade FROM grades g, tests t WHERE g.ssn = '"
 							+ studentSSN + "' AND g.testId = t.testId");
-			while (rs.next())
-				grades.add(GeneralQueryMethods.createStudentGrade(rs));
+			if (rs.next())
+				do {
+					grades.add(GeneralQueryMethods.createStudentGrade(rs));
+				} while (rs.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1036,8 +1038,10 @@ public class Queries {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM finished_tests ft, courses c  WHERE ft.studentSSN = '"
 					+ studentSSN + "' AND c.courseName = ft.course");
-			while (rs.next())
-				courses.add(GeneralQueryMethods.createCourse(rs));
+			if (rs.next())
+				do {
+					courses.add(GeneralQueryMethods.createCourse(rs));
+				} while (rs.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1216,6 +1220,7 @@ public class Queries {
 		}
 		return report;
 	}
+
 	/**
 	 * gets a test given its ID
 	 * 
