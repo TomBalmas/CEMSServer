@@ -852,6 +852,7 @@ public class Queries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		System.out.println(grades.toString());
 		return grades;
 	}
 
@@ -1045,6 +1046,7 @@ public class Queries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		System.out.println(courses.toString());
 		return courses;
 	}
 
