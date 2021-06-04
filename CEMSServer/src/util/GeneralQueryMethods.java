@@ -237,6 +237,8 @@ public class GeneralQueryMethods {
 			averages.add(averageMedian.getKey());
 			medians.add(averageMedian.getValue());
 		}
+		average = getAverageOfAverages(averages);
+		median = getMedianOfMedians(medians);
 		return new Report(average, median, testsAveragesMedians);
 	}
 
@@ -267,7 +269,8 @@ public class GeneralQueryMethods {
 	/**
 	 * creates student's grade information
 	 * 
-	 * @param rs - result set that has all the arguments for student grade constructor
+	 * @param rs - result set that has all the arguments for student grade
+	 *           constructor
 	 * @return student grade
 	 * @throws SQLException
 	 */
