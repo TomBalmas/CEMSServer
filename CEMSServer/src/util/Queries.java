@@ -1215,6 +1215,8 @@ public class Queries {
 						testsAndGrades.add(testAndGrade);
 					} while (rs.next());
 			}
+			if (testsAndGrades.isEmpty())
+				return new Report();
 			report = GeneralQueryMethods.createStudentReport(testsAndGrades);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1433,7 +1435,7 @@ public class Queries {
 					testsAveragesMedians.add(testAverageMedian);
 				} while (rs.next());
 				courseReport = GeneralQueryMethods.createTeacherOrCourseReport(testsAveragesMedians);
-			}else
+			} else
 				courseReport = new Report();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1452,7 +1454,8 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests st, tests t WHERE beginTestCode = '" + testCode + "' AND t.testId = st.testId");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests st, tests t WHERE beginTestCode = '"
+					+ testCode + "' AND t.testId = st.testId");
 			rs.next();
 			scheduledTest = GeneralQueryMethods.createScheduledTest(rs);
 		} catch (SQLException e) {
