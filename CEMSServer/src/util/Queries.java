@@ -1433,7 +1433,8 @@ public class Queries {
 					testsAveragesMedians.add(testAverageMedian);
 				} while (rs.next());
 				courseReport = GeneralQueryMethods.createTeacherOrCourseReport(testsAveragesMedians);
-			}
+			}else
+				courseReport = new Report();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
