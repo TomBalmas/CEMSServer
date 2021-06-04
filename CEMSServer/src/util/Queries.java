@@ -1426,7 +1426,7 @@ public class Queries {
 			ResultSet rs = stmt.executeQuery(
 					"SELECT * FROM statistic_reports sr, course_statistics cs WHERE sr.reportId = cs.reportId");
 			while (rs.next()) {
-				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("meidan"));
+				averageMedian = new Pair<Double, Double>(rs.getDouble("average"), rs.getDouble("median"));
 				testAverageMedian = new Pair<String, Pair<Double, Double>>(rs.getString("testId"), averageMedian);
 				testsAveragesMedians.add(testAverageMedian);
 			}
