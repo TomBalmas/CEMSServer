@@ -55,7 +55,9 @@ public class ServerController {
 		DBConnector.getInstance(ip, schema, user, pass);
 		queries = new Queries(DBConnector.getConnection());
 		Queries.setGlobalLocalInfile();
-		Queries.loadTxtFileIntoTable("questions,lib/questions.txt");
+		Queries.loadTxtFileIntoTable("users,lib/users.txt");
+		Queries.loadTxtFileIntoTable("fields,lib/fields.txt");
+		Queries.loadTxtFileIntoTable("courses,lib/courses.txt");
 	}
 
 	/**

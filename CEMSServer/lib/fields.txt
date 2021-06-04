@@ -1,0 +1,4 @@
+01	Math	Algebra~Hedva
+02	OOP	Java
+03	Science	Geography
+04	History	Bible

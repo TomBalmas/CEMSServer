@@ -1,0 +1,9 @@
+111111111	Principle	Principle	Principle@Principle.com	p	1234	Principle	NULL
+123456789	Teacher	Teacher	Teacher@Teacher.com	t	1234	Teacher	Math~OOP~Science~History
+205719867	Tom	Balmas	tombalmas12@gmail.com	tom	1234	Student	NULL
+205751712	Daniel	Ben-David	danielbd2408@gmail.com	daniel	1234	Student	NULL
+205754773	Vered	Mazor	veredm582@gmail.com	vered	1234	Teacher	Math~OOP
+205793524	Ohad	Lavi	ulalavi@gmail.com	ohad	fxml	Teacher	OOP
+205908437	Iris	Grabois	irisgrabois@gmail.com	iris	4321	Student	NULL
+311155576	Tal	Amar	f914gt29ra12@gmail.com	tal	4321	Principle	NULL
+987654321	Student	Student	Student@Student.com	s	1234	Student	NULL
