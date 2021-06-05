@@ -1267,6 +1267,8 @@ public class Queries {
 				testAverageMedian = new Pair<String, Pair<Double, Double>>(rs.getString("testId"), averageMedian);
 				testsAveragesMedians.add(testAverageMedian);
 			}
+			if (testsAveragesMedians.isEmpty())
+				return new Report();
 			teacherReport = GeneralQueryMethods.createTeacherOrCourseReport(testsAveragesMedians);
 		} catch (SQLException e) {
 			e.printStackTrace();
