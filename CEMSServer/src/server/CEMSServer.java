@@ -224,7 +224,7 @@ public class CEMSServer extends ObservableServer {
 				for (ClientIdentifier c : connectedClients) {
 					if (c.getClientType().equals("Teacher"))
 						if (c.getClientID().equals(args))
-							c.getClientConnection().sendToClient("notify"); // sends String
+							c.getClientConnection().sendToClient("notify teacher"); // sends String
 					break;
 				}
 				client.sendToClient("teacherNotified"); // sends String
@@ -233,7 +233,7 @@ public class CEMSServer extends ObservableServer {
 			case "NOTIFY_PRINCIPLE":
 				for (ClientIdentifier c : connectedClients)
 					if (c.getClientType().equals("Principle")) {
-						c.getClientConnection().sendToClient("notify"); // sends String
+						c.getClientConnection().sendToClient("notify principle"); // sends String
 						break;
 					}
 				client.sendToClient("principleNotified"); // sends String
@@ -248,7 +248,7 @@ public class CEMSServer extends ObservableServer {
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
-							c.getClientConnection().sendToClient("notify"); // sends string
+							c.getClientConnection().sendToClient("notify student"); // sends string
 							break;
 						}
 				client.sendToClient("studentsNotifies"); // sends String

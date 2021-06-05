@@ -1465,4 +1465,29 @@ public class Queries {
 		}
 		return scheduledTest;
 	}
+
+	/**
+	 * gets all the students that are currently in a test, given the test's code
+	 * 
+	 * @param testCode
+	 * @return array list of students
+	 */
+	public static ArrayList<Student> getStudentSSNByTestCode(String testCode) {
+		ArrayList<Student> students = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT studentSSN FROM students_in_test WHERE testCode = '" + testCode + "'");
+			if (rs.next())
+				do {
+					students.add(GeneralQueryMethods.createStudent(rs));
+				} while (rs.next());
+			else
+				students.add(new Student());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return students;
+	}
 }
