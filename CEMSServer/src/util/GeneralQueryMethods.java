@@ -280,4 +280,39 @@ public class GeneralQueryMethods {
 		return new StudentGrade(rs.getString("testId"), rs.getString("course"), rs.getString("title"),
 				rs.getInt("grade"));
 	}
+
+	/**
+	 * checks if argument time is between given start and finish times
+	 * 
+	 * @param startingTime - String 00:00
+	 * @param finishTime   - String 00:00
+	 * @param argumentTime - String 00:00
+	 * @return true if the argument is between the given times
+	 */
+	public static boolean isArgTimeBetweenStartAndFinishTimes(String startingTime, String finishTime,
+			String argumentTime) {
+		String[] details;
+		int startHours;
+		int startMinutes;
+		int finishHours;
+		int finishMinutes;
+		int argumentHours;
+		int argumentMinutes;
+		details = startingTime.split(":");
+		startHours = Integer.parseInt(details[0]);
+		startMinutes = Integer.parseInt(details[1]);
+		details = finishTime.split(":");
+		finishHours = Integer.parseInt(details[0]);
+		finishMinutes = Integer.parseInt(details[1]);
+		details = argumentTime.split(":");
+		argumentHours = Integer.parseInt(details[0]);
+		argumentMinutes = Integer.parseInt(details[1]);
+		if (argumentHours < startHours || argumentHours > finishHours)
+			return false;
+		else if (argumentHours == finishHours && argumentMinutes >= finishMinutes)
+			return false;
+		else if (argumentHours == startHours && argumentMinutes < startMinutes)
+			return false;
+		return true;
+	}
 }
