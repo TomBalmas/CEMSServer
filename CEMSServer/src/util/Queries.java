@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -867,7 +868,7 @@ public class Queries {
 		String[] details = args.split(",");
 		String studentSSN = details[0];
 		String testId = details[1];
-		String answers = details[3];
+		String answers = details[2];
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
@@ -977,7 +978,7 @@ public class Queries {
 	 * adds a finished test to the finished_tests table
 	 * 
 	 * @param args -
-	 *             studentSSN,testId,code,startingTime,timeTaken,presentationMethod,title,course,status
+	 *             studentSSN,testId,code,timeTaken,presentationMethod,title,course,status
 	 * @return true if the finished test was added to the finished_tests table
 	 */
 	public static boolean addFinishedTest(String args) {
@@ -985,13 +986,13 @@ public class Queries {
 		String studentSSN = details[0];
 		String testId = details[1];
 		String code = details[2];
-		String startingTime = details[3];
-		int timeTaken = Integer.parseInt(details[4]);
-		String presentationMethod = details[5];
-		String title = details[6];
-		String course = details[7];
+		String presentationMethod = details[4];
+		String title = details[5];
+		String course = details[6];
+		String status = details[7];
+		String startingTime = Queries.getStartingTimeByTestCode(code);
+		int timeTaken = Integer.parseInt(details[3]);
 		int grade = Queries.calculateStudentGrade(testId, studentSSN);
-		String status = details[8];
 		String date = Queries.getDateByCode(code);
 		String scheduler = Queries.getSchedulerIdByCode(code);
 		Statement stmt;
@@ -1491,6 +1492,12 @@ public class Queries {
 		return students;
 	}
 
+	/**
+	 * gets a specific time extension request using the test's code
+	 * 
+	 * @param testCode
+	 * @return time extension request
+	 */
 	public static TimeExtensionRequest getTimeExtensionRequestByTestCode(String testCode) {
 		TimeExtensionRequest request = null;
 		Statement stmt;
@@ -1506,5 +1513,128 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return request;
+	}
+
+	/**
+	 * gets the starting time of a test given its code
+	 * 
+	 * @param testCode
+	 * @return starting time string
+	 */
+	private static String getStartingTimeByTestCode(String testCode) {
+		String startingTime = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT startingTime FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
+			if (rs.next())
+				startingTime = rs.getString("startingTime");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return startingTime;
+	}
+
+	/**
+	 * adds a student in test to the DB
+	 * 
+	 * @param args - studentSSN,testCode
+	 * @return true if the student was added
+	 */
+	public static boolean addStudentInTest(String args) {
+		String[] details = args.split(",");
+		String studentSSN = details[0];
+		String testCode = details[1];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("INSERT INTO students_in_test VALUES ('" + studentSSN + "', '" + testCode + "');");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * deletes a student from the students_in_test table using studentSSN
+	 * 
+	 * @param studentSSN
+	 * @return true if the student was deleted
+	 */
+	public static boolean deleteStudentInTest(String studentSSN) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("DELETE FROM students_in_test WHERE studentSSN = '" + studentSSN + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * checks if a test is currently active
+	 * 
+	 * @param testCode
+	 * @return true if the test is active
+	 */
+	public static boolean isActiveTest(String testCode) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM active_tests WHERE beginTestCode = '" + testCode + "'");
+			if (rs.next())
+				return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * checks if the scheduled test needs to be active if it needs to be active,
+	 * inserts it into the active_tests table
+	 * 
+	 * @param args - localDate,localTime,testCode example: 03/08/2021,09:30,Xf82 all
+	 *             Strings
+	 * @return true if the test needs to be active
+	 */
+	public static boolean isTimeForTest(String args) {
+		String[] details = args.split(",");
+		String localDate = details[0];
+		String localTime = details[1];
+		String testCode = details[2];
+		String finishTime;
+		Statement stmt1;
+		Statement stmt2;
+		try {
+			stmt1 = conn.createStatement();
+			stmt2 = conn.createStatement();
+			ResultSet rs1 = stmt1.executeQuery("SELECT * FROM scheduled_tests WHERE date = '" + localDate
+					+ "' AND beginTestCode = '" + testCode + "'");
+			if (!rs1.next())
+				return false;
+			finishTime = GeneralQueryMethods.calculateFinishTime(rs1.getString("startingTime"), rs1.getInt("duration"));
+			if (GeneralQueryMethods.isArgTimeBetweenStartAndFinishTimes(rs1.getString("startingTime"), finishTime,
+					localTime)) {
+				ResultSet rs2 = stmt2.executeQuery("SELECT * FROM active_tests at, tests t WHERE at.beginTestCode = '"
+						+ testCode + "' AND t.testId = at.testId");
+				if (rs2.next())
+					return true;
+				else {
+					stmt2.executeUpdate("INSERT INTO active_tests VALUES ('" + rs1.getString("testId") + "', '"
+							+ Queries.getAuthorNameByTestId(rs1.getString("testId")) + "', '" + rs2.getString("title")
+							+ "', '" + rs2.getString("course") + "', '" + rs2.getString("field") + "', '"
+							+ rs1.getString("startingTime") + "', '" + rs1.getString("beginTestCode") + ");");
+					return true;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

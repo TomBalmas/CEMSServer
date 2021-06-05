@@ -324,6 +324,21 @@ public class CEMSServer extends ObservableServer {
 			case "GET_TIME_EXTENSION_REQUEST_BY_CODE":
 				client.sendToClient(Queries.getTimeExtensionRequestByTestCode(args)); // sends TimeExtensionRequest
 				break;
+			case "ADD_STUDENT_IN_TEST":
+				client.sendToClient(Queries.addStudentInTest(args) ? "studentAdded" : "studentNotAdded"); // sends
+																											// String
+				break;
+			case "REMOVE_STUDENT_FROM_TEST":
+				client.sendToClient(
+						Queries.deleteStudentInTest(args) ? "studentRemovedFromTest" : "studentNotRemovedFromTest"); // sends
+																														// String
+				break;
+			case "IS_TEST_ACTIVE":
+				client.sendToClient(Queries.isActiveTest(args) ? "testActive" : "testNotActive"); // sends String
+				break;
+			case "IS_TIME_FOR_TEST":
+				client.sendToClient(Queries.isTimeForTest(args) ? "timeForTest" : "notTimeForTest"); // sends String
+				break;
 			default:
 				break;
 			}
