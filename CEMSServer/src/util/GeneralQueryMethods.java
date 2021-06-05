@@ -92,6 +92,15 @@ public class GeneralQueryMethods {
 				rs.getInt("duration"), rs.getString("scheduledByTeacher"), rs.getString("beginTestCode"));
 	}
 
+	/**
+	 * 
+	 * creates time extension request
+	 * 
+	 * @param rs - result set that has all the arguments for time extension request
+	 *           constructor
+	 * @return new time extension request
+	 * @throws SQLException
+	 */
 	public static TimeExtensionRequest createTimeExtensionRequest(ResultSet rs) throws SQLException {
 		return new TimeExtensionRequest(rs.getString("teacherSSN"), rs.getString("content"), rs.getString("testCode"),
 				rs.getInt("minutes"));
