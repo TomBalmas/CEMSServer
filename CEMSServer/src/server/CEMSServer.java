@@ -328,7 +328,7 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.addStudentInTest(args) ? "studentAdded" : "studentNotAdded"); // sends
 																											// String
 				break;
-			case "REMOVE_STUDENT_FROM_TEST":
+			case "DELETE_STUDENT_FROM_TEST":
 				client.sendToClient(
 						Queries.deleteStudentInTest(args) ? "studentRemovedFromTest" : "studentNotRemovedFromTest"); // sends
 																														// String
