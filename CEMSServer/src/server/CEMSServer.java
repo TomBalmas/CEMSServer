@@ -125,11 +125,12 @@ public class CEMSServer extends ObservableServer {
 			String[] str = ((String) msg).split("-");
 			String cases = str[0];
 			String args = null;
+			String[] details;
 			if (str.length > 1)
 				args = str[1];
 			switch (cases) {
 			case "LOGIN":
-				String[] details = args.split(","); // details[0] = user name, details[1] = password
+				details = args.split(","); // details[0] = user name, details[1] = password
 				User user = Queries.getUser(details[0], details[1]);
 				if (user != null) {
 					for (ClientIdentifier c : connectedClients)
@@ -221,10 +222,13 @@ public class CEMSServer extends ObservableServer {
 				break;
 			// notifies a teacher
 			case "NOTIFY_TEACHER_BY_SSN":
+				details = args.split(",");
+				String status = details[0]; // approved or disapproved
+				String teacherSSN = details[1];
 				for (ClientIdentifier c : connectedClients) {
 					if (c.getClientType().equals("Teacher"))
-						if (c.getClientID().equals(args))
-							c.getClientConnection().sendToClient("notify teacher"); // sends String
+						if (c.getClientID().equals(teacherSSN))
+							c.getClientConnection().sendToClient("notifyTeacher:" + status); // sends String
 					break;
 				}
 				client.sendToClient("teacherNotified"); // sends String
@@ -233,7 +237,7 @@ public class CEMSServer extends ObservableServer {
 			case "NOTIFY_PRINCIPLE":
 				for (ClientIdentifier c : connectedClients)
 					if (c.getClientType().equals("Principle")) {
-						c.getClientConnection().sendToClient("notify principle"); // sends String
+						c.getClientConnection().sendToClient("notifyPrinciple"); // sends String
 						break;
 					}
 				client.sendToClient("principleNotified"); // sends String
@@ -248,7 +252,7 @@ public class CEMSServer extends ObservableServer {
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
-							c.getClientConnection().sendToClient("notify student"); // sends string
+							c.getClientConnection().sendToClient("notifyStudent"); // sends string
 							break;
 						}
 				client.sendToClient("studentsNotifies"); // sends String
@@ -317,10 +321,13 @@ public class CEMSServer extends ObservableServer {
 			case "GET_STUDENTS_IN_TEST_BY_CODE":
 				client.sendToClient(Queries.getStudentSSNByTestCode(args)); // sends ArrayList<Student>
 				break;
+			case "GET_TIME_EXTENSION_REQUEST_BY_CODE":
+				client.sendToClient(Queries.getTimeExtensionRequestByTestCode(args)); // sends TimeExtensionRequest
+				break;
 			default:
 				break;
 			}
-			 
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

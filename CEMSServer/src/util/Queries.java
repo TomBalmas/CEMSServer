@@ -1490,4 +1490,21 @@ public class Queries {
 		}
 		return students;
 	}
+
+	public static TimeExtensionRequest getTimeExtensionRequestByTestCode(String testCode) {
+		TimeExtensionRequest request = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT * FROM time_extension_requests WHERE testCode = '" + testCode + "'");
+			if (rs.next())
+				request = GeneralQueryMethods.createTimeExtensionRequest(rs);
+			else
+				request = new TimeExtensionRequest();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return request;
+	}
 }
