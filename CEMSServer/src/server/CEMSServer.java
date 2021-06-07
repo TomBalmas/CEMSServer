@@ -339,6 +339,9 @@ public class CEMSServer extends ObservableServer {
 			case "IS_TIME_FOR_TEST":
 				client.sendToClient(Queries.isTimeForTest(args) ? "timeForTest" : "notTimeForTest"); // sends String
 				break;
+			case "GET_COURSE_BY_TEST_ID":
+				client.sendToClient(Queries.getCourseByTestId(args)); // sends Course
+				break;
 			default:
 				break;
 			}
