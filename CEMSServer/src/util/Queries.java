@@ -1804,18 +1804,21 @@ public class Queries {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt
 					.executeQuery("SELECT studentSSN FROM students_in_test WHERE testCode = '" + testCode + "'");
-			stmt.executeUpdate("DELETE FROM students_in_test WHERE testCode = '" + testCode + "'");
 			test = Queries.getTestByCode(testCode);
-			if (rs.next())
+			if (rs.next()) {
+				stmt.executeUpdate("DELETE FROM students_in_test WHERE testCode = '" + testCode + "'");
 				do {
 					Queries.addFinishedTest(rs.getString("studentSSN") + "," + test.getID() + "," + testCode + ","
 							+ GeneralQueryMethods.calculateTimeTaken(Queries.getStartingTimeByTestCode(testCode))
 							+ ",Forced," + test.getTitle() + "," + test.getCourse() + ",Unchecked");
 					studentsSuspectedCopying = Queries.checkTestForCopyingByTestCode(testCode);
 				} while (rs.next());
+			}
 			for (Pair<Student, Student> students : studentsSuspectedCopying)
 				stmt.executeUpdate("INSERT INTO copy_suspects VALUES ('" + students.getKey().getSSN() + "', '"
-						+ students.getValue().getSSN() + "', '" + test.getID() + "');");
+						+ students.getValue().getSSN() + "', '" + test.getID() + "', '"
+						+ Queries.getDateByCode(testCode) + "', '" + Queries.getStartingTimeByTestCode(testCode)
+						+ "');");
 			stmt.executeUpdate("DELETE FROM active_tests WHERE testCode = '" + testCode + "'");
 			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE testCode = '" + testCode + "'");
 		} catch (SQLException e) {
@@ -1932,5 +1935,33 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return grades;
+	}
+
+	/**
+	 * gets all the copying suspects of a given test as pairs
+	 * 
+	 * @param args - testId,date,startingTime
+	 * @return
+	 */
+	public static ArrayList<Pair<String, String>> getCopySuspectByTestIdAndDate(String args) {
+		ArrayList<Pair<String, String>> suspects = new ArrayList<>();
+		String[] details = args.split(",");
+		String testId = details[0];
+		String date = details[1];
+		String startingTime = details[2];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM copy_suspects WHERE testId = '" + testId
+					+ "' AND date = '" + date + "' AND startingTime = '" + startingTime + "'");
+			if (rs.next())
+				do {
+					suspects.add(
+							new Pair<String, String>(rs.getString("studentOneSSN"), rs.getString("studentTwoSSN")));
+				} while (rs.next());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return suspects;
 	}
 }
