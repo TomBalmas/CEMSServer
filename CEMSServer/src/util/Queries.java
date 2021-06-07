@@ -1478,8 +1478,8 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT studentSSN FROM students_in_test WHERE testCode = '" + testCode + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM students_in_test sit, users u WHERE sit.testCode = '"
+					+ testCode + "' AND sit.studentSSN = u.ssn");
 			if (rs.next())
 				do {
 					students.add(GeneralQueryMethods.createStudent(rs));
@@ -1636,5 +1636,28 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	/**
+	 * gets course using a test's id
+	 * 
+	 * @param testId
+	 * @return course entity
+	 */
+	public static Course getCourseByTestId(String testId) {
+		Course course = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM tests t, courses, c WHERE t.testId = '" + testId + "' AND t.course = c.courseName");
+			if (rs.next())
+				course = GeneralQueryMethods.createCourse(rs);
+			else
+				course = new Course();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return course;
 	}
 }
