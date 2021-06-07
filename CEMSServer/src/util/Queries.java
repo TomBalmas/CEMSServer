@@ -1901,13 +1901,13 @@ public class Queries {
 	 *             21/03/2021,23/03/2021,654255167
 	 * @return array list of tests
 	 */
-	public static ArrayList<Test> getTestsByDateRange(String args) {
+	public static ArrayList<StudentGrade> getTestsByDateRange(String args) {
 		String[] details = args.split(",");
 		String startDate = details[0];
 		String finishDate = details[1];
 		String studentSSN = details[2];
 		String testDate;
-		ArrayList<Test> tests = new ArrayList<>();
+		ArrayList<StudentGrade> grades = new ArrayList<>();
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
@@ -1917,17 +1917,17 @@ public class Queries {
 				do {
 					testDate = rs1.getString("date");
 					if (GeneralQueryMethods.isDateInRange(startDate, finishDate, testDate)) {
-						ResultSet rs2 = stmt
-								.executeQuery("SELECT * FROM tests WHERE testId = '" + rs1.getString("testId"));
+						ResultSet rs2 = stmt.executeQuery("SELECT * FROM tests t, grades g WHERE t.testId = '"
+								+ rs1.getString("testId") + "' AND t.testId = g.testId AND g.ssn = '" + studentSSN + "'");
 						rs2.next();
-						tests.add(GeneralQueryMethods.createTest(rs2));
+						grades.add(GeneralQueryMethods.createStudentGrade(rs2));
 					}
 				} while (rs1.next());
 			else
-				tests.add(new Test());
+				grades.add(new StudentGrade());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return tests;
+		return grades;
 	}
 }
