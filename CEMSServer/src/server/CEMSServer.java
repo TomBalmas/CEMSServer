@@ -374,7 +374,7 @@ public class CEMSServer extends ObservableServer {
 																											// String
 				break;
 			case "GET_TESTS_BY_DATE_RANGE":
-				client.sendToClient(Queries.getTestsByDateRange(args)); // sends ArrayList<Test>
+				client.sendToClient(Queries.getTestsByDateRange(args)); // sends ArrayList<StudentGrade>
 				break;
 			default:
 				break;
