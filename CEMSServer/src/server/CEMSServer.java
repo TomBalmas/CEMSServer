@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.Student;
 import common.User;
+import javafx.util.Pair;
 import ocsf.server.ConnectionToClient;
 import ocsf.server.ObservableServer;
 import util.Queries;
@@ -126,6 +128,7 @@ public class CEMSServer extends ObservableServer {
 			String cases = str[0];
 			String args = null;
 			String[] details;
+			String[] studentsSSN;
 			if (str.length > 1)
 				args = str[1];
 			switch (cases) {
@@ -248,14 +251,32 @@ public class CEMSServer extends ObservableServer {
 			 * @param - studentSSN,studentSSN,studentSSN...
 			 */
 			case "NOTIFY_STUDENTS_BY_SSN":
-				String[] studentsSSN = args.split(",");
+				studentsSSN = args.split(",");
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
 							c.getClientConnection().sendToClient("notifyStudent"); // sends string
 							break;
 						}
-				client.sendToClient("studentsNotifies"); // sends String
+				client.sendToClient("studentsNotified"); // sends String
+				break;
+			/*
+			 * notify students of how many minutes were extended in a test given their SSN
+			 * and minutes
+			 * 
+			 * @param - minutes~studentSSN,studentSSN,studentSSN...
+			 */
+			case "NOTIFY_STUDENTS_TIME_EXTENSION":
+				details = args.split("~");
+				String minutes = details[0];
+				studentsSSN = details[1].split(",");
+				for (ClientIdentifier c : connectedClients)
+					for (String ssn : studentsSSN)
+						if (c.getClientID().equals(ssn)) {
+							c.getClientConnection().sendToClient("timeExtension:" + minutes); // sends string
+							break;
+						}
+				client.sendToClient("studentsNotified"); // sends String
 				break;
 			case "REMOVE_SCHEDULED_TEST":
 				client.sendToClient(Queries.removeScheduledTest(args) ? "testRemoved" : "testNotRemoved"); // sends
@@ -341,6 +362,15 @@ public class CEMSServer extends ObservableServer {
 				break;
 			case "GET_COURSE_BY_TEST_ID":
 				client.sendToClient(Queries.getCourseByTestId(args)); // sends Course
+				break;
+			case "ADD_GRADE":
+				client.sendToClient(Queries.addGrade(args) ? "gradeAdded" : "gradeNotAdded"); // sends String
+				break;
+			case "LOCK_TEST":
+				client.sendToClient(Queries.lockTest(args)); // sends ArrayList<Pair<Student,Student>>
+				break;
+			case "IS_LAST_STUDENT_IN_TEST":
+				client.sendToClient(Queries.isLastStudentInTest(args) ? "lastStudent" : "notLastStudent");	// sends String
 				break;
 			default:
 				break;
