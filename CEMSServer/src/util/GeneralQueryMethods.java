@@ -2,10 +2,10 @@ package util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 import common.ActiveTest;
 import common.Course;
@@ -345,5 +345,69 @@ public class GeneralQueryMethods {
 		int takenHours = nowHours - startHours;
 		int takenMinutes = nowMinutes - startMinutes;
 		return takenHours * 60 + takenMinutes;
+	}
+
+	/**
+	 * checks if the argument date is between the range of dates given
+	 * 
+	 * @param startDate    - 00/00/0000
+	 * @param finishDate   - 00/00/0000
+	 * @param argumentDate - 00/00/0000
+	 * @return
+	 */
+	public static boolean isDateInRange(String startDate, String finishDate, String argumentDate) {
+		String[] dates;
+		dates = startDate.split("/");
+		int startDay = Integer.parseInt(dates[0]);
+		int startMonth = Integer.parseInt(dates[1]);
+		int startYear = Integer.parseInt(dates[2]);
+		dates = finishDate.split("/");
+		int finishDay = Integer.parseInt(dates[0]);
+		int finishMonth = Integer.parseInt(dates[1]);
+		int finishYear = Integer.parseInt(dates[2]);
+		dates = argumentDate.split("/");
+		int argumentDay = Integer.parseInt(dates[0]);
+		int argumentMonth = Integer.parseInt(dates[1]);
+		int argumentYear = Integer.parseInt(dates[2]);
+		// argumentYear out of range
+		if (argumentYear < startYear || argumentYear > finishYear)
+			return false;
+		// same as startYear smaller than finishYear
+		if (argumentYear == startYear && argumentYear < finishYear) {
+			if (argumentMonth < startMonth)
+				return false;
+			else if (argumentMonth == startMonth && argumentDay < startDay)
+				return false;
+			return true;
+		}
+		// same as finishYear bigger than startYear
+		if (argumentYear > startYear && argumentYear == finishYear) {
+			if (argumentMonth > finishMonth)
+				return false;
+			else if (argumentMonth == finishMonth && argumentDay > finishDay)
+				return false;
+			return true;
+		}
+		// same as startYear and finishYear
+		// argumentMonth out of range
+		if (argumentMonth < startMonth || argumentMonth > finishMonth)
+			return false;
+		// same as startMonth smaller than finishMonth
+		if (argumentMonth == startMonth && argumentMonth < finishMonth) {
+			if (argumentDay < startDay)
+				return false;
+			return true;
+		}
+		// same as finishMonth bigger than startMonth
+		if (argumentMonth == finishMonth && argumentMonth > startMonth) {
+			if (argumentDay > finishDay)
+				return false;
+			return true;
+		}
+		// same as startMonth and finishMonth
+		// argumentDay out of range
+		if (argumentDay < startDay || argumentDay > finishDay)
+			return false;
+		return true;
 	}
 }
