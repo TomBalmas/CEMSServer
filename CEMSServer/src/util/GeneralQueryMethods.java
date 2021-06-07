@@ -330,7 +330,7 @@ public class GeneralQueryMethods {
 	/**
 	 * calculates the difference between now and a given starting time
 	 * 
-	 * @param startingTime
+	 * @param startingTime example: 00:00
 	 * @return time taken as integer
 	 */
 	public static int calculateTimeTaken(String startingTime) {
