@@ -1789,12 +1789,14 @@ public class Queries {
 	}
 
 	/**
-	 * locks a test, deletes it from scheduled_tests and active_tests tables
+	 * locks a test, deletes it from scheduled_tests and active_tests tables and
+	 * checks for students who might have copied of of each other and fills
+	 * copy_suspects table with them
 	 * 
 	 * @param testCode
 	 * @return true if the test was locked
 	 */
-	public static ArrayList<Pair<Student, Student>> lockTest(String testCode) {
+	public static boolean lockTest(String testCode) {
 		ArrayList<Pair<Student, Student>> studentsSuspectedCopying = new ArrayList<>();
 		Test test;
 		Statement stmt;
@@ -1809,18 +1811,18 @@ public class Queries {
 					Queries.addFinishedTest(rs.getString("studentSSN") + "," + test.getID() + "," + testCode + ","
 							+ GeneralQueryMethods.calculateTimeTaken(Queries.getStartingTimeByTestCode(testCode))
 							+ ",Forced," + test.getTitle() + "," + test.getCourse() + ",Unchecked");
-					// -------------------------------------------------------------------------------------------------------------------------------
-					// TODO ohad's path to present student test
-					// -------------------------------------------------------------------------------------------------------------------------------
 					studentsSuspectedCopying = Queries.checkTestForCopyingByTestCode(testCode);
 				} while (rs.next());
+			for (Pair<Student, Student> students : studentsSuspectedCopying)
+				stmt.executeUpdate("INSERT INTO copy_suspects VALUES ('" + students.getKey().getSSN() + "', '"
+						+ students.getValue().getSSN() + "', '" + test.getID() + "');");
 			stmt.executeUpdate("DELETE FROM active_tests WHERE testCode = '" + testCode + "'");
 			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE testCode = '" + testCode + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return null;
+			return false;
 		}
-		return studentsSuspectedCopying;
+		return true;
 	}
 
 	/**
@@ -1917,8 +1919,9 @@ public class Queries {
 				do {
 					testDate = rs1.getString("date");
 					if (GeneralQueryMethods.isDateInRange(startDate, finishDate, testDate)) {
-						ResultSet rs2 = stmt.executeQuery("SELECT * FROM tests t, grades g WHERE t.testId = '"
-								+ rs1.getString("testId") + "' AND t.testId = g.testId AND g.ssn = '" + studentSSN + "'");
+						ResultSet rs2 = stmt.executeQuery(
+								"SELECT * FROM tests t, grades g WHERE t.testId = '" + rs1.getString("testId")
+										+ "' AND t.testId = g.testId AND g.ssn = '" + studentSSN + "'");
 						rs2.next();
 						grades.add(GeneralQueryMethods.createStudentGrade(rs2));
 					}
