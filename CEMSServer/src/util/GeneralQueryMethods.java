@@ -2,6 +2,8 @@ package util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -323,5 +325,25 @@ public class GeneralQueryMethods {
 		else if (argumentHours == startHours && argumentMinutes < startMinutes)
 			return false;
 		return true;
+	}
+
+	/**
+	 * calculates the difference between now and a given starting time
+	 * 
+	 * @param startingTime
+	 * @return time taken as integer
+	 */
+	public static int calculateTimeTaken(String startingTime) {
+		LocalTime now = LocalTime.now();
+		String nowString = now.toString();
+		String[] times = nowString.split(":");
+		int nowHours = Integer.parseInt(times[0]);
+		int nowMinutes = Integer.parseInt(times[1]);
+		times = startingTime.split(":");
+		int startHours = Integer.parseInt(times[0]);
+		int startMinutes = Integer.parseInt(times[1]);
+		int takenHours = nowHours - startHours;
+		int takenMinutes = nowMinutes - startMinutes;
+		return takenHours * 60 + takenMinutes;
 	}
 }

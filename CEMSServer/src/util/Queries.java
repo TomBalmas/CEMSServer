@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -938,11 +937,10 @@ public class Queries {
 	/**
 	 * calculates the grade of a student's test
 	 * 
-	 * @param testId
-	 * @param studentId
+	 * @param studentSSN
 	 * @return grade as integer
 	 */
-	private static int calculateStudentGrade(String testId, String studentId) {
+	private static int calculateStudentGrade(String studentSSN) {
 		int grade = 0;
 		String questionsInTest;
 		String studentAnswers;
@@ -953,18 +951,17 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT pointsPerQuestion, questionsInTest, studentAnswers FROM tests t, students_answers sa WHERE t.testId = '"
-							+ testId + "' AND sa.testId = '" + testId + "'");
+					"SELECT pointsPerQuestion, questionsInTest, studentAnswers FROM tests t, students_answers sa WHERE sa.studentSSN = '"
+							+ studentSSN + "' AND t.testId = sa.testId");
 			rs.next();
 			questionsInTest = rs.getString("questionsInTest");
 			pointsPerQuestion = rs.getInt("pointsPerQuestion");
 			studentAnswers = rs.getString("studentAnswers");
 			questions = questionsInTest.split("~");
 			answers = studentAnswers.split("~");
-			if (questions.length != answers.length)
-				return -1;
 			for (int i = 0; i < questions.length; i++) {
 				rs = stmt.executeQuery("SELECT correctAnswer FROM questions WHERE questionId = '" + questions[i] + "'");
+				rs.next();
 				if (rs.getInt("correctAnswer") == Integer.parseInt(answers[i]))
 					grade += pointsPerQuestion;
 			}
@@ -986,21 +983,21 @@ public class Queries {
 		String studentSSN = details[0];
 		String testId = details[1];
 		String code = details[2];
+		int timeTaken = Integer.parseInt(details[3]);
 		String presentationMethod = details[4];
 		String title = details[5];
 		String course = details[6];
 		String status = details[7];
 		String startingTime = Queries.getStartingTimeByTestCode(code);
-		int timeTaken = Integer.parseInt(details[3]);
-		int grade = Queries.calculateStudentGrade(testId, studentSSN);
+		int grade = Queries.calculateStudentGrade(studentSSN);
 		String date = Queries.getDateByCode(code);
 		String scheduler = Queries.getSchedulerIdByCode(code);
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("INSERT INTO finished_tests VALUES ('" + scheduler + "', '" + studentSSN + "', '"
-					+ testId + "', '" + date + "', '" + startingTime + "', '" + timeTaken + "', '" + presentationMethod
-					+ "', '" + title + "', '" + course + "', '" + grade + "', '" + status + "');");
+					+ testId + "', '" + date + "', '" + startingTime + "', '" + timeTaken + "', '" + title + "', '"
+					+ course + "', '" + grade + "', '" + status + "', '" + presentationMethod + "');");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -1650,7 +1647,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM tests t, courses, c WHERE t.testId = '" + testId + "' AND t.course = c.courseName");
+					"SELECT * FROM tests t, courses c WHERE t.testId = '" + testId + "' AND t.course = c.courseName");
 			if (rs.next())
 				course = GeneralQueryMethods.createCourse(rs);
 			else
@@ -1659,5 +1656,240 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return course;
+	}
+
+	/**
+	 * checks if students copied of of each other in a test
+	 * 
+	 * @param testCode
+	 * @return array list of pairs of students who might have copied
+	 */
+	public static ArrayList<Pair<Student, Student>> checkTestForCopyingByTestCode(String testCode) {
+		ArrayList<Pair<Student, Student>> studentsSuscpectedCopying = new ArrayList<>();
+		ArrayList<String> studentsSSN = new ArrayList<>();
+		ScheduledTest test;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			test = Queries.getScheduledTestByCode(testCode);
+			ResultSet rs = stmt.executeQuery("SELECT studentSSN FROM finished_tests WHERE testId = '" + test.getID()
+					+ "' AND date = '" + test.getDate() + "' AND startingTime = '" + test.getStartingTime() + "'");
+			while (rs.next())
+				studentsSSN.add(rs.getString("studentSSN"));
+			for (int i = 0; i < studentsSSN.size() - 1; i++)
+				for (int j = i + 1; j < studentsSSN.size(); j++)
+					if (Queries.checkCopyingBetweenTwoStudentsBySSNAndTestId(
+							studentsSSN.get(i) + studentsSSN.get(j) + test.getID()))
+						studentsSuscpectedCopying
+								.add(new Pair<Student, Student>(Queries.getStudentBySSN(studentsSSN.get(i)),
+										Queries.getStudentBySSN(studentsSSN.get(j))));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return studentsSuscpectedCopying;
+	}
+
+	/**
+	 * gets a student using their SSN
+	 * 
+	 * @param studentSSN
+	 * @return student
+	 */
+	public static Student getStudentBySSN(String studentSSN) {
+		Student student = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE ssn = '" + studentSSN + "'");
+			student = GeneralQueryMethods.createStudent(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return student;
+	}
+
+	/**
+	 * checks if the students have 50% or more similar wrong answers in a test
+	 * 
+	 * @param args - studentSSNOne,studentSSNTwo,testId
+	 * @return true if the students have at least 50% similar wrong answers
+	 */
+	private static boolean checkCopyingBetweenTwoStudentsBySSNAndTestId(String args) {
+		String[] details = args.split(",");
+		String studentOne = details[0];
+		String studentTwo = details[1];
+		String testId = details[2];
+		ArrayList<Pair<String, Integer>> answersOfStudentOne;
+		ArrayList<Pair<String, Integer>> answersOfStudentTwo;
+		ArrayList<Question> questions;
+		ArrayList<Pair<String, Integer>> similarAnswers = new ArrayList<>();
+		int numberOfSimilarIncorrectAnswers = 0;
+		answersOfStudentOne = Queries.getStudentAnswersByTestIdAndSSN(testId + studentOne);
+		answersOfStudentTwo = Queries.getStudentAnswersByTestIdAndSSN(testId + studentTwo);
+		if (answersOfStudentOne == null || answersOfStudentTwo == null)
+			return false;
+		if (answersOfStudentOne.get(0).getKey().equals("testQuestionsChanged"))
+			return false;
+		questions = Queries.getQuestionsFromTest(testId);
+		for (Pair<String, Integer> answerOne : answersOfStudentOne)
+			for (Pair<String, Integer> answerTwo : answersOfStudentTwo) {
+				if (answerOne.getKey().equals(answerTwo.getKey())) {
+					if (answerOne.getValue().equals(answerTwo.getValue()))
+						similarAnswers.add(answerOne);
+					break;
+				}
+			}
+		for (Question question : questions)
+			for (Pair<String, Integer> answer : similarAnswers) {
+				if (question.getID().equals(answer.getKey())) {
+					if (question.getCorrectAnswer() != answer.getValue())
+						numberOfSimilarIncorrectAnswers += 1;
+					break;
+				}
+			}
+		if (questions.size() / 2 <= numberOfSimilarIncorrectAnswers)
+			return true;
+		return false;
+	}
+
+	/**
+	 * gets a student's answers to a test's questions as pair of question+answer
+	 * 
+	 * @param args - testId,studentSSN
+	 * @return array list of pairs of question and answer
+	 */
+	private static ArrayList<Pair<String, Integer>> getStudentAnswersByTestIdAndSSN(String args) {
+		ArrayList<Pair<String, Integer>> studentAnswers = new ArrayList<>();
+		String[] details = args.split(",");
+		String testId = details[0];
+		String studentSSN = details[1];
+		String[] studentAnswersString;
+		ArrayList<Question> questions;
+		int i = 0;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT studentAnswers FROM students_answers WHERE studentSSN = '"
+					+ studentSSN + "' AND testId = '" + testId + "'");
+			if (!rs.next())
+				return null;
+			studentAnswersString = rs.getString("studentAnswers").split("~");
+			questions = Queries.getQuestionsFromTest(testId);
+			if (questions.size() != studentAnswersString.length) {
+				studentAnswers.add(new Pair<String, Integer>("testQuestionsChanged", 0));
+				return studentAnswers;
+			}
+			for (String answer : studentAnswersString) {
+				studentAnswers.add(new Pair<String, Integer>(questions.get(i).getID(), Integer.parseInt(answer)));
+				i++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return studentAnswers;
+	}
+
+	/**
+	 * locks a test, deletes it from scheduled_tests and active_tests tables
+	 * 
+	 * @param testCode
+	 * @return true if the test was locked
+	 */
+	public static ArrayList<Pair<Student, Student>> lockTest(String testCode) {
+		ArrayList<Pair<Student, Student>> studentsSuspectedCopying = new ArrayList<>();
+		Test test;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT studentSSN FROM students_in_test WHERE testCode = '" + testCode + "'");
+			stmt.executeUpdate("DELETE FROM students_in_test WHERE testCode = '" + testCode + "'");
+			test = Queries.getTestByCode(testCode);
+			if (rs.next())
+				do {
+					Queries.addFinishedTest(rs.getString("studentSSN") + "," + test.getID() + "," + testCode + ","
+							+ GeneralQueryMethods.calculateTimeTaken(Queries.getStartingTimeByTestCode(testCode))
+							+ ",Forced," + test.getTitle() + "," + test.getCourse() + ",Unchecked");
+					// TODO ohad's path to present student test------------------------------------------------------------------------------------------------
+					studentsSuspectedCopying = Queries.checkTestForCopyingByTestCode(testCode);
+				} while (rs.next());
+			stmt.executeUpdate("DELETE FROM active_tests WHERE testCode = '" + testCode + "'");
+			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE testCode = '" + testCode + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return studentsSuspectedCopying;
+	}
+
+	/**
+	 * adds a grade to the grades table
+	 * 
+	 * @param args - testId,studentSSN,teacherNotes
+	 * @return true if the grade was added to the grades table
+	 */
+	public static boolean addGrade(String args) {
+		String[] details = args.split(",");
+		String testId = details[0];
+		String studentSSN = details[1];
+		String teacherNotes = details[2];
+		int grade;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT grade FROM finished_tests WHERE studentSSN = '" + studentSSN
+					+ "' AND testId = '" + testId + "'");
+			rs.next();
+			grade = rs.getInt("grade");
+			stmt.executeUpdate("UPDATE finished_tests SET status = Checked WHERE studentSSN = '" + studentSSN
+					+ "' AND testId = '" + testId + "'");
+			stmt.executeUpdate("INSERT INTO grades VALUES ('" + testId + "', '" + studentSSN + "', " + grade + ", '"
+					+ teacherNotes + "');");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * deletes the contents of an entire table given its name
+	 * 
+	 * @param tableName
+	 * @return true if the contents were deleted
+	 */
+	public static boolean deleteTableContents(String tableName) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("DELETE FROM " + tableName);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * checks if there is only one more student in the test
+	 * 
+	 * @param testCode
+	 * @return true if there is only one student in the test
+	 */
+	public static boolean isLastStudentInTest(String testCode) {
+		int numberOfStudents = 0;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM studentsInTest WHERE testCode = '" + testCode + "'");
+			while (rs.next())
+				numberOfStudents += 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		if (numberOfStudents > 1)
+			return false;
+		return true;
 	}
 }
