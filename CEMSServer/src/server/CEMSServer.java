@@ -370,7 +370,11 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.lockTest(args)); // sends ArrayList<Pair<Student,Student>>
 				break;
 			case "IS_LAST_STUDENT_IN_TEST":
-				client.sendToClient(Queries.isLastStudentInTest(args) ? "lastStudent" : "notLastStudent");	// sends String
+				client.sendToClient(Queries.isLastStudentInTest(args) ? "lastStudent" : "notLastStudent"); // sends
+																											// String
+				break;
+			case "GET_TESTS_BY_DATE_RANGE":
+				client.sendToClient(Queries.getTestsByDateRange(args)); // sends ArrayList<Test>
 				break;
 			default:
 				break;

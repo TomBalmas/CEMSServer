@@ -852,7 +852,6 @@ public class Queries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println(grades.toString());
 		return grades;
 	}
 
@@ -1006,7 +1005,7 @@ public class Queries {
 	}
 
 	/**
-	 * gets all students in the system
+	 * gets all students in the data base
 	 * 
 	 * @return array list of students
 	 */
@@ -1810,7 +1809,9 @@ public class Queries {
 					Queries.addFinishedTest(rs.getString("studentSSN") + "," + test.getID() + "," + testCode + ","
 							+ GeneralQueryMethods.calculateTimeTaken(Queries.getStartingTimeByTestCode(testCode))
 							+ ",Forced," + test.getTitle() + "," + test.getCourse() + ",Unchecked");
-					// TODO ohad's path to present student test------------------------------------------------------------------------------------------------
+					// -------------------------------------------------------------------------------------------------------------------------------
+					// TODO ohad's path to present student test
+					// -------------------------------------------------------------------------------------------------------------------------------
 					studentsSuspectedCopying = Queries.checkTestForCopyingByTestCode(testCode);
 				} while (rs.next());
 			stmt.executeUpdate("DELETE FROM active_tests WHERE testCode = '" + testCode + "'");
@@ -1891,5 +1892,42 @@ public class Queries {
 		if (numberOfStudents > 1)
 			return false;
 		return true;
+	}
+
+	/**
+	 * gets all the tests of a students inside the range of dates given
+	 * 
+	 * @param args - startDate,finishDate,studentSSN example:
+	 *             21/03/2021,23/03/2021,654255167
+	 * @return array list of tests
+	 */
+	public static ArrayList<Test> getTestsByDateRange(String args) {
+		String[] details = args.split(",");
+		String startDate = details[0];
+		String finishDate = details[1];
+		String studentSSN = details[2];
+		String testDate;
+		ArrayList<Test> tests = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs1 = stmt
+					.executeQuery("SELECT testId, date FROM finished_tests WHERE studentSSN = '" + studentSSN + "'");
+			if (rs1.next())
+				do {
+					testDate = rs1.getString("date");
+					if (GeneralQueryMethods.isDateInRange(startDate, finishDate, testDate)) {
+						ResultSet rs2 = stmt
+								.executeQuery("SELECT * FROM tests WHERE testId = '" + rs1.getString("testId"));
+						rs2.next();
+						tests.add(GeneralQueryMethods.createTest(rs2));
+					}
+				} while (rs1.next());
+			else
+				tests.add(new Test());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return tests;
 	}
 }
