@@ -1584,10 +1584,11 @@ public class Queries {
 				rs2 = stmt2.executeQuery("SELECT * FROM active_tests WHERE beginTestCode = '" + testCode + "'");
 				if (!rs2.next()) {
 					rs2 = stmt2.executeQuery("SELECT * FROM tests WHERE testId = '" + rs1.getString("testId") + "'");
+					rs2.next();
 					stmt2.executeUpdate("INSERT INTO active_tests VALUES ('" + rs1.getString("testId") + "', '"
 							+ Queries.getAuthorNameByTestId(rs1.getString("testId")) + "', '" + rs2.getString("title")
 							+ "', '" + rs2.getString("course") + "', '" + rs2.getString("field") + "', '"
-							+ rs1.getString("startingTime") + "', '" + rs1.getString("beginTestCode") + ");");
+							+ rs1.getString("startingTime") + "', '" + rs1.getString("beginTestCode") + "');");
 					return true;
 				}
 			}
