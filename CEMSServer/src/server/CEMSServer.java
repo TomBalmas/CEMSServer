@@ -1,10 +1,13 @@
 package server;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import common.Student;
+import common.TestFile;
 import common.User;
 import javafx.util.Pair;
 import ocsf.server.ConnectionToClient;
@@ -121,9 +124,24 @@ public class CEMSServer extends ObservableServer {
 	 * receives message from client and translates it to switch case to handle it
 	 * with connection to the DB
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		try {
+			// case when a manual test needs to be loaded into the DB
+			if (msg instanceof Pair<?, ?>) {
+				TestFile word = ((Pair<TestFile, String>) msg).getKey();
+				File newWordFile = new File("lib\\" + word.getFileName());
+				byte[] wordFileByteArray = word.getByteArray();
+				FileOutputStream fos = new FileOutputStream(newWordFile);
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				bos.write(wordFileByteArray, 0, word.getSize());
+				bos.close();
+				fos.close();
+				String path = "lib/" + word.getFileName();
+				msg = ((Pair<byte[], String>) msg).getValue();
+				msg = msg + "," + path;
+			}
 			String[] str = ((String) msg).split("-");
 			String cases = str[0];
 			String args = null;

@@ -1,5 +1,6 @@
 package util;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1958,7 +1959,14 @@ public class Queries {
 	/**
 	 * adds a manual test to the DB
 	 * 
-	 * @param args - testId,studentSSN,scheduler,date,startingTime
+	 * to call this query from server, send Pair<TestFile,String> that includes the
+	 * word file as TestFile and all the other arguments except for path as string
+	 * example: Pair<TestFile,String> =
+	 * [wordFile=ADD_MANUAL_TEST-testId,studentSSN,scheduler,date,startingTime,path]
+	 * 
+	 * path is /lib/fileName
+	 * 
+	 * @param args - testId,studentSSN,scheduler,date,startingTime,path
 	 * @return
 	 */
 	public static boolean addManualTest(String args) {
@@ -1968,12 +1976,15 @@ public class Queries {
 		String scheduler = details[2];
 		String date = details[3];
 		String startingTime = details[4];
+		String path = details[5];
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(
 					"INSERT INTO manual_tests (testId, studentSSN, scheduler, date, startingTime) VALUES ('" + testId
 							+ "', '" + studentSSN + "', '" + scheduler + "', '" + date + "', '" + startingTime + "');");
+			stmt.executeUpdate("UPDATE manual_tests SET word = LOAD_FILE('" + path + "') WHERE testId = '" + testId
+					+ "' AND studentSSN = '" + studentSSN + "';");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
