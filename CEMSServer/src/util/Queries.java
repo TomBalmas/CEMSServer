@@ -1581,13 +1581,15 @@ public class Queries {
 			finishTime = GeneralQueryMethods.calculateFinishTime(rs1.getString("startingTime"), rs1.getInt("duration"));
 			if (GeneralQueryMethods.isArgTimeBetweenStartAndFinishTimes(rs1.getString("startingTime"), finishTime,
 					localTime)) {
-				rs2 = stmt2.executeQuery("SELECT * FROM active_tests at, tests t WHERE at.beginTestCode = '" + testCode
-						+ "' AND t.testId = at.testId");
-				stmt2.executeUpdate("INSERT INTO active_tests VALUES ('" + rs1.getString("testId") + "', '"
-						+ Queries.getAuthorNameByTestId(rs1.getString("testId")) + "', '" + rs2.getString("title")
-						+ "', '" + rs2.getString("course") + "', '" + rs2.getString("field") + "', '"
-						+ rs1.getString("startingTime") + "', '" + rs1.getString("beginTestCode") + ");");
-				return true;
+				rs2 = stmt2.executeQuery("SELECT * FROM active_tests WHERE beginTestCode = '" + testCode + "'");
+				if (!rs2.next()) {
+					rs2 = stmt2.executeQuery("SELECT * FROM tests WHERE testId = '" + rs1.getString("testId") + "'");
+					stmt2.executeUpdate("INSERT INTO active_tests VALUES ('" + rs1.getString("testId") + "', '"
+							+ Queries.getAuthorNameByTestId(rs1.getString("testId")) + "', '" + rs2.getString("title")
+							+ "', '" + rs2.getString("course") + "', '" + rs2.getString("field") + "', '"
+							+ rs1.getString("startingTime") + "', '" + rs1.getString("beginTestCode") + ");");
+					return true;
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
