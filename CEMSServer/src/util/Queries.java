@@ -19,6 +19,7 @@ import common.Student;
 import common.StudentGrade;
 import common.Teacher;
 import common.Test;
+import common.TestFile;
 import common.TimeExtensionRequest;
 import common.User;
 import javafx.util.Pair;
@@ -1984,11 +1985,14 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(
-					"INSERT INTO manual_tests (testId, studentSSN, scheduler, date, startingTime) VALUES ('" + testId
-							+ "', '" + studentSSN + "', '" + scheduler + "', '" + date + "', '" + startingTime + "');");
+					"INSERT INTO manual_tests (testId, studentSSN, scheduler, date, startingTime, status, presentationMethod) VALUES ('"
+							+ testId + "', '" + studentSSN + "', '" + scheduler + "', '" + date + "', '" + startingTime
+							+ "', 'not checked', 'Self'" + ");");
 			if (!path.equals("null"))
 				stmt.executeUpdate("UPDATE manual_tests SET word = LOAD_FILE('" + path + "') WHERE testId = '" + testId
 						+ "' AND studentSSN = '" + studentSSN + "';");
+			else
+				stmt.executeUpdate("UPDATE manual_tests SET presentationMethod = 'Forced'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -2012,14 +2016,14 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("UPDATE manual_tests SET grade = " + grade + ", comments = '" + comments
-					+ "' WHERE studentSSN = '" + studentSSN + "' AND testId = '" + testId + "';");
+					+ "', status = 'Checked' WHERE studentSSN = '" + studentSSN + "' AND testId = '" + testId + "';");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
-	
+
 	/**
 	 * locks a test, deletes it from scheduled_tests and active_tests tables
 	 * 
@@ -2036,8 +2040,8 @@ public class Queries {
 			test = Queries.getScheduledTestByCode(testCode);
 			if (rs.next()) {
 				do {
-					Queries.addManualTest(test.getID() + rs.getString("studentSSN") + test.getBelongsToID() 
-					+ test.getDate() + test.getStartingTime() + "null");
+					Queries.addManualTest(test.getID() + rs.getString("studentSSN") + test.getBelongsToID()
+							+ test.getDate() + test.getStartingTime() + "null");
 				} while (rs.next());
 				stmt.executeUpdate("DELETE FROM students_in_test WHERE testCode = '" + testCode + "'");
 			}
@@ -2048,5 +2052,36 @@ public class Queries {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * gets the manual test of a student
+	 * 
+	 * @param args - testId,studentSSN
+	 * @return test file
+	 */
+	public static TestFile getManualTestByStudentSSN(String args) {
+		TestFile test = new TestFile();
+		Blob word;
+		String[] details = args.split(",");
+		String testId = details[0];
+		String studentSSN = details[1];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM manual_tests WHERE studentSSN = '" + studentSSN + "' AND testId = '" + testId + "'");
+			rs.next();
+			if (rs.getString("presentationMethod").equals("Self")) {
+				word = rs.getBlob("word");
+				test.setSize((int) word.length());
+				test.initArray((int) word.length());
+				test.setByteArray(word.getBytes(1, test.getSize()));
+			} else
+				test.setFlag(false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return test;
 	}
 }
