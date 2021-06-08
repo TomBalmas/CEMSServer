@@ -410,6 +410,9 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.lockManualTest(args) ? "manualTestLocked" : "manualTestNotLocked"); // sends
 																												// String
 				break;
+			case "GET_MANUAL_TEST_BY_STUDENT_SSN":
+				client.sendToClient(Queries.getManualTestByStudentSSN(args)); // sends TestFile
+				break;
 			default:
 				break;
 			}
