@@ -1986,8 +1986,9 @@ public class Queries {
 			stmt.executeUpdate(
 					"INSERT INTO manual_tests (testId, studentSSN, scheduler, date, startingTime) VALUES ('" + testId
 							+ "', '" + studentSSN + "', '" + scheduler + "', '" + date + "', '" + startingTime + "');");
-			stmt.executeUpdate("UPDATE manual_tests SET word = LOAD_FILE('" + path + "') WHERE testId = '" + testId
-					+ "' AND studentSSN = '" + studentSSN + "';");
+			if (!path.equals("null"))
+				stmt.executeUpdate("UPDATE manual_tests SET word = LOAD_FILE('" + path + "') WHERE testId = '" + testId
+						+ "' AND studentSSN = '" + studentSSN + "';");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -2012,6 +2013,36 @@ public class Queries {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("UPDATE manual_tests SET grade = " + grade + ", comments = '" + comments
 					+ "' WHERE studentSSN = '" + studentSSN + "' AND testId = '" + testId + "';");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * locks a test, deletes it from scheduled_tests and active_tests tables
+	 * 
+	 * @param testCode
+	 * @return true if the test was locked
+	 */
+	public static boolean lockManualTest(String testCode) {
+		ScheduledTest test;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT studentSSN FROM students_in_test WHERE testCode = '" + testCode + "'");
+			test = Queries.getScheduledTestByCode(testCode);
+			if (rs.next()) {
+				do {
+					Queries.addManualTest(test.getID() + rs.getString("studentSSN") + test.getBelongsToID() 
+					+ test.getDate() + test.getStartingTime() + "null");
+				} while (rs.next());
+				stmt.executeUpdate("DELETE FROM students_in_test WHERE testCode = '" + testCode + "'");
+			}
+			stmt.executeUpdate("DELETE FROM active_tests WHERE beginTestCode = '" + testCode + "'");
+			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;

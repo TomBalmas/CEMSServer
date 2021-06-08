@@ -406,6 +406,10 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.updateManualTest(args) ? "manualTestUpdated" : "manualTestNotUpdated"); // sends
 																													// String
 				break;
+			case "LOCK_MANUAL_TEST":
+				client.sendToClient(Queries.lockManualTest(args) ? "manualTestLocked" : "manualTestNotLocked"); // sends
+																												// String
+				break;
 			default:
 				break;
 			}
