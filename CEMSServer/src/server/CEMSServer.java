@@ -380,6 +380,14 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.getCopySuspectByTestIdAndDate(args)); // sends
 																					// ArrayList<Pair<String,String>>
 				break;
+			case "ADD_MANUAL_TEST":
+				client.sendToClient(Queries.addManualTest(args) ? "manualTestAdded" : "manualTestNotAdded"); // sends
+																												// String
+				break;
+			case "UPDATE_MANUAL_TEST":
+				client.sendToClient(Queries.updateManualTest(args) ? "manualTestUpdated" : "manualTestNotUpdated"); // sends
+																													// String
+				break;
 			default:
 				break;
 			}
