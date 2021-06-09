@@ -82,6 +82,7 @@
             </AnchorPane>
          </children>
       </AnchorPane>
-     <JFXTextArea fx:id="serverLog" editable="false" focusColor="#f0f1f1" labelFloat="true" prefHeight="543.0" prefWidth="720.0" promptText="Server Log:" styleClass="consoleTxt" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
+     <JFXTextArea fx:id="serverLog" editable="false" focusColor="#f0f1f1" labelFloat="true" prefHeight="547.0" prefWidth="656.0" promptText="Server Log:" styleClass="consoleTxt" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
+      <JFXButton fx:id="importBtn" layoutX="245.0" layoutY="161.0" onMouseClicked="#importClicked" prefHeight="276.0" prefWidth="52.0" text="Import" />
    </children>
 </AnchorPane>

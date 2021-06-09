@@ -1,9 +1,11 @@
 package gui;
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.ResourceBundle;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
@@ -13,6 +15,7 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -21,8 +24,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import server.CEMSServer;
 import server.ServerController;
+import util.Queries;
 
-public class ServerUIController implements Observer {
+public class ServerUIController implements Observer, Initializable{
 
 	private int port;
 	private FXMLLoader loader;
@@ -34,44 +38,48 @@ public class ServerUIController implements Observer {
 		this.server = server;
 		server.addObserver(loader.getController());
 	}
-    @FXML
-    private AnchorPane serverConnectionAnchor;
 
-    @FXML
-    private AnchorPane insideserverConnectionAnchor;
+	@FXML
+	private AnchorPane serverConnectionAnchor;
 
-    @FXML
-    private JFXTextField portTxt;
+	@FXML
+	private AnchorPane insideserverConnectionAnchor;
 
-    @FXML
-    private AnchorPane dataBaseConnectionAnchor;
+	@FXML
+	private JFXTextField portTxt;
 
-    @FXML
-    private AnchorPane insidedataBaseConnectionAnchor;
+	@FXML
+	private AnchorPane dataBaseConnectionAnchor;
 
-    @FXML
-    private VBox databaseConVBox;
+	@FXML
+	private AnchorPane insidedataBaseConnectionAnchor;
 
-    @FXML
-    private JFXTextField ipTxt;
+	@FXML
+	private VBox databaseConVBox;
 
-    @FXML
-    private JFXTextField schemaTxt;
+	@FXML
+	private JFXTextField ipTxt;
 
-    @FXML
-    private JFXTextField usernameTxt;
+	@FXML
+	private JFXTextField schemaTxt;
 
-    @FXML
-    private JFXPasswordField passwordTxt;
+	@FXML
+	private JFXTextField usernameTxt;
 
-    @FXML
-    private JFXButton connectBtn;
+	@FXML
+	private JFXPasswordField passwordTxt;
 
-    @FXML
-    private JFXButton disconnectBtn;
+	@FXML
+	private JFXButton connectBtn;
 
-    @FXML
-    private JFXTextArea serverLog;
+	@FXML
+	private JFXButton disconnectBtn;
+
+	@FXML
+	private JFXTextArea serverLog;
+
+	@FXML
+	private JFXButton importBtn;
 
 	public JFXTextField getIpTxt() {
 		return ipTxt;
@@ -112,6 +120,7 @@ public class ServerUIController implements Observer {
 				writeToLog("SQL connection succeed");
 				connectSet();
 				connection = true;
+				importBtn.setDisable(false);
 			} catch (ClassNotFoundException e) {
 				writeToLog("Driver definition failed");
 				disconnectSet();
@@ -125,12 +134,30 @@ public class ServerUIController implements Observer {
 	}
 
 	/**
+	 * imports data from text files to DB
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void importClicked(MouseEvent event) {
+		Queries.setGlobalLocalInfile();
+		Queries.deleteTableContents("users");
+		Queries.deleteTableContents("fields");
+		Queries.deleteTableContents("courses");
+		Queries.loadTxtFileIntoTable("users,lib/users.txt");
+		Queries.loadTxtFileIntoTable("fields,lib/fields.txt");
+		Queries.loadTxtFileIntoTable("courses,lib/courses.txt");
+		writeToLog("Data imported");
+	}
+
+	/**
 	 * when clicking disconnect it will close the connection to the server
 	 * 
 	 * @param event
 	 */
 	@FXML
 	void clickDisconnect(MouseEvent event) {
+		importBtn.setDisable(true);
 		disconnectSet();
 	}
 
@@ -156,7 +183,8 @@ public class ServerUIController implements Observer {
 		} catch (IOException e) {
 			writeToLog(e.getMessage());
 		}
-		if (connection) serverLog.clear();
+		if (connection)
+			serverLog.clear();
 		connection = false;
 		databaseConVBox.setDisable(false);
 		passwordTxt.requestFocus();
@@ -200,6 +228,11 @@ public class ServerUIController implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		writeToLog((String) arg1);
+	}
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		importBtn.setDisable(true);
 	}
 
 }
