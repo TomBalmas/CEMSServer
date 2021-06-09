@@ -2084,4 +2084,26 @@ public class Queries {
 		}
 		return test;
 	}
+
+	/**
+	 * gets the test code of a student who takes the test right now
+	 * 
+	 * @param studentSSN
+	 * @return test code as string
+	 */
+	public static String getTestCodeByStudentSSN(String studentSSN) {
+		String testCode = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT testCode FROM students_in_tests WHERE studentSSN = '" + studentSSN + "'");
+			rs.next();
+			testCode = rs.getString("testCode");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return testCode;
+	}
+
 }

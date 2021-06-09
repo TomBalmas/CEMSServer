@@ -294,8 +294,10 @@ public class CEMSServer extends ObservableServer {
 				details = args.split("~");
 				String minutes = details[0];
 				studentsSSN = details[1].split(",");
-				// TODO - add minutes to timer
-				// required query: get testCode By student in test
+				String testCode = Queries.getTestCodeByStudentSSN(studentsSSN[0]);
+				for (Pair<Stopwatch, String> pair : testTimers)
+					if (pair.getValue().equals(testCode))
+						pair.getKey().addMinutes(Integer.parseInt(minutes)); // adds minutes to the test timer  
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
@@ -429,6 +431,9 @@ public class CEMSServer extends ObservableServer {
 				break;
 			case "LOCK_TEST":
 				client.sendToClient(Queries.lockTest(args) ? "testLocked" : "testNotLocked"); // sends String
+				for (Pair<Stopwatch, String> pair : testTimers)
+					if (pair.getValue().equals(args))
+						pair.getKey().stopTimer();
 				break;
 			case "IS_LAST_STUDENT_IN_TEST":
 				client.sendToClient(Queries.isLastStudentInTest(args) ? "lastStudent" : "notLastStudent"); // sends

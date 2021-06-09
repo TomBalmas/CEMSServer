@@ -7,6 +7,7 @@ public class Stopwatch {
 
 	private static final int MINUTE = 1000 * 60;
 	private static final int SECOND = 1000;
+	private Timer minuteTimer;
 	private int minutes;
 	private boolean startFlag = true;
 
@@ -19,7 +20,7 @@ public class Stopwatch {
 	}
 
 	public synchronized void startTimer(TimerTask tt) {
-		Timer minuteTimer = new Timer();
+		minuteTimer = new Timer();
 		minuteTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
@@ -39,6 +40,10 @@ public class Stopwatch {
 
 	public synchronized void addMinutes(int minutesToAdd) {
 		minutes += minutesToAdd;
+	}
+
+	public synchronized void stopTimer() {
+		minuteTimer.cancel();
 	}
 
 }
