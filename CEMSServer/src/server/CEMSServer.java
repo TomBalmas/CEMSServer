@@ -4,19 +4,25 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 
+import common.Student;
 import common.TestFile;
 import common.User;
 import javafx.util.Pair;
 import ocsf.server.ConnectionToClient;
 import ocsf.server.ObservableServer;
 import util.Queries;
+import util.Stopwatch;
 
 public class CEMSServer extends ObservableServer {
 
 	private List<ClientIdentifier> connectedClients;
+	private ArrayList<Pair<Stopwatch, String>> testTimers = new ArrayList<>();
 
 	private class ClientIdentifier {
 
@@ -288,6 +294,8 @@ public class CEMSServer extends ObservableServer {
 				details = args.split("~");
 				String minutes = details[0];
 				studentsSSN = details[1].split(",");
+				// TODO - add minutes to timer
+				// required query: get testCode By student in test
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
@@ -376,7 +384,42 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient(Queries.isActiveTest(args) ? "testActive" : "testNotActive"); // sends String
 				break;
 			case "IS_TIME_FOR_TEST":
-				client.sendToClient(Queries.isTimeForTest(args) ? "timeForTest" : "notTimeForTest"); // sends String
+				boolean isFirstStudentInTest = Queries.isTimeForTest(args);
+				System.out.println(isFirstStudentInTest);
+				if (isFirstStudentInTest) {
+					System.out.println("first in test");
+					String[] split = args.split(",");
+					String code = split[2];
+					String[] timeSplitter = split[1].split(":");
+					LocalTime studentBegan = LocalTime.of(Integer.parseInt(timeSplitter[0]),
+							Integer.parseInt(timeSplitter[1]));
+					timeSplitter = Queries.getScheduledTestByCode(code).getStartingTime().split(":");
+					LocalTime startTest = LocalTime.of(Integer.parseInt(timeSplitter[0]),
+							Integer.parseInt(timeSplitter[1]));
+					int duration = Queries.getTestByCode(code).getTestDuration();
+					Long timeDiff = ChronoUnit.MINUTES.between(studentBegan, startTest) % 60;
+					testTimers.add(new Pair<>(new Stopwatch(duration - (timeDiff.intValue())), code));
+					testTimers.get(testTimers.size() - 1).getKey().startTimer(new TimerTask() {
+						@Override
+						public void run() {
+							System.out.println(testTimers.get(testTimers.size() - 1).getKey().getMinutes());
+							ArrayList<Student> studentsInTest = Queries.getStudentSSNByTestCode(code);
+							for (ClientIdentifier c : connectedClients)
+								for (Student student : studentsInTest)
+									if (c.getClientID().equals(student.getSSN())) {
+										try {
+											c.getClientConnection().sendToClient("notifyStudent");
+											client.sendToClient("studentsNotified");
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+										break;
+									}
+						}
+
+					});
+					client.sendToClient(isFirstStudentInTest ? "timeForTest" : "notTimeForTest"); // sends String
+				}
 				break;
 			case "GET_COURSE_BY_TEST_ID":
 				client.sendToClient(Queries.getCourseByTestId(args)); // sends Course
