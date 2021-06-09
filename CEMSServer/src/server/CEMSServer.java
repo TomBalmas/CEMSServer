@@ -270,12 +270,18 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient("principleNotified"); // sends String
 				break;
 			/*
-			 * notifies students given their id
+			 * notifies and lock test students given their id
 			 * 
 			 * @param - studentSSN,studentSSN,studentSSN...
 			 */
 			case "NOTIFY_STUDENTS_BY_SSN":
 				studentsSSN = args.split(",");
+				String currentTestcode = Queries.getTestCodeByStudentSSN(studentsSSN[0]);
+				for (Pair<Stopwatch, String> pair : testTimers)
+					if (pair.getValue().equals(currentTestcode)) {
+						pair.getKey().stopTimer();
+						testTimers.remove(pair);
+					}
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
@@ -297,7 +303,7 @@ public class CEMSServer extends ObservableServer {
 				String testCode = Queries.getTestCodeByStudentSSN(studentsSSN[0]);
 				for (Pair<Stopwatch, String> pair : testTimers)
 					if (pair.getValue().equals(testCode))
-						pair.getKey().addMinutes(Integer.parseInt(minutes)); // adds minutes to the test timer  
+						pair.getKey().addMinutes(Integer.parseInt(minutes)); // adds minutes to the test timer
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
@@ -432,8 +438,10 @@ public class CEMSServer extends ObservableServer {
 			case "LOCK_TEST":
 				client.sendToClient(Queries.lockTest(args) ? "testLocked" : "testNotLocked"); // sends String
 				for (Pair<Stopwatch, String> pair : testTimers)
-					if (pair.getValue().equals(args))
+					if (pair.getValue().equals(args)) {
 						pair.getKey().stopTimer();
+						testTimers.remove(pair);
+					}
 				break;
 			case "IS_LAST_STUDENT_IN_TEST":
 				client.sendToClient(Queries.isLastStudentInTest(args) ? "lastStudent" : "notLastStudent"); // sends
