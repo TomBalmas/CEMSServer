@@ -469,6 +469,14 @@ public class CEMSServer extends ObservableServer {
 			case "GET_MANUAL_TEST_BY_STUDENT_SSN":
 				client.sendToClient(Queries.getManualTestByStudentSSN(args)); // sends TestFile
 				break;
+			case "UPDATE_FINISHED_TEST":
+				client.sendToClient(
+						Queries.updateFinishedTest(args) ? "finishedTestUpdated" : "finishedTestNotUpdated"); // sends
+																												// String
+				break;
+			case "GET_STUDENT_ANSWERS_BY_SSN_AND_TEST_ID":
+				client.sendToClient(Queries.getStudentAnswersByTestIdAndSSN(args));	// sends ArrayList<Pair<String, Integer>>
+				break;
 			default:
 				break;
 			}

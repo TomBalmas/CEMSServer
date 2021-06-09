@@ -807,7 +807,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt
-					.executeQuery("SELECT g.testId, course, title, grade FROM grades g, tests t WHERE g.ssn = '"
+					.executeQuery("SELECT g.testId, course, title, grade, teacherNotes FROM grades g, tests t WHERE g.ssn = '"
 							+ studentSSN + "' AND g.testId = t.testId");
 			if (rs.next())
 				do {
@@ -1722,7 +1722,7 @@ public class Queries {
 	 * @param args - testId,studentSSN
 	 * @return array list of pairs of question and answer
 	 */
-	private static ArrayList<Pair<String, Integer>> getStudentAnswersByTestIdAndSSN(String args) {
+	public static ArrayList<Pair<String, Integer>> getStudentAnswersByTestIdAndSSN(String args) {
 		ArrayList<Pair<String, Integer>> studentAnswers = new ArrayList<>();
 		String[] details = args.split(",");
 		String testId = details[0];
@@ -1987,7 +1987,7 @@ public class Queries {
 			stmt.executeUpdate(
 					"INSERT INTO manual_tests (testId, studentSSN, scheduler, date, startingTime, status, presentationMethod) VALUES ('"
 							+ testId + "', '" + studentSSN + "', '" + scheduler + "', '" + date + "', '" + startingTime
-							+ "', 'not checked', 'Self'" + ");");
+							+ "', 'UnChecked', 'Self'" + ");");
 			if (!path.equals("null"))
 				stmt.executeUpdate("UPDATE manual_tests SET word = LOAD_FILE('" + path + "') WHERE testId = '" + testId
 						+ "' AND studentSSN = '" + studentSSN + "';");
@@ -2104,6 +2104,29 @@ public class Queries {
 			e.printStackTrace();
 		}
 		return testCode;
+	}
+
+	/**
+	 * updates a finished test in the DB
+	 * 
+	 * @param args - testId,studentSSN,grade - String,String,integer
+	 * @return true if the test was updated
+	 */
+	public static boolean updateFinishedTest(String args) {
+		String[] details = args.split(args);
+		String testId = details[0];
+		String studentSSN = details[1];
+		int grade = Integer.parseInt(details[3]);
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate("UPDATE finished_tests SET grade = " + grade + ", status = Checked WHERE testId = '"
+					+ testId + "' AND studentSSN = '" + studentSSN + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 }

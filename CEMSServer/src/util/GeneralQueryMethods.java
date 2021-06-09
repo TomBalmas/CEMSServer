@@ -289,7 +289,7 @@ public class GeneralQueryMethods {
 	 */
 	public static StudentGrade createStudentGrade(ResultSet rs) throws SQLException {
 		return new StudentGrade(rs.getString("testId"), rs.getString("course"), rs.getString("title"),
-				rs.getInt("grade"));
+				rs.getInt("grade"), rs.getString("teacherNotes"));
 	}
 
 	/**
