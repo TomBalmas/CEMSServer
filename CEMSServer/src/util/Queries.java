@@ -1746,8 +1746,10 @@ public class Queries {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT studentAnswers FROM students_answers WHERE studentSSN = '"
 					+ studentSSN + "' AND testId = '" + testId + "'");
-			if (!rs.next())
-				return null;
+			if (!rs.next()) {
+				studentAnswers.add(new Pair<String, Integer>("studentDidn'tTakeTest", 0));
+				return studentAnswers;
+			}
 			studentAnswersString = rs.getString("studentAnswers").split("~");
 			questions = Queries.getQuestionsFromTest(testId);
 			if (questions.size() != studentAnswersString.length) {
@@ -1778,18 +1780,8 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT studentSSN FROM students_in_test WHERE testCode = '" + testCode + "'");
 			test = Queries.getTestByCode(testCode);
-			if (rs.next()) {
-				do {
-					Queries.addFinishedTest(rs.getString("studentSSN") + "," + test.getID() + "," + testCode + ","
-							+ GeneralQueryMethods.calculateTimeTaken(Queries.getStartingTimeByTestCode(testCode))
-							+ ",Forced," + test.getTitle() + "," + test.getCourse() + ",Unchecked");
-					studentsSuspectedCopying = Queries.checkTestForCopyingByTestCode(testCode);
-				} while (rs.next());
-				stmt.executeUpdate("DELETE FROM students_in_test WHERE testCode = '" + testCode + "'");
-			}
+			studentsSuspectedCopying = Queries.checkTestForCopyingByTestCode(testCode);
 			for (Pair<Student, Student> students : studentsSuspectedCopying)
 				stmt.executeUpdate("INSERT INTO copy_suspects VALUES ('" + students.getKey().getSSN() + "', '"
 						+ students.getValue().getSSN() + "', '" + test.getID() + "', '"
