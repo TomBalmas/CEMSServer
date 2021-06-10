@@ -1180,7 +1180,8 @@ public class Queries {
 			if (rs.next())
 				do {
 					testId = rs.getString("testId");
-					courseId = testId.substring(2, 3);
+					courseId = testId.substring(2, 4);
+					System.out.println(courseId);
 					if (coursesIds.contains(courseId)) {
 						testAndGrade = new Pair<String, Integer>(rs.getString("testId"), rs.getInt("grade"));
 						testsAndGrades.add(testAndGrade);
