@@ -1172,11 +1172,11 @@ public class Queries {
 			stmt = conn.createStatement();
 			ResultSet rs;
 			for (String course : courses) {
-				rs = stmt.executeQuery("SELECT courseId FROM courses WHERE courseName = '" + course);
+				rs = stmt.executeQuery("SELECT courseId FROM courses WHERE courseName = '" + course + "'");
 				if (rs.next())
 					coursesIds.add(rs.getString("courseId"));
 			}
-			rs = stmt.executeQuery("SELECT * FROM grades WHERE ssn = '" + studentSSN);
+			rs = stmt.executeQuery("SELECT * FROM grades WHERE ssn = '" + studentSSN + "'");
 			if (rs.next())
 				do {
 					testId = rs.getString("testId");
