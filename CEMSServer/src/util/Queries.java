@@ -2034,11 +2034,9 @@ public class Queries {
 	 * @return true if the test was locked
 	 */
 	public static boolean lockManualTest(String testCode) {
-		ScheduledTest test;
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			test = Queries.getScheduledTestByCode(testCode);
 			stmt.executeUpdate("DELETE FROM active_tests WHERE beginTestCode = '" + testCode + "'");
 			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
 		} catch (SQLException e) {
