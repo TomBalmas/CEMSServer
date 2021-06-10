@@ -2097,7 +2097,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt
-					.executeQuery("SELECT testCode FROM students_in_tests WHERE studentSSN = '" + studentSSN + "'");
+					.executeQuery("SELECT testCode FROM students_in_test WHERE studentSSN = '" + studentSSN + "'");
 			rs.next();
 			testCode = rs.getString("testCode");
 		} catch (SQLException e) {
