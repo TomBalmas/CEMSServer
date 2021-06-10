@@ -2136,7 +2136,9 @@ public class Queries {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM manual_tests mt, tests t WHERE mt.scheduler = '"
 					+ teacherSSN + "' AND t.testId = mt.testId");
 			if (rs.next())
+				do {
 				manualTests.add(GeneralQueryMethods.createFinishedTest(rs));
+				}while(rs.next());
 			else
 				manualTests.add(new FinishedTest());
 		} catch (SQLException e) {
