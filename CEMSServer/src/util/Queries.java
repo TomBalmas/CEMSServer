@@ -806,8 +806,8 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT g.testId, course, title, grade, teacherNotes FROM grades g, tests t WHERE g.ssn = '"
+			ResultSet rs = stmt.executeQuery(
+					"SELECT g.testId, course, title, grade, teacherNotes FROM grades g, tests t WHERE g.ssn = '"
 							+ studentSSN + "' AND g.testId = t.testId");
 			if (rs.next())
 				do {
@@ -1002,7 +1002,8 @@ public class Queries {
 					+ studentSSN + "' AND c.courseName = ft.course");
 			if (rs.next())
 				do {
-					courses.add(GeneralQueryMethods.createCourse(rs));
+					if (!courses.contains(GeneralQueryMethods.createCourse(rs)))
+						courses.add(GeneralQueryMethods.createCourse(rs));
 				} while (rs.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
