@@ -24,6 +24,14 @@
 	-fx-background-color: -fx-base1;
 }
 
+.importBtn {
+	-fx-background-color: #5097C7;
+}
+
+.importBtn:hover {
+	-fx-background-color: #3D6BA8;
+}
+
 .connectButton {
 	-fx-background-color: #1eae98;
 }

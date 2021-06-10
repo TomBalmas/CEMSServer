@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="1000.0" styleClass="body" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ServerUIController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="642.0" prefWidth="1000.0" styleClass="body" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ServerUIController">
    <children>
      <AnchorPane prefHeight="577.0" prefWidth="230.0" styleClass="paneBorder" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
          <children>
@@ -27,9 +27,27 @@
                   <Font size="17.0" />
                </font>
             </Text>
-            <AnchorPane fx:id="serverConnectionAnchor" layoutX="15.0" layoutY="82.0" prefHeight="125.0" prefWidth="210.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+            <AnchorPane layoutX="15.0" layoutY="75.0" prefHeight="97.0" prefWidth="210.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                <children>
-                  <AnchorPane fx:id="insideserverConnectionAnchor" layoutX="47.0" layoutY="40.0" prefHeight="73.0" styleClass="insideGrayPane" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
+                  <AnchorPane layoutX="47.0" layoutY="40.0" prefHeight="45.0" prefWidth="186.0" styleClass="insideGrayPane" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
+                     <children>
+                        <JFXButton fx:id="importBtn" layoutX="23.0" layoutY="6.0" onMouseClicked="#importClicked" prefHeight="31.0" prefWidth="136.0" styleClass="importBtn" text="Import" AnchorPane.rightAnchor="27.0" />
+                     </children>
+                  </AnchorPane>
+                  <Label layoutX="45.0" layoutY="13.0" prefHeight="26.0" prefWidth="121.0" text="Import data file" textAlignment="CENTER" AnchorPane.leftAnchor="45.0" AnchorPane.rightAnchor="44.0" AnchorPane.topAnchor="13.0">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+               </children>
+               <styleClass>
+                  <String fx:value="paneBorder" />
+                  <String fx:value="grayPane" />
+               </styleClass>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="162.0" prefHeight="125.0" prefWidth="210.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+               <children>
+                  <AnchorPane layoutX="47.0" layoutY="40.0" prefHeight="73.0" styleClass="insideGrayPane" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
                      <children>
                         <JFXTextField fx:id="portTxt" labelFloat="true" promptText="Port" text="5555" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0" />
                      </children>
@@ -45,14 +63,14 @@
                   <String fx:value="grayPane" />
                </styleClass>
             </AnchorPane>
-            <AnchorPane fx:id="dataBaseConnectionAnchor" layoutX="15.0" layoutY="205.0" prefHeight="337.0" prefWidth="210.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+            <AnchorPane layoutX="10.0" layoutY="277.0" prefHeight="337.0" prefWidth="210.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                <children>
                   <Label text="Database Connection" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="13.0">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <AnchorPane fx:id="insidedataBaseConnectionAnchor" layoutY="46.0" prefHeight="337.0" prefWidth="301.0" styleClass="insideGrayPane" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
+                  <AnchorPane layoutY="46.0" prefHeight="337.0" prefWidth="301.0" styleClass="insideGrayPane" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="40.0">
                      <children>
                         <VBox fx:id="databaseConVBox" prefHeight="200.0" prefWidth="301.0" spacing="26.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="20.0">
                            <children>
@@ -82,7 +100,6 @@
             </AnchorPane>
          </children>
       </AnchorPane>
-     <JFXTextArea fx:id="serverLog" editable="false" focusColor="#f0f1f1" labelFloat="true" prefHeight="547.0" prefWidth="656.0" promptText="Server Log:" styleClass="consoleTxt" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
-      <JFXButton fx:id="importBtn" layoutX="245.0" layoutY="161.0" onMouseClicked="#importClicked" prefHeight="276.0" prefWidth="52.0" text="Import" />
+     <JFXTextArea fx:id="serverLog" editable="false" focusColor="#f0f1f1" labelFloat="true" prefHeight="612.0" prefWidth="724.0" promptText="Server Log:" styleClass="consoleTxt" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
    </children>
 </AnchorPane>

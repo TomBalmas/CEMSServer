@@ -12,6 +12,7 @@ import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -233,6 +234,12 @@ public class ServerUIController implements Observer, Initializable{
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		importBtn.setDisable(true);
+	    Platform.runLater(new Runnable() {
+	        @Override
+	        public void run() {
+	        	passwordTxt.requestFocus();
+	        }
+	    });
 	}
 
 }
