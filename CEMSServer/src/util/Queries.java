@@ -2038,16 +2038,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT studentSSN FROM students_in_test WHERE testCode = '" + testCode + "'");
 			test = Queries.getScheduledTestByCode(testCode);
-			if (rs.next()) {
-				do {
-					Queries.addManualTest(test.getID() + rs.getString("studentSSN") + test.getBelongsToID()
-							+ test.getDate() + test.getStartingTime() + "null");
-				} while (rs.next());
-				stmt.executeUpdate("DELETE FROM students_in_test WHERE testCode = '" + testCode + "'");
-			}
 			stmt.executeUpdate("DELETE FROM active_tests WHERE beginTestCode = '" + testCode + "'");
 			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
 		} catch (SQLException e) {
