@@ -1164,19 +1164,28 @@ public class Queries {
 		String[] details = args.split(",");
 		String studentSSN = details[0];
 		String[] courses = details[1].split("~");
+		String testId = null;
+		String courseId = null;
+		ArrayList<String> coursesIds = new ArrayList<>();
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs;
 			for (String course : courses) {
-				rs = stmt.executeQuery("SELECT testId, grade FROM finished_tests WHERE studentSSN = '" + studentSSN
-						+ "' AND course = '" + course + "' AND status = 'Checked'");
+				rs = stmt.executeQuery("SELECT courseId FROM courses WHERE courseName = '" + course);
 				if (rs.next())
-					do {
+					coursesIds.add(rs.getString("courseId"));
+			}
+			rs = stmt.executeQuery("SELECT * FROM grades WHERE ssn = '" + studentSSN);
+			if (rs.next())
+				do {
+					testId = rs.getString("testId");
+					courseId = testId.substring(2, 3);
+					if (coursesIds.contains(courseId)) {
 						testAndGrade = new Pair<String, Integer>(rs.getString("testId"), rs.getInt("grade"));
 						testsAndGrades.add(testAndGrade);
-					} while (rs.next());
-			}
+					}
+				} while (rs.next());
 			if (testsAndGrades.isEmpty())
 				return new Report();
 			report = GeneralQueryMethods.createStudentReport(testsAndGrades);
