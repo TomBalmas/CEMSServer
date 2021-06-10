@@ -393,7 +393,6 @@ public class CEMSServer extends ObservableServer {
 				break;
 			case "IS_TIME_FOR_TEST":
 				boolean isFirstStudentInTest = Queries.isTimeForTest(args);
-				System.out.println(isFirstStudentInTest);
 				if (isFirstStudentInTest) {
 					System.out.println("first in test");
 					String[] split = args.split(",");
@@ -426,8 +425,8 @@ public class CEMSServer extends ObservableServer {
 						}
 
 					});
-					client.sendToClient(isFirstStudentInTest ? "timeForTest" : "notTimeForTest"); // sends String
 				}
+				client.sendToClient(isFirstStudentInTest ? "timeForTest" : "notTimeForTest"); // sends String
 				break;
 			case "GET_COURSE_BY_TEST_ID":
 				client.sendToClient(Queries.getCourseByTestId(args)); // sends Course

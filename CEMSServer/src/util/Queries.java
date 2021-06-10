@@ -1170,7 +1170,7 @@ public class Queries {
 			ResultSet rs;
 			for (String course : courses) {
 				rs = stmt.executeQuery("SELECT testId, grade FROM finished_tests WHERE studentSSN = '" + studentSSN
-						+ "' AND course = '" + course + "' AND status = Checked");
+						+ "' AND course = '" + course + "' AND status = 'Checked'");
 				if (rs.next())
 					do {
 						testAndGrade = new Pair<String, Integer>(rs.getString("testId"), rs.getInt("grade"));
@@ -1574,8 +1574,8 @@ public class Queries {
 		try {
 			stmt1 = conn.createStatement();
 			stmt2 = conn.createStatement();
-			ResultSet rs2;
 			ResultSet rs1;
+			ResultSet rs2;
 			rs1 = stmt1.executeQuery("SELECT * FROM scheduled_tests WHERE date = '" + localDate
 					+ "' AND beginTestCode = '" + testCode + "'");
 			if (!rs1.next())
