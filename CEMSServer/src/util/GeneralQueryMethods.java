@@ -62,7 +62,7 @@ public class GeneralQueryMethods {
 	 */
 	public static FinishedTest createFinishedTest(ResultSet rs) throws SQLException {
 		return new FinishedTest(rs.getString("testId"), Queries.getNameById(rs.getString("authorId")),
-				rs.getString("Title"), rs.getString("Course"), rs.getString("scheduler"), rs.getString("studentSSN"),
+				rs.getString("title"), rs.getString("course"), rs.getString("scheduler"), rs.getString("studentSSN"),
 				rs.getString("date"), rs.getString("startingTime"), rs.getInt("timeTaken"),
 				rs.getString("presentationMethod"), rs.getInt("grade"), rs.getString("status"));
 	}

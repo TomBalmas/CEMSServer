@@ -1815,7 +1815,7 @@ public class Queries {
 					+ "' AND testId = '" + testId + "'");
 			rs.next();
 			grade = rs.getInt("grade");
-			stmt.executeUpdate("UPDATE finished_tests SET status = Checked WHERE studentSSN = '" + studentSSN
+			stmt.executeUpdate("UPDATE finished_tests SET status = 'Checked' WHERE studentSSN = '" + studentSSN
 					+ "' AND testId = '" + testId + "'");
 			stmt.executeUpdate("INSERT INTO grades VALUES ('" + testId + "', '" + studentSSN + "', " + grade + ", '"
 					+ teacherNotes + "');");
@@ -1953,9 +1953,9 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("UPDATE tests SET title = '" + title + "', duration = " + duration
-					+ ", pointsPerQuerstion = '" + pointsPerQuestion + "', studentInstructions = '"
-					+ studentInstructions + "', teacherInstructions = '" + teacherInstructions
-					+ "', questionsInTest = '" + questionsInTest + "' WHERE testId = '" + testId + "';");
+					+ ", pointsPerQuestion = '" + pointsPerQuestion + "', studentInstructions = '" + studentInstructions
+					+ "', teacherInstructions = '" + teacherInstructions + "', questionsInTest = '" + questionsInTest
+					+ "' WHERE testId = '" + testId + "';");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -1988,9 +1988,10 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(
-					"INSERT INTO manual_tests (testId, studentSSN, scheduler, date, startingTime, status, presentationMethod) VALUES ('"
+					"INSERT INTO manual_tests (testId, studentSSN, scheduler, date, startingTime, grade, status, presentationMethod, timeTaken) VALUES ('"
 							+ testId + "', '" + studentSSN + "', '" + scheduler + "', '" + date + "', '" + startingTime
-							+ "', 'UnChecked', 'Self'" + ");");
+							+ "', -1, 'UnChecked', 'Self'" + GeneralQueryMethods.calculateTimeTaken(startingTime)
+							+ ");");
 			if (!path.equals("null"))
 				stmt.executeUpdate("UPDATE manual_tests SET word = LOAD_FILE('" + path + "') WHERE testId = '" + testId
 						+ "' AND studentSSN = '" + studentSSN + "';");
@@ -2052,7 +2053,7 @@ public class Queries {
 	 * @param args - testId,studentSSN
 	 * @return test file
 	 */
-	public static TestFile getManualTestByStudentSSN(String args) {
+	public static TestFile getManualTestByStudentSSNAndTestId(String args) {
 		TestFile test = new TestFile();
 		Blob word;
 		String[] details = args.split(",");
@@ -2105,20 +2106,44 @@ public class Queries {
 	 * @return true if the test was updated
 	 */
 	public static boolean updateFinishedTest(String args) {
-		String[] details = args.split(args);
+		String[] details = args.split(",");
 		String testId = details[0];
 		String studentSSN = details[1];
-		int grade = Integer.parseInt(details[3]);
+		int grade = Integer.parseInt(details[2]);
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("UPDATE finished_tests SET grade = " + grade + ", status = Checked WHERE testId = '"
+			stmt.executeUpdate("UPDATE finished_tests SET grade = " + grade + ", status = 'Checked' WHERE testId = '"
 					+ testId + "' AND studentSSN = '" + studentSSN + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * gets all manual tests of a teacher
+	 * 
+	 * @param teacherSSN
+	 * @return array list of finished tests
+	 */
+	public static ArrayList<FinishedTest> getManualTestsBySchedulerSSN(String teacherSSN) {
+		ArrayList<FinishedTest> manualTests = new ArrayList<>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM manual_tests mt, tests t WHERE mt.scheduler = '"
+					+ teacherSSN + "' AND t.testId = mt.testId");
+			if (rs.next())
+				manualTests.add(GeneralQueryMethods.createFinishedTest(rs));
+			else
+				manualTests.add(new FinishedTest());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return manualTests;
 	}
 
 }
