@@ -277,11 +277,6 @@ public class CEMSServer extends ObservableServer {
 			case "NOTIFY_STUDENTS_BY_SSN":
 				studentsSSN = args.split(",");
 				String currentTestcode = Queries.getTestCodeByStudentSSN(studentsSSN[0]);
-				for (Pair<Stopwatch, String> pair : testTimers)
-					if (pair.getValue().equals(currentTestcode)) {
-						pair.getKey().stopTimer();
-						testTimers.remove(pair);
-					}
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
