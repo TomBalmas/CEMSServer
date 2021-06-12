@@ -1,9 +1,11 @@
 package server;
 
 import java.io.BufferedOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -30,9 +32,18 @@ public class CEMSServer extends ObservableServer {
 		private ConnectionToClient clientConnection;
 		private String clientType = null;
 		private String clientID = null;
+		private String clientIp = null;
 
 		public ClientIdentifier(ConnectionToClient clientConnection) {
 			this.clientConnection = clientConnection;
+		}
+
+		public String getClientIp() {
+			return clientIp;
+		}
+
+		public void setClientIp(String clientIp) {
+			this.clientIp = clientIp;
 		}
 
 		public ConnectionToClient getClientConnection() {
@@ -99,13 +110,18 @@ public class CEMSServer extends ObservableServer {
 	 */
 	@Override
 	protected void clientException(ConnectionToClient client, Throwable exception) {
+		String clientDisconnectedString = CLIENT_DISCONNECTED.substring(0, CLIENT_DISCONNECTED.length() - 1);
 		try {
 			for (ClientIdentifier c : connectedClients)
-				if (c.getClientConnection().equals(client))
+				if (c.getClientConnection().equals(client)) {
+					sendToLog(clientDisconnectedString + " from ip: " + c.getClientIp());
 					connectedClients.remove(c);
-			sendToLog("Client Exception: " + exception.toString());
+				}
 			client.close();
-		} catch (Exception e) {
+		} catch (EOFException e) {
+			return;
+		} catch (IOException e) {
+			sendToLog("Client Exception: " + exception.toString());
 			exception.printStackTrace();
 		}
 	}
@@ -119,13 +135,10 @@ public class CEMSServer extends ObservableServer {
 	 */
 	@Override
 	protected void clientDisconnected(ConnectionToClient client) {
-		String clientDisconnectedString = CLIENT_DISCONNECTED.substring(0, CLIENT_DISCONNECTED.length() - 1);
 		for (ClientIdentifier c : connectedClients) {
-			if (c.getClientConnection().equals(client)) {
+			if (c.getClientConnection().equals(client))
 				connectedClients.remove(c);
-			}
 		}
-		sendToLog(clientDisconnectedString + " ip: " + client);
 	}
 
 	/**
@@ -172,6 +185,7 @@ public class CEMSServer extends ObservableServer {
 						if (c.getClientID() == null && c.getClientType() == null) {
 							c.setClientID(user.getSSN());
 							c.setClientType(user.getClass().getSimpleName());
+							c.setClientIp(client.getInetAddress().toString());
 						}
 				}
 				client.sendToClient(user); // sends User
