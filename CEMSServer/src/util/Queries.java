@@ -1708,8 +1708,8 @@ public class Queries {
 		ArrayList<Question> questions;
 		ArrayList<Pair<String, Integer>> similarAnswers = new ArrayList<>();
 		int numberOfSimilarIncorrectAnswers = 0;
-		answersOfStudentOne = Queries.getStudentAnswersByTestIdAndSSN(testId + studentOne);
-		answersOfStudentTwo = Queries.getStudentAnswersByTestIdAndSSN(testId + studentTwo);
+		answersOfStudentOne = Queries.getStudentAnswersByTestIdAndSSN(testId + "," + studentOne);
+		answersOfStudentTwo = Queries.getStudentAnswersByTestIdAndSSN(testId + "," + studentTwo);
 		if (answersOfStudentOne == null || answersOfStudentTwo == null)
 			return false;
 		if (answersOfStudentOne.get(0).getKey().equals("testQuestionsChanged"))
