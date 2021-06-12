@@ -276,14 +276,13 @@ public class CEMSServer extends ObservableServer {
 			 */
 			case "NOTIFY_STUDENTS_BY_SSN":
 				studentsSSN = args.split(",");
-				String currentTestcode = Queries.getTestCodeByStudentSSN(studentsSSN[0]);
 				for (ClientIdentifier c : connectedClients)
 					for (String ssn : studentsSSN)
 						if (c.getClientID().equals(ssn)) {
 							c.getClientConnection().sendToClient("notifyStudent"); // sends string
 							break;
 						}
-				client.sendToClient("studentsNotified"); // sends String
+				client.sendToClient("studentsNotifiedLocked"); // sends String
 				break;
 			/*
 			 * notify students of how many minutes were extended in a test given their SSN
@@ -389,7 +388,6 @@ public class CEMSServer extends ObservableServer {
 			case "IS_TIME_FOR_TEST":
 				boolean isFirstStudentInTest = Queries.isTimeForTest(args);
 				if (isFirstStudentInTest) {
-					System.out.println("first in test");
 					String[] split = args.split(",");
 					String code = split[2];
 					String[] timeSplitter = split[1].split(":");
@@ -404,7 +402,6 @@ public class CEMSServer extends ObservableServer {
 					testTimers.get(testTimers.size() - 1).getKey().startTimer(new TimerTask() {
 						@Override
 						public void run() {
-							System.out.println(testTimers.get(testTimers.size() - 1).getKey().getMinutes());
 							ArrayList<Student> studentsInTest = Queries.getStudentSSNByTestCode(code);
 							for (ClientIdentifier c : connectedClients)
 								for (Student student : studentsInTest)
