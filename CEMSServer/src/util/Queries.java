@@ -10,6 +10,7 @@ import java.util.Collections;
 
 import common.ActiveTest;
 import common.Course;
+import common.EmptyUser;
 import common.FinishedTest;
 import common.Principle;
 import common.Question;
@@ -41,6 +42,7 @@ public class Queries {
 	 * @return User
 	 */
 	public static User getUser(String username, String password) {
+		User user = null;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(
@@ -48,22 +50,24 @@ public class Queries {
 			if (rs.next())
 				switch (rs.getString("role")) {
 				case "Student":
-					return new Student(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
+					user = new Student(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				case "Teacher":
-					return new Teacher(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
+					user = new Teacher(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"),
 							rs.getString("fields"));
 				case "Principle":
-					return new Principle(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
+					user = new Principle(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
 				default:
 					return null;
 				}
+			else
+				user = new EmptyUser();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return user;
 	}
 
 	/**

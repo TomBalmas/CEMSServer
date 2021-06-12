@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 
+import common.EmptyUser;
 import common.Student;
 import common.TestFile;
 import common.User;
@@ -156,11 +157,12 @@ public class CEMSServer extends ObservableServer {
 			String[] studentsSSN;
 			if (str.length > 1)
 				args = str[1];
+
 			switch (cases) {
 			case "LOGIN":
 				details = args.split(","); // details[0] = user name, details[1] = password
 				User user = Queries.getUser(details[0], details[1]);
-				if (user != null) {
+				if (!(user instanceof EmptyUser)) {
 					for (ClientIdentifier c : connectedClients)
 						if (user.getSSN().equals(c.getClientID())) {
 							client.sendToClient("userAlreadyConnected"); // sends String
