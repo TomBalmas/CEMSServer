@@ -98,7 +98,6 @@ public class CEMSServer extends ObservableServer {
 	 */
 	@Override
 	protected void clientException(ConnectionToClient client, Throwable exception) {
-
 		try {
 			for (ClientIdentifier c : connectedClients)
 				if (c.getClientConnection().equals(client))
@@ -106,7 +105,7 @@ public class CEMSServer extends ObservableServer {
 			sendToLog("Client Exception: " + exception.toString());
 			client.close();
 		} catch (Exception e) {
-
+			exception.printStackTrace();
 		}
 	}
 
@@ -120,10 +119,12 @@ public class CEMSServer extends ObservableServer {
 	@Override
 	protected void clientDisconnected(ConnectionToClient client) {
 		String clientDisconnectedString = CLIENT_DISCONNECTED.substring(0, CLIENT_DISCONNECTED.length() - 1);
-		for (ClientIdentifier c : connectedClients)
-			if (c.getClientConnection().equals(client))
+		for (ClientIdentifier c : connectedClients) {
+			if (c.getClientConnection().equals(client)) {
 				connectedClients.remove(c);
-		sendToLog(clientDisconnectedString + " ip: " + client.getInetAddress());
+			}
+		}
+		sendToLog(clientDisconnectedString + " ip: " + client);
 	}
 
 	/**
@@ -408,7 +409,7 @@ public class CEMSServer extends ObservableServer {
 									if (c.getClientID().equals(student.getSSN())) {
 										try {
 											c.getClientConnection().sendToClient("notifyStudent");
-											client.sendToClient("studentsNotified");
+											client.sendToClient("studentsNotifiedLocked");
 										} catch (IOException e) {
 											e.printStackTrace();
 										}
