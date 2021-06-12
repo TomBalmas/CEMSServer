@@ -1663,7 +1663,7 @@ public class Queries {
 			for (int i = 0; i < studentsSSN.size() - 1; i++)
 				for (int j = i + 1; j < studentsSSN.size(); j++)
 					if (Queries.checkCopyingBetweenTwoStudentsBySSNAndTestId(
-							studentsSSN.get(i) + studentsSSN.get(j) + test.getID()))
+							studentsSSN.get(i) + "," + studentsSSN.get(j) + "," + test.getID()))
 						studentsSuscpectedCopying
 								.add(new Pair<Student, Student>(Queries.getStudentBySSN(studentsSSN.get(i)),
 										Queries.getStudentBySSN(studentsSSN.get(j))));
@@ -2160,4 +2160,21 @@ public class Queries {
 		return manualTests;
 	}
 
+	public static boolean createTable(String args) {
+		String[] details = args.split(",");
+		String tableName = details[0];
+		String columnName;
+		Statement stmt;
+		for (String detail : details) {
+			columnName = detail;
+			try {
+				stmt = conn.createStatement();
+				stmt.execute("CREATE TABLE cems." + tableName + " (" + columnName + ");");
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
 }
