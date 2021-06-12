@@ -282,7 +282,7 @@ public class CEMSServer extends ObservableServer {
 							c.getClientConnection().sendToClient("notifyStudent"); // sends string
 							break;
 						}
-				client.sendToClient("studentsNotified"); // sends String
+				client.sendToClient("studentsNotifiedLocked"); // sends String
 				break;
 			/*
 			 * notify students of how many minutes were extended in a test given their SSN
