@@ -2041,6 +2041,8 @@ public class Queries {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("UPDATE manual_tests SET grade = " + grade + ", comments = '" + comments
 					+ "', status = 'Checked' WHERE studentSSN = '" + studentSSN + "' AND testId = '" + testId + "';");
+			stmt.executeUpdate("INSERT INTO grades VALUES ('" + testId + "', '" + studentSSN + "', " + grade + ", '"
+					+ comments + "');");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
