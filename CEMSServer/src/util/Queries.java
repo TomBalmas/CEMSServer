@@ -1685,6 +1685,7 @@ public class Queries {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE ssn = '" + studentSSN + "'");
+			rs.next();
 			student = GeneralQueryMethods.createStudent(rs);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -2174,6 +2175,18 @@ public class Queries {
 				e.printStackTrace();
 				return false;
 			}
+		}
+		return true;
+	}
+	
+	public static boolean createDataBase(String DBName) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			stmt.execute("CREATE DATABASE " + DBName);
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
