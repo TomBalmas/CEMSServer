@@ -56,6 +56,9 @@ public class ServerController {
 		DBConnector.getInstance(ip, schema, user, pass);
 		queries = new Queries(DBConnector.getConnection());
 		Queries.setGlobalLocalInfile();
+		Queries.createTable("users,");
+		Queries.createTable("fields");
+		Queries.createTable("courses");
 		Queries.deleteTableContents("users");
 		Queries.deleteTableContents("fields");
 		Queries.deleteTableContents("courses");
