@@ -1437,7 +1437,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests st, tests t WHERE beginTestCode = '"
+			ResultSet rs = stmt.executeQuery("SELECT * FROM scheduled_tests st, tests t WHERE st.beginTestCode = '"
 					+ testCode + "' AND t.testId = st.testId");
 			rs.next();
 			scheduledTest = GeneralQueryMethods.createScheduledTest(rs);
@@ -2159,35 +2159,5 @@ public class Queries {
 			return null;
 		}
 		return manualTests;
-	}
-
-	public static boolean createTable(String args) {
-		String[] details = args.split(",");
-		String tableName = details[0];
-		String columnName;
-		Statement stmt;
-		for (String detail : details) {
-			columnName = detail;
-			try {
-				stmt = conn.createStatement();
-				stmt.execute("CREATE TABLE cems." + tableName + " (" + columnName + ");");
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public static boolean createDataBase(String DBName) {
-		Statement stmt;
-		try {
-			stmt = conn.createStatement();
-			stmt.execute("CREATE DATABASE " + DBName);
-		}catch(SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
 	}
 }
