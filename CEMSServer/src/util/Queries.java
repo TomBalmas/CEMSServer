@@ -1977,6 +1977,7 @@ public class Queries {
 	 * @return
 	 */
 	public static boolean addManualTest(String args) {
+		System.out.println(args);
 		String[] details = args.split(",");
 		String testId = details[0];
 		String studentSSN = details[1];
@@ -1984,6 +1985,8 @@ public class Queries {
 		String date = details[3];
 		String startingTime = details[4];
 		String path = details[5];
+		path.replace("//", "/");
+		System.out.println(path);
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();

@@ -137,7 +137,7 @@ public class CEMSServer extends ObservableServer {
 			// case when a manual test needs to be loaded into the DB
 			if (msg instanceof Pair<?, ?>) {
 				TestFile word = ((Pair<TestFile, String>) msg).getKey();
-				File newWordFile = new File("lib/" + word.getFileName());
+				File newWordFile = new File("C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/" + word.getFileName());
 				byte[] wordFileByteArray = word.getByteArray();
 				FileOutputStream fos = new FileOutputStream(newWordFile);
 				BufferedOutputStream bos = new BufferedOutputStream(fos);
