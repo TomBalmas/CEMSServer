@@ -1990,8 +1990,8 @@ public class Queries {
 			stmt.executeUpdate(
 					"INSERT INTO manual_tests (testId, studentSSN, scheduler, date, startingTime, grade, status, presentationMethod, timeTaken) VALUES ('"
 							+ testId + "', '" + studentSSN + "', '" + scheduler + "', '" + date + "', '" + startingTime
-							+ "', -1, 'UnChecked', 'Self'" + GeneralQueryMethods.calculateTimeTaken(startingTime)
-							+ ");");
+							+ "', " + -1 + ", 'UnChecked', 'Self', "
+							+ GeneralQueryMethods.calculateTimeTaken(startingTime) + ");");
 			if (!path.equals("null"))
 				stmt.executeUpdate("UPDATE manual_tests SET word = LOAD_FILE('" + path + "') WHERE testId = '" + testId
 						+ "' AND studentSSN = '" + studentSSN + "';");
@@ -2137,8 +2137,8 @@ public class Queries {
 					+ teacherSSN + "' AND t.testId = mt.testId");
 			if (rs.next())
 				do {
-				manualTests.add(GeneralQueryMethods.createFinishedTest(rs));
-				}while(rs.next());
+					manualTests.add(GeneralQueryMethods.createFinishedTest(rs));
+				} while (rs.next());
 			else
 				manualTests.add(new FinishedTest());
 		} catch (SQLException e) {

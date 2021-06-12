@@ -144,7 +144,7 @@ public class CEMSServer extends ObservableServer {
 				bos.write(wordFileByteArray, 0, word.getSize());
 				bos.close();
 				fos.close();
-				String path = "lib/" + word.getFileName();
+				String path = "C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/" + word.getFileName();
 				msg = ((Pair<byte[], String>) msg).getValue();
 				msg = msg + "," + path;
 			}
