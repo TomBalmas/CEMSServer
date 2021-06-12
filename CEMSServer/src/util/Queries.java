@@ -52,15 +52,18 @@ public class Queries {
 				case "Student":
 					user = new Student(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
+					break;
 				case "Teacher":
 					user = new Teacher(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"),
 							rs.getString("fields"));
+					break;
 				case "Principle":
 					user = new Principle(rs.getString("ssn"), rs.getString("name"), rs.getString("surname"),
 							rs.getString("email"), rs.getString("username"), rs.getString("password"));
+					break;
 				default:
-					return null;
+					return user;
 				}
 			else
 				user = new EmptyUser();
