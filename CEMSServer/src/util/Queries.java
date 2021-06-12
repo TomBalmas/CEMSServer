@@ -412,20 +412,29 @@ public class Queries {
 	 * @return - true if the question was deleted
 	 */
 	public static boolean deleteQuestionById(String questionId) {
-		Statement stmt1, stmt2;
+		Statement stmt;
 		String tempQuestions = null;
 		try {
-			stmt1 = conn.createStatement();
-			stmt2 = conn.createStatement();
-			ResultSet rs = stmt1.executeQuery(
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
 					"SELECT testId, questionsInTest FROM tests WHERE questionsInTest LIKE '%" + questionId + "%'");
 			while (rs.next()) {
 				tempQuestions = rs.getString("questionsInTest");
-				tempQuestions = tempQuestions.replace("~" + questionId + "~", "~");
-				stmt2.executeUpdate("UPDATE tests SET questionsInTest = '" + tempQuestions + "' WHERE testId = '"
+				if (tempQuestions.contains("~" + questionId + "~"))
+					tempQuestions = tempQuestions.replace("~" + questionId + "~", "~");
+				else if (tempQuestions.contains("~" + questionId))
+					tempQuestions.replace("~" + questionId, "");
+				else if (tempQuestions.contains(questionId + "~"))
+					tempQuestions.replace(questionId + "~", "");
+				else if (tempQuestions.contains(questionId)) {
+					stmt.executeUpdate("DELETE FROM questions WHERE questionId='" + questionId + "'");
+					Queries.deleteTestByID(rs.getString("testId"));
+					return true;
+				}
+				stmt.executeUpdate("UPDATE tests SET questionsInTest = '" + tempQuestions + "' WHERE testId = '"
 						+ rs.getString("testId") + "'");
 			}
-			stmt1.executeUpdate("DELETE FROM questions WHERE questionId='" + questionId + "'");
+			stmt.executeUpdate("DELETE FROM questions WHERE questionId='" + questionId + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
