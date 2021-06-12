@@ -1,0 +1,4 @@
+010101	205754773	Moed A	Algebra	180	20	you have to answer all the questions	incorect answer will get 0 points	01100~01101~01102~01103~01104	Math	
+010301	205754773	Moed B	Hedva	180	50	you have to answer all the questions	incorect answer will get 0 points	01105~01106	Math	
+020201	205793524	Moed C	Java	180	25	you have to answer all the questions	incorect answer will get 0 points	02100~02101~02102~02103	OOP	
+030400	123456789	Moed A	Geography	1	100	you have to answer all the questions	incorect answer will get 0 points	03100	Science	
