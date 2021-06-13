@@ -1338,6 +1338,8 @@ public class Queries {
 					AMinus += 1;
 				else
 					APlus += 1;
+			System.out.println(reportId + "," + testId + "," + date + "," + startingTime + "," + numberOfStudents + ","
+					+ average + "," + median);
 			stmt.executeUpdate("INSERT INTO statistic_reports VALUES ('" + reportId + "', '" + testId + "', '" + date
 					+ "', '" + startingTime + "', " + numberOfStudents + ", " + average + ", " + median + ", " + F
 					+ ", " + DMinus + ", " + DPlus + ", " + CMinus + ", " + CPlus + ", " + BMinus + ", " + BPlus + ", "
@@ -2342,14 +2344,15 @@ public class Queries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		numberOfStudents = Queries.getNumberOfStudentsFromTest(testId + date + startingTime + ",finished_tests");
+		numberOfStudents = Queries
+				.getNumberOfStudentsFromTest(testId + "," + date + "," + startingTime + ",finished_tests");
 		numberOfForced = Queries.getNumberOfStudentsByPresentationMethodFromTest(
-				testId + date + startingTime + ",finished_tests" + ",Forced");
+				testId + "," + date + "," + startingTime + ",finished_tests" + ",Forced");
 		numberOfSelf = numberOfStudents - numberOfForced;
 		if (numberOfStudents.equals(0)) {
-			numberOfStudents = Queries.getNumberOfStudentsFromTest(testId + date + startingTime + ",manual_tests");
+			numberOfStudents = Queries.getNumberOfStudentsFromTest(testId + "," + date + "," + startingTime + ",manual_tests");
 			numberOfForced = Queries.getNumberOfStudentsByPresentationMethodFromTest(
-					testId + date + startingTime + ",finished_tests" + ",Forced");
+					testId + "," + date + "," + startingTime + ",finished_tests" + ",Forced");
 			numberOfSelf = numberOfStudents - numberOfForced;
 		}
 		studentsDetails.add(numberOfStudents);

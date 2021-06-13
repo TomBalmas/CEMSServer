@@ -211,6 +211,8 @@ public class GeneralQueryMethods {
 	 * @return median of the grades as double
 	 */
 	public static double getMedian(ArrayList<Integer> grades) {
+		if(grades.isEmpty())
+			return 0;
 		Collections.sort(grades);
 		return grades.get(grades.size() / 2);
 	}
