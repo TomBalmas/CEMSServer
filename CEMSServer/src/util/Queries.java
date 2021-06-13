@@ -198,7 +198,8 @@ public class Queries {
 		String[] details = args.split(",");
 		String testId = details[0];
 		String date = details[1];
-		String startingTime = details[2];
+		String[] startingTimeString = details[2].split(":");
+		String startingTime = startingTimeString[0] + ":" + startingTimeString[1];
 		String scheduledBy = details[3];
 		String code = details[4];
 		Statement stmt;
@@ -1197,7 +1198,6 @@ public class Queries {
 				do {
 					testId = rs.getString("testId");
 					courseId = testId.substring(2, 4);
-					System.out.println(courseId);
 					if (coursesIds.contains(courseId)) {
 						testAndGrade = new Pair<String, Integer>(rs.getString("testId"), rs.getInt("grade"));
 						testsAndGrades.add(testAndGrade);
@@ -1270,7 +1270,7 @@ public class Queries {
 	 * @param testCode
 	 * @return reportId as string
 	 */
-	public static String addTestReport(String testCode) {
+	private static boolean addTestReport(String testCode) {
 		ArrayList<Integer> grades = new ArrayList<>();
 		Integer numberOfStudents = 0;
 		Double median;
@@ -1280,6 +1280,9 @@ public class Queries {
 		String teacherSSN = null;
 		String courseName = null;
 		String courseId = null;
+		String date = null;
+		String startingTime = null;
+		ArrayList<String> students = new ArrayList<>();
 		boolean initializeOnceFlag = true;
 		int F = 0; // 0-54.9
 		int DMinus = 0; // 55-64
@@ -1291,18 +1294,115 @@ public class Queries {
 		int AMinus = 0; // 90-94
 		int APlus = 0; // 95-100
 		Statement stmt;
+		ResultSet rs;
 		try {
+			reportId = Queries.getAvailableIdForReport();
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT testId, scheduledByTeacher, grades, course FROM scheduled_tests st, finished_tests ft WHERE st.date = ft.date AND st.beginTestCode = '"
-							+ testCode + "' AND st.starting_time = ft.starting_time AND st.testId = ft.testId");
+			rs = stmt.executeQuery(
+					"SELECT st.testId, scheduledByTeacher, grade, course, st.startingTime, st.date, ft.studentSSN FROM scheduled_tests st, finished_tests ft WHERE "
+							+ "st.date = ft.date AND st.beginTestCode = '" + testCode
+							+ "' AND st.startingTime = ft.startingTime AND st.testId = ft.testId");
 			while (rs.next()) {
 				grades.add(rs.getInt("grade"));
 				numberOfStudents += 1;
+				students.add(rs.getString("studentSSN"));
 				if (initializeOnceFlag) {
 					testId = rs.getString("testId");
 					teacherSSN = rs.getString("scheduledByTeacher");
 					courseName = rs.getString("course");
+					date = rs.getString("date");
+					startingTime = rs.getString("startingTime");
+					initializeOnceFlag = false;
+				}
+			}
+			average = GeneralQueryMethods.getAverage(grades);
+			median = GeneralQueryMethods.getMedian(grades);
+			Collections.sort(grades);
+			for (Integer grade : grades)
+				if (grade < 55)
+					F += 1;
+				else if (grade < 65)
+					DMinus += 1;
+				else if (grade < 70)
+					DPlus += 1;
+				else if (grade < 75)
+					CMinus += 1;
+				else if (grade < 80)
+					CPlus += 1;
+				else if (grade < 85)
+					BMinus += 1;
+				else if (grade < 90)
+					BPlus += 1;
+				else if (grade < 95)
+					AMinus += 1;
+				else
+					APlus += 1;
+			stmt.executeUpdate("INSERT INTO statistic_reports VALUES ('" + reportId + "', '" + testId + "', '" + date
+					+ "', '" + startingTime + "', " + numberOfStudents + ", " + average + ", " + median + ", " + F
+					+ ", " + DMinus + ", " + DPlus + ", " + CMinus + ", " + CPlus + ", " + BMinus + ", " + BPlus + ", "
+					+ AMinus + ", " + APlus + ");");
+			stmt.executeUpdate("INSERT INTO teacher_statistics VALUES ('" + reportId + "', '" + teacherSSN + "');");
+			for (String studentSSN : students)
+				stmt.executeUpdate("INSERT INTO student_statistics VALUES ('" + reportId + "', '" + studentSSN + "');");
+			rs = stmt.executeQuery("SELECT courseId FROM courses WHERE courseName = '" + courseName + "'");
+			rs.next();
+			courseId = rs.getString("courseId");
+			stmt.executeUpdate("INSERT INTO course_statistics VALUES ('" + reportId + "', '" + courseId + "');");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	/**
+	 * adds a test report to the all the report tables
+	 * 
+	 * @param testCode
+	 * @return reportId as string
+	 */
+	private static boolean addManualTestReport(String testCode) {
+		ArrayList<Integer> grades = new ArrayList<>();
+		Course course;
+		Integer numberOfStudents = 0;
+		Double median;
+		Double average;
+		String reportId = null;
+		String testId = null;
+		String teacherSSN = null;
+		String courseName = null;
+		String courseId = null;
+		String date = null;
+		String startingTime = null;
+		ArrayList<String> students = new ArrayList<>();
+		boolean initializeOnceFlag = true;
+		int F = 0; // 0-54.9
+		int DMinus = 0; // 55-64
+		int DPlus = 0; // 65 - 69
+		int CMinus = 0; // 70-74
+		int CPlus = 0; // 75-79
+		int BMinus = 0; // 80-84
+		int BPlus = 0; // 85-89
+		int AMinus = 0; // 90-94
+		int APlus = 0; // 95-100
+		Statement stmt;
+		ResultSet rs;
+		try {
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(
+					"SELECT st.testId, scheduledByTeacher, grade, st.startingTime, st.date, studentSSN FROM scheduled_tests st, manual_tests mt WHERE "
+							+ "st.date = mt.date AND st.beginTestCode = '" + testCode
+							+ "' AND st.startingTime = mt.startingTime AND st.testId = mt.testId");
+			while (rs.next()) {
+				grades.add(rs.getInt("grade"));
+				numberOfStudents += 1;
+				students.add(rs.getString("studentSSN"));
+				if (initializeOnceFlag) {
+					testId = rs.getString("testId");
+					teacherSSN = rs.getString("scheduledByTeacher");
+					course = Queries.getCourseByTestId(rs.getString("testId"));
+					courseName = course.getName();
+					date = rs.getString("date");
+					startingTime = rs.getString("startingTime");
 					initializeOnceFlag = false;
 				}
 			}
@@ -1329,18 +1429,21 @@ public class Queries {
 					AMinus += 1;
 				else
 					APlus += 1;
-			stmt.executeUpdate("INSERT INTO reports VALUES ('" + reportId + "', '" + testId + "', " + numberOfStudents
-					+ ", " + average + ", " + median + ", " + F + ", " + DMinus + ", " + DPlus + ", " + CMinus + ", "
-					+ CPlus + ", " + BMinus + ", " + BPlus + ", " + AMinus + ", " + APlus + ");");
-			stmt.executeUpdate("INSERT INTO teacher_statistics VALUES ('" + reportId + "', '" + teacherSSN + "'");
+			stmt.executeUpdate("INSERT INTO statistic_reports VALUES ('" + reportId + "', '" + testId + "', '" + date
+					+ "', '" + startingTime + "', " + numberOfStudents + ", " + average + ", " + median + ", " + F
+					+ ", " + DMinus + ", " + DPlus + ", " + CMinus + ", " + CPlus + ", " + BMinus + ", " + BPlus + ", "
+					+ AMinus + ", " + APlus + ");");
+			stmt.executeUpdate("INSERT INTO teacher_statistics VALUES ('" + reportId + "', '" + teacherSSN + "');");
+			for (String studentSSN : students)
+				stmt.executeUpdate("INSERT INTO student_statistics VALUES ('" + reportId + "', '" + studentSSN + "');");
 			rs = stmt.executeQuery("SELECT courseId FROM courses WHERE courseName = '" + courseName + "'");
 			rs.next();
 			courseId = rs.getString("courseId");
-			stmt.executeUpdate("INSERT INTO course_statistics VALUES ('" + reportId + "', '" + courseId + "'");
+			stmt.executeUpdate("INSERT INTO course_statistics VALUES ('" + reportId + "', '" + courseId + "');");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return reportId;
+		return true;
 	}
 
 	/**
@@ -1354,7 +1457,7 @@ public class Queries {
 		Integer lastId;
 		Integer tempId;
 		stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT reportId FROM reports ORDER BY reportId");
+		ResultSet rs = stmt.executeQuery("SELECT reportId FROM statistic_reports ORDER BY reportId");
 
 		// case of empty bank
 		if (!rs.next())
@@ -1804,6 +1907,7 @@ public class Queries {
 						+ students.getValue().getSSN() + "', '" + test.getID() + "', '"
 						+ Queries.getDateByCode(testCode) + "', '" + Queries.getStartingTimeByTestCode(testCode)
 						+ "');");
+			Queries.addTestReport(testCode);
 			stmt.executeUpdate("DELETE FROM active_tests WHERE beginTestCode = '" + testCode + "'");
 			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
 		} catch (SQLException e) {
@@ -1834,8 +1938,14 @@ public class Queries {
 			grade = rs.getInt("grade");
 			stmt.executeUpdate("UPDATE finished_tests SET status = 'Checked' WHERE studentSSN = '" + studentSSN
 					+ "' AND testId = '" + testId + "'");
-			stmt.executeUpdate("INSERT INTO grades VALUES ('" + testId + "', '" + studentSSN + "', " + grade + ", '"
-					+ teacherNotes + "');");
+			rs = stmt.executeQuery(
+					"SELECT * FROM grades WHERE testId = '" + testId + "' AND ssn = '" + studentSSN + "'");
+			if (rs.next())
+				stmt.executeUpdate("UPDATE grades SET grade = " + grade + " WHERE testId = '" + testId + "' AND ssn = '"
+						+ studentSSN + "'");
+			else
+				stmt.executeUpdate("INSERT INTO grades VALUES ('" + testId + "', '" + studentSSN + "', " + grade + ", '"
+						+ teacherNotes + "');");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -1879,7 +1989,7 @@ public class Queries {
 			e.printStackTrace();
 			return false;
 		}
-		if (numberOfStudents > 1)
+		if (numberOfStudents >= 1)
 			return false;
 		return true;
 	}
@@ -1994,7 +2104,6 @@ public class Queries {
 	 * @return
 	 */
 	public static boolean addManualTest(String args) {
-		System.out.println(args);
 		String[] details = args.split(",");
 		String testId = details[0];
 		String studentSSN = details[1];
@@ -2003,7 +2112,6 @@ public class Queries {
 		String startingTime = details[4];
 		String path = details[5];
 		path.replace("//", "/");
-		System.out.println(path);
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
@@ -2036,13 +2144,26 @@ public class Queries {
 		String studentSSN = details[1];
 		int grade = Integer.parseInt(details[2]);
 		String comments = details[3];
+		String date;
+		String startingTime;
 		Statement stmt;
+		ResultSet rs1;
+		ResultSet rs2;
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("UPDATE manual_tests SET grade = " + grade + ", comments = '" + comments
 					+ "', status = 'Checked' WHERE studentSSN = '" + studentSSN + "' AND testId = '" + testId + "';");
 			stmt.executeUpdate("INSERT INTO grades VALUES ('" + testId + "', '" + studentSSN + "', " + grade + ", '"
 					+ comments + "');");
+			rs1 = stmt.executeQuery("SELECT date, startingTime FROM manual_tests WHERE testId = '" + testId
+					+ "' AND studentSSN = '" + studentSSN + "'");
+			rs1.next();
+			date = rs1.getString("date");
+			startingTime = rs1.getString("startingTime");
+			rs2 = stmt.executeQuery("SELECT reportId FROM statistic_reports WHERE testId = '" + testId
+					+ "' AND date = '" + date + "' AND startingTime = '" + startingTime + "'");
+			rs2.next();
+			Queries.updateTestReport(rs2.getString("reportId"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -2060,6 +2181,7 @@ public class Queries {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
+			Queries.addManualTestReport(testCode);
 			stmt.executeUpdate("DELETE FROM active_tests WHERE beginTestCode = '" + testCode + "'");
 			stmt.executeUpdate("DELETE FROM scheduled_tests WHERE beginTestCode = '" + testCode + "'");
 		} catch (SQLException e) {
@@ -2132,11 +2254,35 @@ public class Queries {
 		String testId = details[0];
 		String studentSSN = details[1];
 		int grade = Integer.parseInt(details[2]);
-		Statement stmt;
+		String date;
+		String startingTime;
+		boolean flag = false; // tells whether to change the report or not
+		Statement stmt1;
+		Statement stmt2;
 		try {
-			stmt = conn.createStatement();
-			stmt.executeUpdate("UPDATE finished_tests SET grade = " + grade + ", status = 'Checked' WHERE testId = '"
+			stmt1 = conn.createStatement();
+			stmt2 = conn.createStatement();
+			// checking if the grade was changed
+			ResultSet rs1 = stmt1.executeQuery("SELECT grade FROM finished_tests WHERE testId = '" + testId
+					+ "' AND studentSSN = '" + studentSSN + "'");
+			rs1.next();
+			if (grade != rs1.getInt("grade"))
+				flag = true;
+			// changing the grade and adding comments
+			stmt2.executeUpdate("UPDATE finished_tests SET grade = " + grade + ", status = 'Checked' WHERE testId = '"
 					+ testId + "' AND studentSSN = '" + studentSSN + "'");
+			ResultSet rs2 = stmt2.executeQuery("SELECT * FROM finished_tests WHERE testId ='" + testId
+					+ "' AND studentSSN = '" + studentSSN + "'");
+			rs2.next();
+			date = rs2.getString("date");
+			startingTime = rs2.getString("startingTime");
+			// updating the report
+			if (flag) {
+				ResultSet rs3 = stmt2.executeQuery("SELECT reportId FROM statistic_reports WHERE date ='" + date
+						+ "' AND startingTime = '" + startingTime + "' AND testId = '" + testId + "'");
+				rs3.next();
+				Queries.updateTestReport(rs3.getString("reportId"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -2169,4 +2315,213 @@ public class Queries {
 		}
 		return manualTests;
 	}
+
+	/**
+	 * gets the numbers of students of a given testId with date and time,
+	 * 
+	 * @param args - testReportId
+	 * @return array list as [students,forced,self]
+	 */
+	public static ArrayList<Integer> getNumberOfStudentsByTestReportId(String reportId) {
+		ArrayList<Integer> studentsDetails = new ArrayList<>();
+		Integer numberOfStudents = 0;
+		Integer numberOfForced = 0;
+		Integer numberOfSelf = 0;
+		String testId = null;
+		String date = null;
+		String startingTime = null;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM statistic_reports WHERE reportId ='" + reportId + "'");
+			rs.next();
+			testId = rs.getString("testId");
+			date = rs.getString("date");
+			startingTime = rs.getString("startingTime");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		numberOfStudents = Queries.getNumberOfStudentsFromTest(testId + date + startingTime + ",finished_tests");
+		numberOfForced = Queries.getNumberOfStudentsByPresentationMethodFromTest(
+				testId + date + startingTime + ",finished_tests" + ",Forced");
+		numberOfSelf = numberOfStudents - numberOfForced;
+		if (numberOfStudents.equals(0)) {
+			numberOfStudents = Queries.getNumberOfStudentsFromTest(testId + date + startingTime + ",manual_tests");
+			numberOfForced = Queries.getNumberOfStudentsByPresentationMethodFromTest(
+					testId + date + startingTime + ",finished_tests" + ",Forced");
+			numberOfSelf = numberOfStudents - numberOfForced;
+		}
+		studentsDetails.add(numberOfStudents);
+		studentsDetails.add(numberOfForced);
+		studentsDetails.add(numberOfSelf);
+		return studentsDetails;
+	}
+
+	/**
+	 * gets the number of students that participated in a computed test
+	 * 
+	 * @param args - testId,date,startingTime,tableName
+	 * @return number of students as integer
+	 */
+	private static Integer getNumberOfStudentsFromTest(String args) {
+		String[] details = args.split(",");
+		String testId = details[0];
+		String date = details[1];
+		String startingTime = details[2];
+		String tableName = details[3];
+		Integer numberOfStudents = 0;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName + " WHERE testId = '" + testId
+					+ "' AND date = '" + date + "' AND startingTime = '" + startingTime + "'");
+			while (rs.next())
+				numberOfStudents += 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return numberOfStudents;
+	}
+
+	/**
+	 * gets the number of students that participated in a computed test
+	 * 
+	 * @param args - testId,date,startingTime,tableName,presentationMethod
+	 * @return number of students as integer
+	 *
+	 */
+	private static Integer getNumberOfStudentsByPresentationMethodFromTest(String args) {
+		String[] details = args.split(",");
+		String testId = details[0];
+		String date = details[1];
+		String startingTime = details[2];
+		String tableName = details[3];
+		String presentationMethod = details[4];
+		Integer numberOfStudents = 0;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName + " WHERE testId = '" + testId
+					+ "' AND date = '" + date + "' AND startingTime = '" + startingTime + "' AND presentationMethod = '"
+					+ presentationMethod + "'");
+			while (rs.next())
+				numberOfStudents += 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return numberOfStudents;
+	}
+
+	/**
+	 * updates a test report given its id
+	 * 
+	 * @param reportId
+	 * @return true if the report was updated
+	 */
+	private static boolean updateTestReport(String reportId) {
+		ArrayList<Integer> grades = new ArrayList<>();
+		int F = 0; // 0-54.9
+		int DMinus = 0; // 55-64
+		int DPlus = 0; // 65 - 69
+		int CMinus = 0; // 70-74
+		int CPlus = 0; // 75-79
+		int BMinus = 0; // 80-84
+		int BPlus = 0; // 85-89
+		int AMinus = 0; // 90-94
+		int APlus = 0; // 95-100
+		double average = 0.0;
+		double median = 0.0;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM statistic_reports WHERE reportId = '" + reportId + "'");
+			rs.next();
+			grades = Queries.getFinishedTestGrades(
+					rs.getString("testId") + "," + rs.getString("date") + "," + rs.getString("startingTime"));
+			if (grades.isEmpty())
+				grades = Queries.getManualTestGrades(
+						rs.getString("testId") + "," + rs.getString("date") + "," + rs.getString("startingTime"));
+			System.out.println(grades);
+			Collections.sort(grades);
+			for (Integer grade : grades)
+				if (grade < 55)
+					F += 1;
+				else if (grade < 65)
+					DMinus += 1;
+				else if (grade < 70)
+					DPlus += 1;
+				else if (grade < 75)
+					CMinus += 1;
+				else if (grade < 80)
+					CPlus += 1;
+				else if (grade < 85)
+					BMinus += 1;
+				else if (grade < 90)
+					BPlus += 1;
+				else if (grade < 95)
+					AMinus += 1;
+				else
+					APlus += 1;
+			average = GeneralQueryMethods.getAverage(grades);
+			median = GeneralQueryMethods.getMedian(grades);
+			stmt.executeUpdate("UPDATE statistic_reports SET average = " + average + ", median = " + median + ", F = "
+					+ F + ", DMinus = " + DMinus + ", DPlus = " + DPlus + ", CMinus = " + CMinus + ", CPlus = " + CPlus
+					+ ", BMinus = " + BMinus + ", BPlus = " + BPlus + ", AMinus = " + AMinus + ", APlus = " + APlus
+					+ " WHERE reportId = '" + reportId + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	/**
+	 * gets all the grades of a certain computed test
+	 * 
+	 * @param args - testId,date,startingTime
+	 * @return grades as array list of integers
+	 */
+	private static ArrayList<Integer> getFinishedTestGrades(String args) {
+		ArrayList<Integer> grades = new ArrayList<>();
+		String[] details = args.split(",");
+		String testId = details[0];
+		String date = details[1];
+		String startingTime = details[2];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT grade FROM finished_tests WHERE testId = '" + testId
+					+ "' AND date = '" + date + "' AND startingTime = '" + startingTime + "'");
+			while (rs.next())
+				grades.add(rs.getInt("grade"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return grades;
+	}
+
+	/**
+	 * gets all the grades of a certain manual test
+	 * 
+	 * @param args - testId,date,startingTime
+	 * @return grades as array list of integers
+	 */
+	private static ArrayList<Integer> getManualTestGrades(String args) {
+		ArrayList<Integer> grades = new ArrayList<>();
+		String[] details = args.split(",");
+		String testId = details[0];
+		String date = details[1];
+		String startingTime = details[2];
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT grade FROM manual_tests WHERE testId = '" + testId
+					+ "' AND date = '" + date + "' AND startingTime = '" + startingTime + "'");
+			while (rs.next())
+				grades.add(rs.getInt("grade"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return grades;
+	}
+
 }

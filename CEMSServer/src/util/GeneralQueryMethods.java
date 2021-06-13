@@ -146,10 +146,10 @@ public class GeneralQueryMethods {
 	 * @throws SQLException
 	 */
 	public static Report createTestReport(ResultSet rs) throws SQLException {
-		return new Report(rs.getString("reportId"), rs.getString("testId"), rs.getInt("numOfStudents"),
-				rs.getDouble("average"), rs.getDouble("median"), rs.getInt("0-54.9"), rs.getInt("55-64"),
-				rs.getInt("65-69"), rs.getInt("70-74"), rs.getInt("75-79"), rs.getInt("80-84"), rs.getInt("85-89"),
-				rs.getInt("90-94"), rs.getInt("95-100"));
+		return new Report(rs.getString("reportId"), rs.getString("testId"), rs.getString("date"), rs.getString("startingTime"), rs.getInt("numOfStudents"),
+				rs.getDouble("average"), rs.getDouble("median"), rs.getInt("F"), rs.getInt("DMinus"),
+				rs.getInt("DPlus"), rs.getInt("CMinus"), rs.getInt("CPlus"), rs.getInt("BMinus"), rs.getInt("BPlus"),
+				rs.getInt("AMinus"), rs.getInt("APlus"));
 	}
 
 	/**
