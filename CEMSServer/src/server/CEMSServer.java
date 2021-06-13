@@ -118,9 +118,7 @@ public class CEMSServer extends ObservableServer {
 					connectedClients.remove(c);
 				}
 			client.close();
-		} catch (EOFException e) {
-			return;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			sendToLog("Client Exception: " + exception.toString());
 			exception.printStackTrace();
 		}
