@@ -369,9 +369,6 @@ public class CEMSServer extends ObservableServer {
 			case "GET_TEST_BY_ID":
 				client.sendToClient(Queries.getTestByTestId(args)); // sends Test
 				break;
-			case "ADD_TEST_REPORT":
-				client.sendToClient(Queries.addTestReport(args));// sends String
-				break;
 			case "CREATE_TEACHER_REPORT":
 				client.sendToClient(Queries.createTeacherReportBySSN(args)); // sends Report
 				break;
@@ -488,6 +485,9 @@ public class CEMSServer extends ObservableServer {
 				break;
 			case "GET_MANUAL_TESTS_BY_SCHEDULER_SSN":
 				client.sendToClient(Queries.getManualTestsBySchedulerSSN(args)); // sends ArrayList<FinishedTest>
+				break;
+			case "GET_NUMBER_OF_STUDENTS_DETAILS_BY_TEST_REPORT_ID":
+				client.sendToClient(Queries.getNumberOfStudentsByTestReportId(args)); // sends ArrayList<Integer>
 				break;
 			default:
 				break;
