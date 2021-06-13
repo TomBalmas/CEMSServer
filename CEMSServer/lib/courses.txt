@@ -3,3 +3,4 @@
 03	Hedva	Math	
 04	Geography	Science	
 05	Bible	History	
+06	Music for kids	Music	
