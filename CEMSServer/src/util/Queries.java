@@ -901,7 +901,8 @@ public class Queries {
 		String[] details = args.split(",");
 		String testCode = details[0];
 		String date = details[1];
-		String startingTime = details[2];
+		String[] startingTimeString = details[2].split(":");
+		String startingTime = startingTimeString[0] + ":" + startingTimeString[1];
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
