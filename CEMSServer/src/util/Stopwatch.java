@@ -29,7 +29,6 @@ public class Stopwatch {
 					startFlag = false;
 				}
 				minutes--;
-				System.out.println(minutes);
 				if (minutes <= 0) {
 					tt.run();
 					minuteTimer.cancel();

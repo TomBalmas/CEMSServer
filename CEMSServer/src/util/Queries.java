@@ -1338,8 +1338,6 @@ public class Queries {
 					AMinus += 1;
 				else
 					APlus += 1;
-			System.out.println(reportId + "," + testId + "," + date + "," + startingTime + "," + numberOfStudents + ","
-					+ average + "," + median);
 			stmt.executeUpdate("INSERT INTO statistic_reports VALUES ('" + reportId + "', '" + testId + "', '" + date
 					+ "', '" + startingTime + "', " + numberOfStudents + ", " + average + ", " + median + ", " + F
 					+ ", " + DMinus + ", " + DPlus + ", " + CMinus + ", " + CPlus + ", " + BMinus + ", " + BPlus + ", "
@@ -2445,7 +2443,6 @@ public class Queries {
 			if (grades.isEmpty())
 				grades = Queries.getManualTestGrades(
 						rs.getString("testId") + "," + rs.getString("date") + "," + rs.getString("startingTime"));
-			System.out.println(grades);
 			Collections.sort(grades);
 			for (Integer grade : grades)
 				if (grade < 55)
