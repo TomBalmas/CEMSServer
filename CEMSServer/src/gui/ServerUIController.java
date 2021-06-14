@@ -101,10 +101,10 @@ public class ServerUIController implements Observer, Initializable {
 	}
 
 	/**
-	 * when clicking on connect the server will start and start listen to
-	 * connections
+	 * When clicking on connect the server will start and start listen to
+	 * connections.
 	 * 
-	 * @param event
+	 * @param event Begins the login process.
 	 */
 	@FXML
 	void clickConnect(Event event) {
@@ -137,9 +137,9 @@ public class ServerUIController implements Observer, Initializable {
 	}
 
 	/**
-	 * imports data from text files to DB
+	 * Imports data from text files to DB.
 	 * 
-	 * @param event
+	 * @param event Start Import data text files.
 	 */
 	@FXML
 	void importClicked(MouseEvent event) {
@@ -158,9 +158,9 @@ public class ServerUIController implements Observer, Initializable {
 	}
 
 	/**
-	 * when clicking disconnect it will close the connection to the server
+	 * When clicking disconnect it will close the connection to the server.
 	 * 
-	 * @param event
+	 * @param event start the connect.
 	 */
 	@FXML
 	void clickDisconnect(MouseEvent event) {
@@ -169,7 +169,7 @@ public class ServerUIController implements Observer, Initializable {
 	}
 
 	/**
-	 * this function contains the visual changes when clicking connect
+	 * This function contains the visual changes when clicking connect.
 	 */
 	private void connectSet() {
 		databaseConVBox.setDisable(true);
@@ -181,8 +181,8 @@ public class ServerUIController implements Observer, Initializable {
 	}
 
 	/**
-	 * this function contains the visual and functional changes when clicking
-	 * disconnect
+	 * This function contains the visual and functional changes when clicking
+	 * disconnect.
 	 */
 	private void disconnectSet() {
 		try {
@@ -200,9 +200,6 @@ public class ServerUIController implements Observer, Initializable {
 		portTxt.setDisable(false);
 	}
 
-	/**
-	 * @return instance of the fxml loader
-	 */
 	public FXMLLoader getLoader() {
 		return loader;
 	}
@@ -223,20 +220,28 @@ public class ServerUIController implements Observer, Initializable {
 	}
 
 	/**
-	 * @param msg - this message will be written to the server log when called
+	 * The function write to log message about status of connection.
+	 * @param msg this message will be written to the server log when called.
 	 */
 	private void writeToLog(String msg) {
 		serverLog.appendText("> " + msg + "\n");
 	}
 
 	/**
-	 * this function will get the messages from the server to write them to the log
+	 * This function will get the messages from the server to write them to the log.
+	 * @param arg0 alerts on change in object.
+	 * @param arg1 an object that receives the log.
 	 */
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		writeToLog((String) arg1);
 	}
 
+	
+	/**
+	 *@param arg0 gets the URL.
+	 *@param arg1
+	 */
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		importBtn.setDisable(true);

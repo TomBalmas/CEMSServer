@@ -19,6 +19,10 @@ public class Stopwatch {
 		return minutes;
 	}
 
+	/**
+	 * The function start the timer for ending test.
+	 * @param tt get the time for test.
+	 */
 	public synchronized void startTimer(TimerTask tt) {
 		minuteTimer = new Timer();
 		minuteTimer.scheduleAtFixedRate(new TimerTask() {
@@ -37,10 +41,17 @@ public class Stopwatch {
 		}, 0, MINUTE);
 	}
 
+	/**
+	 * The function add minutes to timer.
+	 * @param minutesToAdd add time for timer.
+	 */
 	public synchronized void addMinutes(int minutesToAdd) {
 		minutes += minutesToAdd;
 	}
 
+	/**
+	 * The function stop the timer when reaches 0.
+	 */
 	public synchronized void stopTimer() {
 		minuteTimer.cancel();
 	}

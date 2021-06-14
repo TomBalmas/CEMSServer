@@ -23,10 +23,10 @@ import javafx.util.Pair;
 public class GeneralQueryMethods {
 
 	/**
-	 * creates a question
+	 * Creates a question.
 	 * 
-	 * @param rs - result set that has all the arguments for test constructor
-	 * @return new question
+	 * @param rs result set that has all the arguments for test constructor.
+	 * @return new question.
 	 * @throws SQLException
 	 */
 	public static Question createQuestion(ResultSet rs) throws SQLException {
@@ -40,10 +40,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a test
+	 * Creates a test.
 	 * 
-	 * @param rs - result set that has all the arguments for test constructor
-	 * @return - new test
+	 * @param rs result set that has all the arguments for test constructor.
+	 * @return new test.
 	 * @throws SQLException
 	 */
 	public static Test createTest(ResultSet rs) throws SQLException {
@@ -54,10 +54,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a finished test
+	 * Creates a finished test.
 	 * 
-	 * @param rs - result set that has all the arguments for test constructor
-	 * @return new finished test
+	 * @param rs result set that has all the arguments for test constructor.
+	 * @return new finished test.
 	 * @throws SQLException
 	 */
 	public static FinishedTest createFinishedTest(ResultSet rs) throws SQLException {
@@ -68,9 +68,9 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates an active test
+	 * Creates an active test.
 	 * 
-	 * @param rs - result set that has all the arguments for test constructor
+	 * @param rs result set that has all the arguments for test constructor.
 	 * @return new active test
 	 * @throws SQLException
 	 */
@@ -82,10 +82,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a scheduled test
+	 * Creates a scheduled test.
 	 * 
-	 * @param rs - result set that has all the arguments for test constructor
-	 * @return new scheduled test
+	 * @param rs result set that has all the arguments for test constructor.
+	 * @return new scheduled test.
 	 * @throws SQLException
 	 */
 	public static ScheduledTest createScheduledTest(ResultSet rs) throws SQLException {
@@ -96,11 +96,11 @@ public class GeneralQueryMethods {
 
 	/**
 	 * 
-	 * creates time extension request
+	 * Creates time extension request.
 	 * 
-	 * @param rs - result set that has all the arguments for time extension request
-	 *           constructor
-	 * @return new time extension request
+	 * @param rs result set that has all the arguments for time extension request
+	 *           constructor.
+	 * @return new time extension request.
 	 * @throws SQLException
 	 */
 	public static TimeExtensionRequest createTimeExtensionRequest(ResultSet rs) throws SQLException {
@@ -109,11 +109,11 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * calculates starting time + duration
+	 * Calculates starting time + duration.
 	 * 
-	 * @param startingTime - test's starting time
-	 * @param duration     - test's duration
-	 * @return - finish time as string
+	 * @param startingTime test's starting time.
+	 * @param duration test's duration.
+	 * @return finish time as string.
 	 */
 	public static String calculateFinishTime(String startingTime, int duration) {
 		String[] time = startingTime.split(":");
@@ -139,10 +139,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a report
+	 * Creates a report.
 	 * 
-	 * @param rs - result set that has all the arguments for report constructor
-	 * @return new report
+	 * @param rs result set that has all the arguments for report constructor.
+	 * @return new report.
 	 * @throws SQLException
 	 */
 	public static Report createTestReport(ResultSet rs) throws SQLException {
@@ -153,10 +153,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a student
+	 * Creates a student.
 	 * 
-	 * @param rs - result set that has all the arguments for student constructor
-	 * @return new student
+	 * @param rs result set that has all the arguments for student constructor.
+	 * @return new student.
 	 * @throws SQLException
 	 */
 	public static Student createStudent(ResultSet rs) throws SQLException {
@@ -165,10 +165,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a course
+	 * Creates a course.
 	 * 
-	 * @param rs - result set that has all the arguments for course constructor
-	 * @return new course
+	 * @param rsresult set that has all the arguments for course constructor.
+	 * @return new course.
 	 * @throws SQLException
 	 */
 	public static Course createCourse(ResultSet rs) throws SQLException {
@@ -176,10 +176,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a teacher
+	 * Creates a teacher.
 	 * 
-	 * @param rs - result set that has all the arguments for teacher constructor
-	 * @return new teacher
+	 * @param rs result set that has all the arguments for teacher constructor.
+	 * @return new teacher.
 	 * @throws SQLException
 	 */
 	public static Teacher createTeacher(ResultSet rs) throws SQLException {
@@ -188,10 +188,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a student report
+	 * Creates a student report.
 	 * 
-	 * @param testsAndGrades - array list of pairs of tests and grades
-	 * @return report with student constructor
+	 * @param testsAndGrades - array list of pairs of tests and grades.
+	 * @return report with student constructor.
 	 */
 	public static Report createStudentReport(ArrayList<Pair<String, Integer>> testsAndGrades) {
 		ArrayList<Integer> grades = new ArrayList<>();
@@ -205,10 +205,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * gets the median of grades array list
+	 * Gets the median of grades array list.
 	 * 
-	 * @param grades - integer array list
-	 * @return median of the grades as double
+	 * @param grades integer array list.
+	 * @return median of the grades as double.
 	 */
 	public static double getMedian(ArrayList<Integer> grades) {
 		if(grades.isEmpty())
@@ -218,10 +218,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * gets the average of grades array list
+	 * Gets the average of grades array list.
 	 * 
-	 * @param grades - integer array list
-	 * @return average of the grades as double
+	 * @param grades integer array list.
+	 * @return average of the grades as double.
 	 */
 	public static Double getAverage(ArrayList<Integer> grades) {
 		Double average = 0.0;
@@ -231,11 +231,11 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates a teacher report
+	 * Creates a teacher report.
 	 * 
-	 * @param testsAveragesMedians - array list of pairs of tests and pairs of
-	 *                             averages and medians
-	 * @return report with teacher constructor
+	 * @param testsAveragesMedians array list of pairs of tests and pairs of
+	 *                             averages and medians.
+	 * @return report with teacher constructor.
 	 */
 	public static Report createTeacherOrCourseReport(
 			ArrayList<Pair<String, Pair<Double, Double>>> testsAveragesMedians) {
@@ -256,10 +256,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * gets the median of medians array list
+	 * Gets the median of medians array list.
 	 * 
-	 * @param medians - double array list
-	 * @return median of the medians as double
+	 * @param medians double array list.
+	 * @return median of the medians as double.
 	 */
 	public static double getMedianOfMedians(ArrayList<Double> medians) {
 		Collections.sort(medians);
@@ -267,10 +267,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * gets the average of averages array list
+	 * Gets the average of averages array list.
 	 * 
-	 * @param averages - double array list
-	 * @return average of the averages as double
+	 * @param averages double array list.
+	 * @return average of the averages as double.
 	 */
 	public static Double getAverageOfAverages(ArrayList<Double> averages) {
 		Double averageOfAverages = 0.0;
@@ -282,11 +282,11 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * creates student's grade information
+	 * Creates student's grade information.
 	 * 
-	 * @param rs - result set that has all the arguments for student grade
-	 *           constructor
-	 * @return student grade
+	 * @param rs result set that has all the arguments for student grade
+	 *           constructor.
+	 * @return student grade.
 	 * @throws SQLException
 	 */
 	public static StudentGrade createStudentGrade(ResultSet rs) throws SQLException {
@@ -295,12 +295,12 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * checks if argument time is between given start and finish times
+	 * Checks if argument time is between given start and finish times.
 	 * 
 	 * @param startingTime - String 00:00
 	 * @param finishTime   - String 00:00
 	 * @param argumentTime - String 00:00
-	 * @return true if the argument is between the given times
+	 * @return true if the argument is between the given times.
 	 */
 	public static boolean isArgTimeBetweenStartAndFinishTimes(String startingTime, String finishTime,
 			String argumentTime) {
@@ -330,10 +330,10 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * calculates the difference between now and a given starting time
+	 * Calculates the difference between now and a given starting time.
 	 * 
 	 * @param startingTime example: 00:00
-	 * @return time taken as integer
+	 * @return time taken as integer.
 	 */
 	public static int calculateTimeTaken(String startingTime) {
 		LocalTime now = LocalTime.now();
@@ -350,12 +350,12 @@ public class GeneralQueryMethods {
 	}
 
 	/**
-	 * checks if the argument date is between the range of dates given
+	 * Checks if the argument date is between the range of dates given
 	 * 
 	 * @param startDate    - 00/00/0000
 	 * @param finishDate   - 00/00/0000
 	 * @param argumentDate - 00/00/0000
-	 * @return
+	 * @return boolean true or false.
 	 */
 	public static boolean isDateInRange(String startDate, String finishDate, String argumentDate) {
 		String[] dates;
@@ -371,10 +371,10 @@ public class GeneralQueryMethods {
 		int argumentDay = Integer.parseInt(dates[0]);
 		int argumentMonth = Integer.parseInt(dates[1]);
 		int argumentYear = Integer.parseInt(dates[2]);
-		// argumentYear out of range
+		// ArgumentYear out of range
 		if (argumentYear < startYear || argumentYear > finishYear)
 			return false;
-		// same as startYear smaller than finishYear
+		// Same as startYear smaller than finishYear
 		if (argumentYear == startYear && argumentYear < finishYear) {
 			if (argumentMonth < startMonth)
 				return false;
@@ -382,7 +382,7 @@ public class GeneralQueryMethods {
 				return false;
 			return true;
 		}
-		// same as finishYear bigger than startYear
+		// Same as finishYear bigger than startYear.
 		if (argumentYear > startYear && argumentYear == finishYear) {
 			if (argumentMonth > finishMonth)
 				return false;
@@ -390,24 +390,24 @@ public class GeneralQueryMethods {
 				return false;
 			return true;
 		}
-		// same as startYear and finishYear
-		// argumentMonth out of range
+		// Same as startYear and finishYear.
+		// ArgumentMonth out of range.
 		if (argumentMonth < startMonth || argumentMonth > finishMonth)
 			return false;
-		// same as startMonth smaller than finishMonth
+		// Same as startMonth smaller than finishMonth.
 		if (argumentMonth == startMonth && argumentMonth < finishMonth) {
 			if (argumentDay < startDay)
 				return false;
 			return true;
 		}
-		// same as finishMonth bigger than startMonth
+		// Same as finishMonth bigger than startMonth.
 		if (argumentMonth == finishMonth && argumentMonth > startMonth) {
 			if (argumentDay > finishDay)
 				return false;
 			return true;
 		}
-		// same as startMonth and finishMonth
-		// argumentDay out of range
+		// Same as startMonth and finishMonth.
+		// ArgumentDay out of range.
 		if (argumentDay < startDay || argumentDay > finishDay)
 			return false;
 		return true;
