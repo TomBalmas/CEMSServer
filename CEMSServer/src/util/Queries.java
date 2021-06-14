@@ -1778,7 +1778,9 @@ public class Queries {
 						studentsSuscpectedCopying
 								.add(new Pair<Student, Student>(Queries.getStudentBySSN(studentsSSN.get(i)),
 										Queries.getStudentBySSN(studentsSSN.get(j))));
-		} catch (SQLException e) {
+		} catch (
+
+		SQLException e) {
 			e.printStackTrace();
 		}
 		return studentsSuscpectedCopying;
@@ -2348,7 +2350,8 @@ public class Queries {
 				testId + "," + date + "," + startingTime + ",finished_tests" + ",Forced");
 		numberOfSelf = numberOfStudents - numberOfForced;
 		if (numberOfStudents.equals(0)) {
-			numberOfStudents = Queries.getNumberOfStudentsFromTest(testId + "," + date + "," + startingTime + ",manual_tests");
+			numberOfStudents = Queries
+					.getNumberOfStudentsFromTest(testId + "," + date + "," + startingTime + ",manual_tests");
 			numberOfForced = Queries.getNumberOfStudentsByPresentationMethodFromTest(
 					testId + "," + date + "," + startingTime + ",finished_tests" + ",Forced");
 			numberOfSelf = numberOfStudents - numberOfForced;
