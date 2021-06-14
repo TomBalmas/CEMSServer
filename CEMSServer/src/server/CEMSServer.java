@@ -67,12 +67,15 @@ public class CEMSServer extends ObservableServer {
 		}
 
 	}
-
+	
 	public CEMSServer(int port) {
 		super(port);
 		connectedClients = new ArrayList<>();
 	}
 
+	/**
+	 * The function start the server.
+	 */
 	@Override
 	protected void serverStarted() {
 		String serverStartedString = SERVER_STARTED.substring(0, SERVER_STARTED.length() - 1);
@@ -80,22 +83,25 @@ public class CEMSServer extends ObservableServer {
 	}
 
 	/**
-	 * this function
-	 * 
-	 * @param msg - the string for sending to the server log
+	 * This function send message to the log.
+	 *@param msg the string for sending to the server log.
 	 */
 	private void sendToLog(String msg) {
 		setChanged();
 		notifyObservers(msg);
 	}
 
+	/**
+	 * This method stop the server.
+	 */
 	@Override
 	protected void serverStopped() {
 
 	}
 
 	/**
-	 * notify log when a client has connected, adding to connectedClients list
+	 * Notify log when a client has connected, adding to connectedClients list.
+	 * @param client gets the specific client.
 	 */
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
@@ -105,8 +111,9 @@ public class CEMSServer extends ObservableServer {
 	}
 
 	/**
-	 * catch exceptions and write them to the log
-	 *
+	 * Catch exceptions and write them to the log.
+	 *@param client this gets the specific client.
+	 *@param exception
 	 */
 	@Override
 	protected void clientException(ConnectionToClient client, Throwable exception) {
@@ -129,7 +136,8 @@ public class CEMSServer extends ObservableServer {
 	}
 
 	/**
-	 * notify log when a client has disconnected,removing from connectedClients list
+	 * Notify log when a client has disconnected, removing from connectedClients list.
+	 * @param client this gets the specific client.
 	 */
 	@Override
 	protected void clientDisconnected(ConnectionToClient client) {
@@ -140,8 +148,11 @@ public class CEMSServer extends ObservableServer {
 	}
 
 	/**
-	 * receives message from client and translates it to switch case to handle it
-	 * with connection to the DB
+	 * Receives message from client and translates it to switch case to handle it
+	 * with connection to the DB.
+	 * @param msg the message from the client.
+	 * @param client specific client that send the message.
+	 * 
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -285,7 +296,7 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient("principleNotified"); // sends String
 				break;
 			/*
-			 * notifies and lock test students given their id
+			 * Notifies and lock test students given their id.
 			 * 
 			 * @param - studentSSN,studentSSN,studentSSN...
 			 */
@@ -300,10 +311,10 @@ public class CEMSServer extends ObservableServer {
 				client.sendToClient("studentsNotifiedLocked"); // sends String
 				break;
 			/*
-			 * notify students of how many minutes were extended in a test given their SSN
+			 * Notify students of how many minutes were extended in a test given their SSN
 			 * and minutes
 			 * 
-			 * @param - minutes~studentSSN,studentSSN,studentSSN...
+			 * @param minutes~studentSSN,studentSSN,studentSSN...
 			 */
 			case "NOTIFY_STUDENTS_TIME_EXTENSION":
 				details = args.split("~");

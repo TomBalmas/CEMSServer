@@ -7,10 +7,10 @@ import gui.ServerUIController;
 import util.Queries;
 
 /**
- * this class implements the logic of what the server can do function wise.
+ * This class implements the logic of what the server can do function wise.
+ *  @version 1.0
+ *  @author Group 1
  * 
- * @author ArtLo
- *
  */
 public class ServerController {
 
@@ -22,17 +22,15 @@ public class ServerController {
 		uiController = new ServerUIController();
 	}
 
-	/**
-	 * @return instance of the UI controller
-	 */
+	
 	public ServerUIController getUiController() {
 		return uiController;
 	}
 
 	/**
-	 * running the server and start listening to clients connected
+	 * Running the server and start listening to clients connected.
 	 * 
-	 * @param port
+	 * @param port of server
 	 * @throws IOException
 	 */
 	public static void runServer(int port) throws IOException {
@@ -42,12 +40,12 @@ public class ServerController {
 	}
 
 	/**
-	 * connecting to the database.
+	 * Connecting to the database.
 	 * 
-	 * @param ip
+	 * @param ip of SQLserver.
 	 * @param schema
-	 * @param user
-	 * @param pass
+	 * @param user of MYSQL.
+	 * @param pass of MYSQL.
 	 * @throws SQLException
 	 * @throws ClassNotFoundException
 	 */
@@ -59,7 +57,7 @@ public class ServerController {
 	}
 
 	/**
-	 * closes the server for connections
+	 * Closes the server for connections.
 	 * 
 	 * @throws IOException
 	 */
@@ -67,9 +65,7 @@ public class ServerController {
 		server.close();
 	}
 
-	/**
-	 * @return instance of the server object
-	 */
+	
 	public static CEMSServer getServer() {
 		return server;
 	}
