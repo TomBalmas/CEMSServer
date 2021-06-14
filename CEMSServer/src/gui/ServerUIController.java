@@ -1,5 +1,6 @@
 package gui;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -22,12 +23,13 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import server.CEMSServer;
 import server.ServerController;
 import util.Queries;
 
-public class ServerUIController implements Observer, Initializable{
+public class ServerUIController implements Observer, Initializable {
 
 	private int port;
 	private FXMLLoader loader;
@@ -141,13 +143,17 @@ public class ServerUIController implements Observer, Initializable{
 	 */
 	@FXML
 	void importClicked(MouseEvent event) {
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+		File file = directoryChooser.showDialog(new Stage());
+		String path = file.getAbsolutePath();
+		path = path.replaceAll("\\\\", "/");
 		Queries.setGlobalLocalInfile();
 		Queries.deleteTableContents("users");
 		Queries.deleteTableContents("fields");
 		Queries.deleteTableContents("courses");
-		Queries.loadTxtFileIntoTable("users,lib/users.txt");
-		Queries.loadTxtFileIntoTable("fields,lib/fields.txt");
-		Queries.loadTxtFileIntoTable("courses,lib/courses.txt");
+		Queries.loadTxtFileIntoTable("users," + path + "/users.txt");
+		Queries.loadTxtFileIntoTable("fields," + path + "/fields.txt");
+		Queries.loadTxtFileIntoTable("courses," + path + "/courses.txt");
 		writeToLog("Data imported");
 	}
 
@@ -234,12 +240,12 @@ public class ServerUIController implements Observer, Initializable{
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		importBtn.setDisable(true);
-	    Platform.runLater(new Runnable() {
-	        @Override
-	        public void run() {
-	        	passwordTxt.requestFocus();
-	        }
-	    });
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				passwordTxt.requestFocus();
+			}
+		});
 	}
 
 }
